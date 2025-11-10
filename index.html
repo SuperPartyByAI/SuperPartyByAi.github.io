@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎉 SuperParty - Management Evenimente cu AI</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎉</text></svg>">
     <style>
         * {
             margin: 0;
@@ -212,6 +213,11 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
         /* Dashboard Styles */
         .dashboard {
             display: none;
@@ -374,123 +380,173 @@
             display: none !important;
         }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar-header {
+                padding: 20px 15px;
+            }
+
+            .sidebar-logo {
+                font-size: 18px;
+            }
+
+            .sidebar-by-ai {
+                font-size: 12px;
+            }
+
+            .sidebar-user {
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .sidebar-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .sidebar-username {
+                font-size: 14px;
+            }
+
+            .sidebar-menu {
+                display: none;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+
+            .sidebar-menu.mobile-open {
+                display: block;
+            }
+
+            .menu-toggle {
+                display: block;
+                width: 100%;
+                padding: 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 15px;
+                border-radius: 8px;
+            }
+
+            .menu-item {
+                padding: 12px 15px;
+            }
+
+            .sidebar-footer {
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .auth-container {
+                max-width: 100%;
+                padding: 0 15px;
+            }
+
+            .auth-card {
+                padding: 30px 20px;
+            }
+
+            .auth-logo {
+                font-size: 40px;
+            }
+
+            .auth-header h1 {
+                font-size: 24px;
+            }
+
+            h1 {
+                font-size: 24px !important;
+            }
+
+            h2 {
+                font-size: 20px !important;
+            }
+
+            /* Tables responsive */
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px !important;
+            }
+
+            /* Grid responsive */
+            [style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Code box responsive */
+            .code-display {
+                font-size: 20px !important;
+                letter-spacing: 2px !important;
+            }
+
+            /* Buttons responsive */
+            .btn, .btn-primary, .btn-logout {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+
+        .menu-toggle {
             display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
         }
 
-        .modal-overlay.show {
-            display: flex;
+        .code-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
         }
 
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: relative;
+        .code-active {
+            background: #d1fae5;
+            color: #059669;
         }
 
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: #f3f4f6;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.3s;
-        }
-
-        .modal-close:hover {
-            background: #e5e7eb;
-        }
-
-        .ai-upload-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 25px;
-            color: white;
-            margin-bottom: 25px;
-        }
-
-        .upload-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .upload-btn {
-            padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 3px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .upload-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.8);
-            transform: translateY(-2px);
+        .code-used {
+            background: #fee;
+            color: #ef4444;
+            text-decoration: line-through;
         }
 
         .code-box {
-            padding: 25px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
             border-radius: 15px;
             text-align: center;
-            color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            margin-bottom: 25px;
+            margin: 20px 0;
         }
 
-        .form-filled {
-            background: #f0fdf4 !important;
-        }
-
-        .info-box {
-            background: #fffbeb;
-            border: 2px solid #f59e0b;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .success-box {
-            background: rgba(16, 185, 129, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 15px;
+        .code-display {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 10px 0;
         }
     </style>
 </head>
-<body>
+<body class="auth-page">
     <!-- Auth Page -->
     <div id="authPage" class="auth-page">
         <div class="auth-container">
@@ -531,8 +587,11 @@
                 <!-- Register Form -->
                 <div id="registerForm" class="form-section">
                     <div class="form-group">
-                        <label>🎫 Cod de Acces</label>
-                        <input type="text" id="registerCode" placeholder="PARTY2024" style="text-transform: uppercase;">
+                        <label>🎫 Cod Unic de Acces</label>
+                        <input type="text" id="registerCode" placeholder="PARTY-XXXX-XXXX" style="text-transform: uppercase;">
+                        <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 5px;">
+                            ℹ️ Fiecare cod poate fi folosit o singură dată
+                        </small>
                     </div>
                     <div class="form-group">
                         <label>👤 Username</label>
@@ -579,14 +638,17 @@
                         <div class="sidebar-role" id="sidebarRole">Administrator</div>
                     </div>
                 </div>
+                <button class="menu-toggle" onclick="toggleMobileMenu()">
+                    📱 Meniu
+                </button>
             </div>
 
-            <nav class="sidebar-menu">
+            <nav class="sidebar-menu" id="sidebarMenu">
                 <div class="menu-item active" data-section="home">
                     <span class="icon">🏠</span>
                     <span>Acasă</span>
                 </div>
-                <div class="menu-item menu-item-special" data-section="noteaza-eveniment">
+                <div class="menu-item menu-item-special" data-section="noteaza-eveniment" style="background: rgba(16, 185, 129, 0.05);">
                     <span class="icon" style="font-size: 24px;">➕</span>
                     <span style="color: #10b981; font-weight: 600;">Notează Eveniment</span>
                 </div>
@@ -628,13 +690,17 @@
                     <div class="admin-separator">
                         <div class="admin-title">🔐 ADMIN MODE</div>
                     </div>
+                    <div class="menu-item menu-item-admin" data-section="admin-codes">
+                        <span class="icon">🎫</span>
+                        <span style="color: #ef4444; font-weight: 600;">Gestionare Coduri</span>
+                    </div>
                     <div class="menu-item menu-item-admin" data-section="admin-stats">
                         <span class="icon">📊</span>
                         <span style="color: #ef4444; font-weight: 600;">Statistici Complete</span>
                     </div>
-                    <div class="menu-item menu-item-admin" data-section="admin-database">
-                        <span class="icon">🗄️</span>
-                        <span style="color: #ef4444; font-weight: 600;">Bază de Date</span>
+                    <div class="menu-item menu-item-admin" data-section="admin-users">
+                        <span class="icon">👥</span>
+                        <span style="color: #ef4444; font-weight: 600;">Utilizatori</span>
                     </div>
                     <div class="menu-item menu-item-admin" data-section="admin-settings">
                         <span class="icon">⚙️</span>
@@ -653,40 +719,48 @@
         </main>
     </div>
 
-    <!-- Event Form Modal -->
-    <div class="modal-overlay" id="eventModal">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeEventForm()">✕</button>
-            <div id="modalContent"></div>
-        </div>
-    </div>
-
     <script>
-        // App State
+        // App State cu sistem de coduri unice
         let appData = {
-            accessCode: 'PARTY2024',
+            accessCodes: [
+                {
+                    code: 'PARTY-2024-DEMO',
+                    status: 'active', // 'active' sau 'used'
+                    createdAt: '2025-11-10T10:00:00',
+                    usedBy: null,
+                    usedAt: null
+                }
+            ],
             users: [
                 {
                     username: 'Andreiadmin',
                     email: 'admin@superparty.ro',
                     password: 'Andrei209512!',
                     role: 'admin',
-                    registerDate: '2025-11-01T20:00:00'
-                },
-                {
-                    username: 'Andrei',
-                    email: 'andrei@email.com',
-                    password: 'Andrei209512!',
-                    role: 'user',
-                    registerDate: '2025-11-09T20:30:00'
+                    registerDate: '2025-11-01T20:00:00',
+                    accessCode: null
                 }
             ]
         };
 
-        let eventCounter = 1;
         let currentSession = null;
-        let uploadedImage = null;
-        let formData = {};
+
+        // Funcție pentru generarea codului unic
+        function generateUniqueCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let part1 = 'PARTY';
+            let part2 = '';
+            let part3 = '';
+            
+            for (let i = 0; i < 4; i++) {
+                part2 += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            for (let i = 0; i < 4; i++) {
+                part3 += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return `${part1}-${part2}-${part3}`;
+        }
 
         // Initialize
         function init() {
@@ -697,14 +771,10 @@
         function loadData() {
             const saved = localStorage.getItem('superpartyData');
             if (saved) appData = JSON.parse(saved);
-            
-            const counter = localStorage.getItem('eventCounter');
-            if (counter) eventCounter = parseInt(counter);
         }
 
         function saveData() {
             localStorage.setItem('superpartyData', JSON.stringify(appData));
-            localStorage.setItem('eventCounter', eventCounter.toString());
         }
 
         function checkSession() {
@@ -732,7 +802,7 @@
             } else {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('registerForm').classList.add('active');
-                document.getElementById('authSubtitle').textContent = 'Creează-ți cont gratuit!';
+                document.getElementById('authSubtitle').textContent = 'Ai primit cod de acces?';
             }
             hideMessage();
         }
@@ -801,8 +871,16 @@
                 return;
             }
             
-            if (code !== appData.accessCode) {
+            // Verifică dacă codul există și este activ
+            const accessCodeObj = appData.accessCodes.find(c => c.code === code);
+            
+            if (!accessCodeObj) {
                 showMessage('❌ Cod de acces invalid!', 'error');
+                return;
+            }
+            
+            if (accessCodeObj.status === 'used') {
+                showMessage(`❌ Acest cod a fost deja folosit de ${accessCodeObj.usedBy}!`, 'error');
                 return;
             }
             
@@ -821,17 +899,25 @@
                 return;
             }
             
+            // Marchează codul ca folosit
+            accessCodeObj.status = 'used';
+            accessCodeObj.usedBy = username;
+            accessCodeObj.usedAt = new Date().toISOString();
+            
+            // Adaugă utilizatorul
             appData.users.push({
                 username,
                 email,
                 password,
                 role: 'user',
-                registerDate: new Date().toISOString()
+                registerDate: new Date().toISOString(),
+                accessCode: code
             });
             
             saveData();
-            showMessage('✅ Cont creat cu succes!', 'success');
-            setTimeout(() => switchTab('login'), 1500);
+            
+            showMessage(`✅ Cont creat cu succes! Codul ${code} a fost marcat ca folosit.`, 'success');
+            setTimeout(() => switchTab('login'), 2500);
         }
 
         // Dashboard Functions
@@ -867,8 +953,17 @@
                     document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
                     loadSection(this.getAttribute('data-section'));
+                    
+                    // Close mobile menu after selection
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebarMenu').classList.remove('mobile-open');
+                    }
                 });
             });
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('sidebarMenu').classList.toggle('mobile-open');
         }
 
         function loadSection(section) {
@@ -880,12 +975,12 @@
                         👋 Bine ai venit, ${currentSession.username}!
                     </h1>
                     <p style="color: #6b7280; margin-bottom: 40px;">
-                        Acest dashboard este construit cu AI și oferă o experiență de management completă.
+                        Sistem de coduri unice one-time use + Management complet evenimente
                     </p>
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px;">
                         <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
                         <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 10px;">SuperParty Dashboard</h2>
-                        <p style="font-size: 16px; opacity: 0.95;">Gestionează-ți evenimentele și petrecerile cu ușurință!</p>
+                        <p style="font-size: 16px; opacity: 0.95;">Gestionează evenimente cu coduri unice pentru fiecare utilizator!</p>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                         <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
@@ -894,52 +989,100 @@
                             <p style="font-size: 32px; font-weight: bold; color: #667eea;">${appData.users.length}</p>
                         </div>
                         <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
-                            <div style="font-size: 36px; margin-bottom: 15px;">⚙️</div>
-                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Rolul Tău</h3>
-                            <p style="font-size: 20px; font-weight: bold; color: #10b981;">${currentSession.role === 'admin' ? 'Administrator' : 'Utilizator'}</p>
+                            <div style="font-size: 36px; margin-bottom: 15px;">🎫</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Coduri Active</h3>
+                            <p style="font-size: 32px; font-weight: bold; color: #10b981;">${appData.accessCodes.filter(c => c.status === 'active').length}</p>
                         </div>
                         <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
-                            <div style="font-size: 36px; margin-bottom: 15px;">🎫</div>
-                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Cod Acces</h3>
-                            <p style="font-size: 20px; font-weight: bold; color: #f59e0b;">${appData.accessCode}</p>
+                            <div style="font-size: 36px; margin-bottom: 15px;">⚙️</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Rolul Tău</h3>
+                            <p style="font-size: 20px; font-weight: bold; color: #f59e0b;">${currentSession.role === 'admin' ? 'Administrator' : 'Utilizator'}</p>
                         </div>
                     </div>
                 `;
             } else if (section === 'noteaza-eveniment') {
                 content.innerHTML = `
                     <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">➕ Notează Eveniment Nou</h1>
-                    <p style="color: #6b7280; margin-bottom: 40px;">Începe să adaugi un eveniment nou în sistem cu ajutorul AI</p>
+                    <p style="color: #6b7280; margin-bottom: 40px;">Adaugă un eveniment nou în sistem</p>
                     <div style="background: white; border-radius: 20px; padding: 60px 40px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); text-align: center;">
                         <div style="font-size: 80px; margin-bottom: 30px;">🎉</div>
                         <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 15px; color: #10b981;">Gata să notezi un eveniment?</h2>
-                        <p style="color: #6b7280; font-size: 16px; margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                            Apasă butonul de mai jos pentru a deschide formularul complet de rezervare cu toate detaliile necesare.
+                        <p style="color: #6b7280; font-size: 16px; margin-bottom: 40px;">
+                            Această funcționalitate va fi adăugată în curând
                         </p>
-                        <button onclick="openEventForm()" style="padding: 20px 50px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 15px; font-size: 20px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); display: inline-flex; align-items: center; gap: 12px;">
-                            <span style="font-size: 24px;">🤖</span>
-                            Notează Petrecere cu AI
+                    </div>
+                `;
+            } else if (section === 'admin-codes' && currentSession.role === 'admin') {
+                const activeCodes = appData.accessCodes.filter(c => c.status === 'active').length;
+                const usedCodes = appData.accessCodes.filter(c => c.status === 'used').length;
+                
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">🎫 Gestionare Coduri de Acces</h1>
+                    <p style="color: #6b7280; margin-bottom: 40px;">Generează și gestionează coduri unice pentru utilizatori</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">✅</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Coduri Active</h3>
+                            <p style="font-size: 32px; font-weight: bold; color: #10b981;">${activeCodes}</p>
+                        </div>
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">❌</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Coduri Folosite</h3>
+                            <p style="font-size: 32px; font-weight: bold; color: #ef4444;">${usedCodes}</p>
+                        </div>
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">🎫</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Total Coduri</h3>
+                            <p style="font-size: 32px; font-weight: bold; color: #667eea;">${appData.accessCodes.length}</p>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">🎯 Generează Cod Nou</h2>
+                        <button onclick="generateNewCode()" style="padding: 16px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                            ✨ Generează Cod Unic
                         </button>
-                        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
-                                <span style="font-size: 20px;">📋</span>
-                                <span style="font-size: 14px; font-weight: 500;">Formular Complet</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
-                                <span style="font-size: 20px;">⚡</span>
-                                <span style="font-size: 14px; font-weight: 500;">Rapid & Simplu</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
-                                <span style="font-size: 20px;">🎯</span>
-                                <span style="font-size: 14px; font-weight: 500;">Toate Detaliile</span>
-                            </div>
+                        <div id="newCodeDisplay"></div>
+                    </div>
+
+                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">📋 Lista Codurilor</h2>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">COD</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">STATUS</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">CREAT LA</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">FOLOSIT DE</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">FOLOSIT LA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${appData.accessCodes.map(code => `
+                                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                                            <td style="padding: 12px; font-size: 14px; font-weight: 600; font-family: monospace;">${code.code}</td>
+                                            <td style="padding: 12px;">
+                                                <span class="code-badge ${code.status === 'active' ? 'code-active' : 'code-used'}">
+                                                    ${code.status === 'active' ? '✅ Activ' : '❌ Folosit'}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px; font-size: 14px;">${formatDate(code.createdAt)}</td>
+                                            <td style="padding: 12px; font-size: 14px;">${code.usedBy || '-'}</td>
+                                            <td style="padding: 12px; font-size: 14px;">${code.usedAt ? formatDate(code.usedAt) : '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
-            } else if (section === 'admin-database' && currentSession.role === 'admin') {
+            } else if (section === 'admin-users' && currentSession.role === 'admin') {
                 content.innerHTML = `
-                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">🗄️ Bază de Date</h1>
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">👥 Utilizatori Înregistrați</h1>
                     <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
-                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">📊 Utilizatori Înregistrați (${appData.users.length})</h2>
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">📊 Total: ${appData.users.length} utilizatori</h2>
                         <div style="overflow-x: auto;">
                             <table style="width: 100%; border-collapse: collapse;">
                                 <thead>
@@ -947,6 +1090,7 @@
                                         <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">USERNAME</th>
                                         <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">EMAIL</th>
                                         <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">ROL</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">COD FOLOSIT</th>
                                         <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">DATA ÎNREGISTRĂRII</th>
                                     </tr>
                                 </thead>
@@ -960,22 +1104,12 @@
                                                     ${user.role === 'admin' ? 'Admin' : 'User'}
                                                 </span>
                                             </td>
+                                            <td style="padding: 12px; font-size: 13px; font-family: monospace; color: #6b7280;">${user.accessCode || '-'}</td>
                                             <td style="padding: 12px; font-size: 14px;">${formatDate(user.registerDate)}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                `;
-            } else if (section === 'admin-settings' && currentSession.role === 'admin') {
-                content.innerHTML = `
-                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">⚙️ Setări Avansate</h1>
-                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
-                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">🎫 Cod de Acces Actual</h2>
-                        <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 15px; padding: 30px; text-align: center; color: white;">
-                            <div style="font-size: 48px; font-weight: bold; letter-spacing: 8px;">${appData.accessCode}</div>
-                            <p style="margin-top: 10px; opacity: 0.9;">Utilizatorii noi au nevoie de acest cod pentru a se înregistra</p>
                         </div>
                     </div>
                 `;
@@ -985,7 +1119,21 @@
                     <div style="background: white; border-radius: 15px; padding: 60px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
                         <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
                         <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #ef4444;">Statistici Complete</h2>
-                        <p style="color: #6b7280; font-size: 16px;">Aici vor fi afișate rapoarte detaliate și statistici despre toate evenimentele.</p>
+                        <p style="color: #6b7280; font-size: 16px;">Aici vor fi afișate rapoarte detaliate.</p>
+                    </div>
+                `;
+            } else if (section === 'admin-settings' && currentSession.role === 'admin') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">⚙️ Setări Avansate</h1>
+                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">🎫 Sistem Coduri Unice</h2>
+                        <p style="color: #6b7280; margin-bottom: 20px;">
+                            Sistemul folosește coduri unice one-time use pentru fiecare utilizator. Admin-ul generează coduri individuale pentru fiecare persoană care vrea să se înregistreze.
+                        </p>
+                        <div style="background: #f0fdf4; border: 2px solid #10b981; border-radius: 10px; padding: 20px;">
+                            <strong style="color: #059669;">✅ Coduri Active:</strong> ${appData.accessCodes.filter(c => c.status === 'active').length}<br>
+                            <strong style="color: #ef4444;">❌ Coduri Folosite:</strong> ${appData.accessCodes.filter(c => c.status === 'used').length}
+                        </div>
                     </div>
                 `;
             } else {
@@ -1008,10 +1156,46 @@
                         <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #667eea;">
                             Secțiunea ${section.split('-').join(' ')}
                         </h2>
-                        <p style="color: #6b7280; font-size: 16px;">Conținutul acestei secțiuni va fi dezvoltat în versiunile viitoare.</p>
+                        <p style="color: #6b7280; font-size: 16px;">Conținutul va fi dezvoltat în versiunile viitoare.</p>
                     </div>
                 `;
             }
+        }
+
+        function generateNewCode() {
+            const newCode = generateUniqueCode();
+            
+            appData.accessCodes.push({
+                code: newCode,
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                usedBy: null,
+                usedAt: null
+            });
+            
+            saveData();
+            
+            document.getElementById('newCodeDisplay').innerHTML = `
+                <div class="code-box" style="margin-top: 20px;">
+                    <div style="font-size: 14px; margin-bottom: 10px;">✨ COD NOU GENERAT</div>
+                    <div class="code-display">${newCode}</div>
+                    <div style="font-size: 13px; opacity: 0.9; margin-top: 10px;">
+                        Acest cod poate fi folosit o singură dată pentru înregistrare
+                    </div>
+                    <button onclick="copyCode('${newCode}')" style="margin-top: 15px; padding: 10px 20px; background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                        📋 Copiază Codul
+                    </button>
+                </div>
+            `;
+            
+            // Reload section to update table
+            setTimeout(() => loadSection('admin-codes'), 2000);
+        }
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`✅ Codul ${code} a fost copiat în clipboard!`);
+            });
         }
 
         function formatDate(isoString) {
@@ -1023,291 +1207,6 @@
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${day}.${month}.${year}, ${hours}:${minutes}`;
         }
-
-        // Event Form Functions
-        function openEventForm() {
-            document.getElementById('eventModal').classList.add('show');
-            generateEventForm();
-        }
-
-        function closeEventForm() {
-            document.getElementById('eventModal').classList.remove('show');
-            uploadedImage = null;
-            formData = {};
-        }
-
-        function generateEventForm() {
-            const modal = document.getElementById('modalContent');
-            modal.innerHTML = `
-                <h2 style="color: #10b981; font-size: 28px; margin-bottom: 10px;">🤖 Tabel total evenimente</h2>
-                <p style="color: #6b7280; margin-bottom: 30px;">Completează toate câmpurile pentru a nota evenimentul</p>
-
-                <div class="ai-upload-section">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                        <span style="font-size: 32px;">🤖</span>
-                        <div>
-                            <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">Analiză Automată cu AI</h3>
-                            <p style="font-size: 13px; opacity: 0.9;">Încarcă o poză cu formularul și AI-ul va completa automat câmpurile</p>
-                        </div>
-                    </div>
-
-                    <div class="upload-buttons" id="uploadButtons">
-                        <label for="camera-input" class="upload-btn">
-                            <span style="font-size: 48px; display: block; margin-bottom: 12px;">📸</span>
-                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Fă Poză</div>
-                            <div style="font-size: 12px; opacity: 0.9;">Deschide camera</div>
-                        </label>
-                        <input id="camera-input" type="file" accept="image/*" capture="environment" onchange="handleImageUpload(event)" style="display: none;">
-                        
-                        <label for="file-input" class="upload-btn">
-                            <span style="font-size: 48px; display: block; margin-bottom: 12px;">🖼️</span>
-                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Încarcă Formular</div>
-                            <div style="font-size: 12px; opacity: 0.9;">Alege din galerie</div>
-                        </label>
-                        <input id="file-input" type="file" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
-                    </div>
-
-                    <div id="uploadPreview"></div>
-                </div>
-
-                <div class="code-box">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">COD UNIC EVENIMENT</div>
-                    <div style="font-size: 48px; font-weight: bold; letter-spacing: 4px;">${eventCounter}</div>
-                    <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Același cod pentru toate rolurile din acest eveniment</div>
-                </div>
-
-                <div class="info-box">
-                    <strong>💡 Important:</strong> Acest cod unic leagă toate rolurile (Animator, Ursitoаre, Gheață Carbonică, Arcadă, Moș Crăciun, etc.) la același eveniment. Chiar dacă sunt mai multe persoane cu roluri diferite, toate aparțin evenimentului cu codul <strong>#${eventCounter}</strong>
-                </div>
-
-                <div style="display: grid; gap: 20px;">
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Pe ce dată ai primit formularul
-                        </label>
-                        <input type="date" id="formReceivedDate" value="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Cine notează eveniment
-                        </label>
-                        <select id="whoNotes" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
-                            <option value="">Selectează...</option>
-                            <option value="andrei">Andrei</option>
-                            <option value="maria">Maria</option>
-                            <option value="ion">Ion</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            De pe ce a intrat clientul
-                        </label>
-                        <select id="clientSource" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
-                            <option value="">Selectează...</option>
-                            <option value="facebook">Facebook</option>
-                            <option value="instagram">Instagram</option>
-                            <option value="google">Google</option>
-                            <option value="recomandare">Recomandare</option>
-                            <option value="altele">Altele</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Număr de telefon
-                        </label>
-                        <input type="tel" id="phoneNumber" placeholder="07XX XXX XXX" class="${formData.numarTelefon ? 'form-filled' : ''}" value="${formData.numarTelefon || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            🎭 Rol în eveniment <span style="color: #ef4444;">*</span>
-                        </label>
-                        <select id="eventRole" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
-                            <option value="">Selectează rolul...</option>
-                            <option value="animator">🎭 Animator</option>
-                            <option value="ursitoare">🧚 Ursitoаre</option>
-                            <option value="gheata-carbonica">❄️ Gheață Carbonică</option>
-                            <option value="arcada-suport-cifre">🎪 Arcadă pe Suport cu Cifre</option>
-                            <option value="arcada-suport-fara-cifre">🎪 Arcadă pe Suport fără Cifre</option>
-                            <option value="arcada-pe-suport">🎪 Arcadă pe Suport</option>
-                            <option value="arcada-fara-suport">🎪 Arcadă fără Suport</option>
-                            <option value="mos-craciun">🎅 Moș Crăciun</option>
-                            <option value="training">📚 Training</option>
-                            <option value="altul">✨ Altul</option>
-                        </select>
-                        <div style="margin-top: 8px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 12px; color: #075985;">
-                            <strong>ℹ️ Info:</strong> Poți adăuga mai multe persoane cu roluri diferite pentru evenimentul #${eventCounter}
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                                Data petrecere (Zi/Lună/An)
-                            </label>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                <input type="number" min="1" max="31" placeholder="Zi" id="eventDay" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; text-align: center;">
-                                <select id="eventMonth" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer; text-align: center;">
-                                    <option value="">Luna</option>
-                                    <option value="01">Ian</option>
-                                    <option value="02">Feb</option>
-                                    <option value="03">Mar</option>
-                                    <option value="04">Apr</option>
-                                    <option value="05">Mai</option>
-                                    <option value="06">Iun</option>
-                                    <option value="07">Iul</option>
-                                    <option value="08">Aug</option>
-                                    <option value="09">Sep</option>
-                                    <option value="10">Oct</option>
-                                    <option value="11">Noi</option>
-                                    <option value="12">Dec</option>
-                                </select>
-                                <input type="number" min="2024" max="2030" placeholder="An" value="2025" id="eventYear" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; text-align: center;">
-                            </div>
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                                Ora
-                            </label>
-                            <input type="time" id="eventTime" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Prenume părinte
-                        </label>
-                        <input type="text" id="parentName" placeholder="Introdu prenumele părintelui..." class="${formData.prenumeParinte ? 'form-filled' : ''}" value="${formData.prenumeParinte || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Prenume copil
-                        </label>
-                        <input type="text" id="childName" placeholder="Introdu prenumele copilului..." class="${formData.prenumeCopil ? 'form-filled' : ''}" value="${formData.prenumeCopil || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Vârsta copil
-                        </label>
-                        <input type="number" id="childAge" placeholder="Vârsta copilului" class="${formData.varstacopil ? 'form-filled' : ''}" value="${formData.varstacopil || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Personaj
-                        </label>
-                        <input type="text" id="character" placeholder="Ex: Spiderman, Elsa, Batman..." style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
-                            Alte detalii
-                        </label>
-                        <textarea id="extraDetails" placeholder="Adaugă detalii suplimentare..." rows="4" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; resize: vertical;"></textarea>
-                    </div>
-
-                    <div style="display: flex; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
-                        <button onclick="saveEvent()" style="flex: 1; padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ✅ Salvează eveniment #${eventCounter}
-                        </button>
-                        <button onclick="closeEventForm()" style="padding: 16px 24px; background: #e5e7eb; color: #374151; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            Anulează
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                alert('❌ Te rog încarcă o imagine (JPG, PNG, etc.)');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedImage = e.target.result;
-                showImagePreview();
-                // Aici ar trebui să apelezi API-ul Claude pentru analiză
-                // Pentru demo, simulăm completarea
-                simulateAIAnalysis();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function showImagePreview() {
-            const preview = document.getElementById('uploadPreview');
-            preview.innerHTML = `
-                <div style="padding: 20px; background: rgba(255, 255, 255, 0.15); border-radius: 12px; text-align: center; margin-top: 15px;">
-                    <img src="${uploadedImage}" alt="Formular" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 15px; object-fit: contain;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">✅ Formular analizat cu succes!</div>
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <label for="camera-input-2" style="padding: 12px 24px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
-                            📸 Fă altă poză
-                        </label>
-                        <input id="camera-input-2" type="file" accept="image/*" capture="environment" onchange="handleImageUpload(event)" style="display: none;">
-                        <label for="file-input-2" style="padding: 12px 24px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
-                            🖼️ Încarcă alt formular
-                        </label>
-                        <input id="file-input-2" type="file" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
-                    </div>
-                </div>
-                <div class="success-box">
-                    <span>✨</span>
-                    <span>Câmpurile au fost completate automat. Verifică și ajustează dacă e necesar.</span>
-                </div>
-            `;
-        }
-
-        function simulateAIAnalysis() {
-            // Simulare - în producție aici ar fi API call către Claude
-            formData = {
-                numarTelefon: '0723456789',
-                prenumeParinte: 'Maria',
-                prenumeCopil: 'Alex',
-                varstacopil: '5'
-            };
-            
-            // Update form fields
-            if (document.getElementById('phoneNumber')) {
-                document.getElementById('phoneNumber').value = formData.numarTelefon;
-                document.getElementById('phoneNumber').classList.add('form-filled');
-            }
-            if (document.getElementById('parentName')) {
-                document.getElementById('parentName').value = formData.prenumeParinte;
-                document.getElementById('parentName').classList.add('form-filled');
-            }
-            if (document.getElementById('childName')) {
-                document.getElementById('childName').value = formData.prenumeCopil;
-                document.getElementById('childName').classList.add('form-filled');
-            }
-            if (document.getElementById('childAge')) {
-                document.getElementById('childAge').value = formData.varstacopil;
-                document.getElementById('childAge').classList.add('form-filled');
-            }
-        }
-
-        function saveEvent() {
-            alert(`✅ Eveniment cu codul #${eventCounter} salvat cu succes!\n\nProxim cod disponibil: #${eventCounter + 1}`);
-            eventCounter++;
-            saveData();
-            closeEventForm();
-        }
-
-        // Close modal on outside click
-        document.getElementById('eventModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEventForm();
-            }
-        });
 
         // Initialize app
         init();
