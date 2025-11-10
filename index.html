@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 SuperParty - Management Evenimente cu AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        /* Auth Page Styles */
+        .auth-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .auth-logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .auth-subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-top: 10px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f5f7fa;
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background: #fee;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+
+        .dashboard.active {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-by-ai {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidebar-username {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .sidebar-role {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #6b7280;
+            cursor: pointer;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: #f5f7fa;
+            color: #667eea;
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            color: #667eea;
+            border-left-color: #667eea;
+        }
+
+        .menu-item .icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-item-special {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .admin-separator {
+            border-top: 2px solid #ef4444;
+            margin: 15px 0;
+            padding-top: 15px;
+        }
+
+        .admin-title {
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 0 20px 10px 20px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item-admin {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .menu-item-admin:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #f3f4f6;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #e5e7eb;
+        }
+
+        .ai-upload-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .upload-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .upload-btn {
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .code-box {
+            padding: 25px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .form-filled {
+            background: #f0fdf4 !important;
+        }
+
+        .info-box {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Page -->
+    <div id="authPage" class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">🎉</div>
+                <h1>SuperParty</h1>
+                <div class="ai-badge">
+                    <span>✨</span>
+                    Powered by AI
+                </div>
+                <p class="auth-subtitle" id="authSubtitle">Bine ai venit!</p>
+            </div>
+
+            <div class="auth-card" id="authCard">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">🔐 Login</button>
+                    <button class="tab" onclick="switchTab('register')">✨ Înregistrare</button>
+                </div>
+
+                <div id="authMessage" class="message"></div>
+
+                <!-- Login Form -->
+                <div id="loginForm" class="form-section active">
+                    <div class="form-group">
+                        <label>👤 Username</label>
+                        <input type="text" id="loginUsername" placeholder="Introdu username-ul">
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 Parolă</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Introdu parola">
+                            <span class="toggle-password" onclick="togglePassword('loginPassword')">👁️</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="handleLogin()">🚀 Intră în cont</button>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="form-section">
+                    <div class="form-group">
+                        <label>🎫 Cod de Acces</label>
+                        <input type="text" id="registerCode" placeholder="PARTY2024" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Username</label>
+                        <input type="text" id="registerUsername" placeholder="Alege un username">
+                    </div>
+                    <div class="form-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="registerEmail" placeholder="email@exemplu.ro">
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 Parolă</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerPassword" placeholder="Minim 8 caractere">
+                            <span class="toggle-password" onclick="togglePassword('registerPassword')">👁️</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 Confirmă Parola</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerConfirmPassword" placeholder="Rescrie parola">
+                            <span class="toggle-password" onclick="togglePassword('registerConfirmPassword')">👁️</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="handleRegister()">✨ Creează Cont</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo-container">
+                    <div class="sidebar-logo">
+                        <span style="font-size: 24px;">🎉</span> SuperParty
+                    </div>
+                    <div class="sidebar-by-ai">🤖 By AI</div>
+                </div>
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+                    <div>
+                        <div class="sidebar-username" id="sidebarUsername">Admin</div>
+                        <div class="sidebar-role" id="sidebarRole">Administrator</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-section="home">
+                    <span class="icon">🏠</span>
+                    <span>Acasă</span>
+                </div>
+                <div class="menu-item menu-item-special" data-section="noteaza-eveniment">
+                    <span class="icon" style="font-size: 24px;">➕</span>
+                    <span style="color: #10b981; font-weight: 600;">Notează Eveniment</span>
+                </div>
+                <div class="menu-item" data-section="petreceri-nealocate">
+                    <span class="icon">📋</span>
+                    <span>Petreceri Nealocate</span>
+                </div>
+                <div class="menu-item" data-section="ce-petreceri-am">
+                    <span class="icon">🎊</span>
+                    <span>Ce Petreceri Am</span>
+                </div>
+                <div class="menu-item" data-section="total-petreceri">
+                    <span class="icon">📈</span>
+                    <span>Total Petreceri</span>
+                </div>
+                <div class="menu-item" data-section="soferi">
+                    <span class="icon">🚗</span>
+                    <span>Evenimente cu Șoferi</span>
+                </div>
+                <div class="menu-item" data-section="cu-factura">
+                    <span class="icon">🧾</span>
+                    <span>Cu Factură</span>
+                </div>
+                <div class="menu-item" data-section="echipa">
+                    <span class="icon">👥</span>
+                    <span>Echipa</span>
+                </div>
+                <div class="menu-item" data-section="inventar">
+                    <span class="icon">📦</span>
+                    <span>Inventar</span>
+                </div>
+                <div class="menu-item" data-section="piniata">
+                    <span class="icon">🎯</span>
+                    <span>Piniata</span>
+                </div>
+
+                <!-- Admin Section -->
+                <div id="adminMenu" class="hidden">
+                    <div class="admin-separator">
+                        <div class="admin-title">🔐 ADMIN MODE</div>
+                    </div>
+                    <div class="menu-item menu-item-admin" data-section="admin-stats">
+                        <span class="icon">📊</span>
+                        <span style="color: #ef4444; font-weight: 600;">Statistici Complete</span>
+                    </div>
+                    <div class="menu-item menu-item-admin" data-section="admin-database">
+                        <span class="icon">🗄️</span>
+                        <span style="color: #ef4444; font-weight: 600;">Bază de Date</span>
+                    </div>
+                    <div class="menu-item menu-item-admin" data-section="admin-settings">
+                        <span class="icon">⚙️</span>
+                        <span style="color: #ef4444; font-weight: 600;">Setări Avansate</span>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="handleLogout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <!-- Content will be loaded dynamically -->
+        </main>
+    </div>
+
+    <!-- Event Form Modal -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeEventForm()">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let appData = {
+            accessCode: 'PARTY2024',
+            users: [
+                {
+                    username: 'Andreiadmin',
+                    email: 'admin@superparty.ro',
+                    password: 'Andrei209512!',
+                    role: 'admin',
+                    registerDate: '2025-11-01T20:00:00'
+                },
+                {
+                    username: 'Andrei',
+                    email: 'andrei@email.com',
+                    password: 'Andrei209512!',
+                    role: 'user',
+                    registerDate: '2025-11-09T20:30:00'
+                }
+            ]
+        };
+
+        let eventCounter = 1;
+        let currentSession = null;
+        let uploadedImage = null;
+        let formData = {};
+
+        // Initialize
+        function init() {
+            loadData();
+            checkSession();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('superpartyData');
+            if (saved) appData = JSON.parse(saved);
+            
+            const counter = localStorage.getItem('eventCounter');
+            if (counter) eventCounter = parseInt(counter);
+        }
+
+        function saveData() {
+            localStorage.setItem('superpartyData', JSON.stringify(appData));
+            localStorage.setItem('eventCounter', eventCounter.toString());
+        }
+
+        function checkSession() {
+            const session = localStorage.getItem('superpartySession');
+            if (session) {
+                currentSession = JSON.parse(session);
+                const expiresAt = new Date(currentSession.expiresAt);
+                if (expiresAt > new Date()) {
+                    loadDashboard();
+                } else {
+                    localStorage.removeItem('superpartySession');
+                }
+            }
+        }
+
+        // Auth Functions
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+                document.getElementById('authSubtitle').textContent = 'Bine ai venit!';
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+                document.getElementById('authSubtitle').textContent = 'Creează-ți cont gratuit!';
+            }
+            hideMessage();
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('authMessage');
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            
+            if (type === 'error') {
+                document.getElementById('authCard').classList.add('shake');
+                setTimeout(() => document.getElementById('authCard').classList.remove('shake'), 500);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('authMessage').classList.remove('show');
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showMessage('❌ Te rugăm completează toate câmpurile!', 'error');
+                return;
+            }
+            
+            const user = appData.users.find(u => u.username === username && u.password === password);
+            
+            if (!user) {
+                showMessage('❌ Username sau parolă incorectă!', 'error');
+                return;
+            }
+            
+            const session = {
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                registerDate: user.registerDate,
+                loginTime: new Date().toISOString(),
+                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+            };
+            
+            localStorage.setItem('superpartySession', JSON.stringify(session));
+            currentSession = session;
+            
+            showMessage('✅ Login cu succes!', 'success');
+            setTimeout(() => loadDashboard(), 1000);
+        }
+
+        function handleRegister() {
+            const code = document.getElementById('registerCode').value.trim().toUpperCase();
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (!code || !username || !email || !password || !confirmPassword) {
+                showMessage('❌ Te rugăm completează toate câmpurile!', 'error');
+                return;
+            }
+            
+            if (code !== appData.accessCode) {
+                showMessage('❌ Cod de acces invalid!', 'error');
+                return;
+            }
+            
+            if (appData.users.find(u => u.username === username)) {
+                showMessage('❌ Username-ul există deja!', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('❌ Parola trebuie să aibă minim 8 caractere!', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('❌ Parolele nu coincid!', 'error');
+                return;
+            }
+            
+            appData.users.push({
+                username,
+                email,
+                password,
+                role: 'user',
+                registerDate: new Date().toISOString()
+            });
+            
+            saveData();
+            showMessage('✅ Cont creat cu succes!', 'success');
+            setTimeout(() => switchTab('login'), 1500);
+        }
+
+        // Dashboard Functions
+        function loadDashboard() {
+            if (!currentSession) return;
+            
+            document.getElementById('authPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            
+            const avatar = currentSession.username.charAt(0).toUpperCase();
+            document.getElementById('sidebarAvatar').textContent = avatar;
+            document.getElementById('sidebarUsername').textContent = currentSession.username;
+            document.getElementById('sidebarRole').textContent = currentSession.role === 'admin' ? 'Administrator' : 'Utilizator';
+            
+            if (currentSession.role === 'admin') {
+                document.getElementById('adminMenu').classList.remove('hidden');
+            }
+            
+            initNavigation();
+            loadSection('home');
+        }
+
+        function handleLogout() {
+            if (confirm('Sigur vrei să te deconectezi?')) {
+                localStorage.removeItem('superpartySession');
+                location.reload();
+            }
+        }
+
+        function initNavigation() {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    loadSection(this.getAttribute('data-section'));
+                });
+            });
+        }
+
+        function loadSection(section) {
+            const content = document.getElementById('mainContent');
+            
+            if (section === 'home') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">
+                        👋 Bine ai venit, ${currentSession.username}!
+                    </h1>
+                    <p style="color: #6b7280; margin-bottom: 40px;">
+                        Acest dashboard este construit cu AI și oferă o experiență de management completă.
+                    </p>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+                        <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 10px;">SuperParty Dashboard</h2>
+                        <p style="font-size: 16px; opacity: 0.95;">Gestionează-ți evenimentele și petrecerile cu ușurință!</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">👥</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Utilizatori</h3>
+                            <p style="font-size: 32px; font-weight: bold; color: #667eea;">${appData.users.length}</p>
+                        </div>
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">⚙️</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Rolul Tău</h3>
+                            <p style="font-size: 20px; font-weight: bold; color: #10b981;">${currentSession.role === 'admin' ? 'Administrator' : 'Utilizator'}</p>
+                        </div>
+                        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                            <div style="font-size: 36px; margin-bottom: 15px;">🎫</div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Cod Acces</h3>
+                            <p style="font-size: 20px; font-weight: bold; color: #f59e0b;">${appData.accessCode}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'noteaza-eveniment') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">➕ Notează Eveniment Nou</h1>
+                    <p style="color: #6b7280; margin-bottom: 40px;">Începe să adaugi un eveniment nou în sistem cu ajutorul AI</p>
+                    <div style="background: white; border-radius: 20px; padding: 60px 40px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); text-align: center;">
+                        <div style="font-size: 80px; margin-bottom: 30px;">🎉</div>
+                        <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 15px; color: #10b981;">Gata să notezi un eveniment?</h2>
+                        <p style="color: #6b7280; font-size: 16px; margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            Apasă butonul de mai jos pentru a deschide formularul complet de rezervare cu toate detaliile necesare.
+                        </p>
+                        <button onclick="openEventForm()" style="padding: 20px 50px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 15px; font-size: 20px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); display: inline-flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 24px;">🤖</span>
+                            Notează Petrecere cu AI
+                        </button>
+                        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
+                                <span style="font-size: 20px;">📋</span>
+                                <span style="font-size: 14px; font-weight: 500;">Formular Complet</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
+                                <span style="font-size: 20px;">⚡</span>
+                                <span style="font-size: 14px; font-weight: 500;">Rapid & Simplu</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; color: #6b7280;">
+                                <span style="font-size: 20px;">🎯</span>
+                                <span style="font-size: 14px; font-weight: 500;">Toate Detaliile</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'admin-database' && currentSession.role === 'admin') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">🗄️ Bază de Date</h1>
+                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">📊 Utilizatori Înregistrați (${appData.users.length})</h2>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">USERNAME</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">EMAIL</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">ROL</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280;">DATA ÎNREGISTRĂRII</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${appData.users.map(user => `
+                                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                                            <td style="padding: 12px; font-size: 14px; font-weight: 500;">${user.username}</td>
+                                            <td style="padding: 12px; font-size: 14px;">${user.email}</td>
+                                            <td style="padding: 12px;">
+                                                <span style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: ${user.role === 'admin' ? '#fee2e2' : '#dbeafe'}; color: ${user.role === 'admin' ? '#dc2626' : '#2563eb'};">
+                                                    ${user.role === 'admin' ? 'Admin' : 'User'}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px; font-size: 14px;">${formatDate(user.registerDate)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'admin-settings' && currentSession.role === 'admin') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">⚙️ Setări Avansate</h1>
+                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">🎫 Cod de Acces Actual</h2>
+                        <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 15px; padding: 30px; text-align: center; color: white;">
+                            <div style="font-size: 48px; font-weight: bold; letter-spacing: 8px;">${appData.accessCode}</div>
+                            <p style="margin-top: 10px; opacity: 0.9;">Utilizatorii noi au nevoie de acest cod pentru a se înregistra</p>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'admin-stats' && currentSession.role === 'admin') {
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 40px;">📊 Statistici Complete</h1>
+                    <div style="background: white; border-radius: 15px; padding: 60px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                        <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #ef4444;">Statistici Complete</h2>
+                        <p style="color: #6b7280; font-size: 16px;">Aici vor fi afișate rapoarte detaliate și statistici despre toate evenimentele.</p>
+                    </div>
+                `;
+            } else {
+                const icons = {
+                    'petreceri-nealocate': '📋',
+                    'ce-petreceri-am': '🎊',
+                    'total-petreceri': '📈',
+                    'soferi': '🚗',
+                    'cu-factura': '🧾',
+                    'echipa': '👥',
+                    'inventar': '📦',
+                    'piniata': '🎯'
+                };
+                content.innerHTML = `
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px; text-transform: capitalize;">
+                        ${section.split('-').join(' ')}
+                    </h1>
+                    <div style="background: white; border-radius: 15px; padding: 60px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                        <div style="font-size: 64px; margin-bottom: 20px;">${icons[section] || '📋'}</div>
+                        <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #667eea;">
+                            Secțiunea ${section.split('-').join(' ')}
+                        </h2>
+                        <p style="color: #6b7280; font-size: 16px;">Conținutul acestei secțiuni va fi dezvoltat în versiunile viitoare.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}.${month}.${year}, ${hours}:${minutes}`;
+        }
+
+        // Event Form Functions
+        function openEventForm() {
+            document.getElementById('eventModal').classList.add('show');
+            generateEventForm();
+        }
+
+        function closeEventForm() {
+            document.getElementById('eventModal').classList.remove('show');
+            uploadedImage = null;
+            formData = {};
+        }
+
+        function generateEventForm() {
+            const modal = document.getElementById('modalContent');
+            modal.innerHTML = `
+                <h2 style="color: #10b981; font-size: 28px; margin-bottom: 10px;">🤖 Tabel total evenimente</h2>
+                <p style="color: #6b7280; margin-bottom: 30px;">Completează toate câmpurile pentru a nota evenimentul</p>
+
+                <div class="ai-upload-section">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                        <span style="font-size: 32px;">🤖</span>
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">Analiză Automată cu AI</h3>
+                            <p style="font-size: 13px; opacity: 0.9;">Încarcă o poză cu formularul și AI-ul va completa automat câmpurile</p>
+                        </div>
+                    </div>
+
+                    <div class="upload-buttons" id="uploadButtons">
+                        <label for="camera-input" class="upload-btn">
+                            <span style="font-size: 48px; display: block; margin-bottom: 12px;">📸</span>
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Fă Poză</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Deschide camera</div>
+                        </label>
+                        <input id="camera-input" type="file" accept="image/*" capture="environment" onchange="handleImageUpload(event)" style="display: none;">
+                        
+                        <label for="file-input" class="upload-btn">
+                            <span style="font-size: 48px; display: block; margin-bottom: 12px;">🖼️</span>
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Încarcă Formular</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Alege din galerie</div>
+                        </label>
+                        <input id="file-input" type="file" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+                    </div>
+
+                    <div id="uploadPreview"></div>
+                </div>
+
+                <div class="code-box">
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">COD UNIC EVENIMENT</div>
+                    <div style="font-size: 48px; font-weight: bold; letter-spacing: 4px;">${eventCounter}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Același cod pentru toate rolurile din acest eveniment</div>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Important:</strong> Acest cod unic leagă toate rolurile (Animator, Ursitoаre, Gheață Carbonică, Arcadă, Moș Crăciun, etc.) la același eveniment. Chiar dacă sunt mai multe persoane cu roluri diferite, toate aparțin evenimentului cu codul <strong>#${eventCounter}</strong>
+                </div>
+
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Pe ce dată ai primit formularul
+                        </label>
+                        <input type="date" id="formReceivedDate" value="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Cine notează eveniment
+                        </label>
+                        <select id="whoNotes" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
+                            <option value="">Selectează...</option>
+                            <option value="andrei">Andrei</option>
+                            <option value="maria">Maria</option>
+                            <option value="ion">Ion</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            De pe ce a intrat clientul
+                        </label>
+                        <select id="clientSource" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
+                            <option value="">Selectează...</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="google">Google</option>
+                            <option value="recomandare">Recomandare</option>
+                            <option value="altele">Altele</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Număr de telefon
+                        </label>
+                        <input type="tel" id="phoneNumber" placeholder="07XX XXX XXX" class="${formData.numarTelefon ? 'form-filled' : ''}" value="${formData.numarTelefon || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            🎭 Rol în eveniment <span style="color: #ef4444;">*</span>
+                        </label>
+                        <select id="eventRole" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer;">
+                            <option value="">Selectează rolul...</option>
+                            <option value="animator">🎭 Animator</option>
+                            <option value="ursitoare">🧚 Ursitoаre</option>
+                            <option value="gheata-carbonica">❄️ Gheață Carbonică</option>
+                            <option value="arcada-suport-cifre">🎪 Arcadă pe Suport cu Cifre</option>
+                            <option value="arcada-suport-fara-cifre">🎪 Arcadă pe Suport fără Cifre</option>
+                            <option value="arcada-pe-suport">🎪 Arcadă pe Suport</option>
+                            <option value="arcada-fara-suport">🎪 Arcadă fără Suport</option>
+                            <option value="mos-craciun">🎅 Moș Crăciun</option>
+                            <option value="training">📚 Training</option>
+                            <option value="altul">✨ Altul</option>
+                        </select>
+                        <div style="margin-top: 8px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 12px; color: #075985;">
+                            <strong>ℹ️ Info:</strong> Poți adăuga mai multe persoane cu roluri diferite pentru evenimentul #${eventCounter}
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                                Data petrecere (Zi/Lună/An)
+                            </label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                <input type="number" min="1" max="31" placeholder="Zi" id="eventDay" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; text-align: center;">
+                                <select id="eventMonth" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; cursor: pointer; text-align: center;">
+                                    <option value="">Luna</option>
+                                    <option value="01">Ian</option>
+                                    <option value="02">Feb</option>
+                                    <option value="03">Mar</option>
+                                    <option value="04">Apr</option>
+                                    <option value="05">Mai</option>
+                                    <option value="06">Iun</option>
+                                    <option value="07">Iul</option>
+                                    <option value="08">Aug</option>
+                                    <option value="09">Sep</option>
+                                    <option value="10">Oct</option>
+                                    <option value="11">Noi</option>
+                                    <option value="12">Dec</option>
+                                </select>
+                                <input type="number" min="2024" max="2030" placeholder="An" value="2025" id="eventYear" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; text-align: center;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                                Ora
+                            </label>
+                            <input type="time" id="eventTime" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Prenume părinte
+                        </label>
+                        <input type="text" id="parentName" placeholder="Introdu prenumele părintelui..." class="${formData.prenumeParinte ? 'form-filled' : ''}" value="${formData.prenumeParinte || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Prenume copil
+                        </label>
+                        <input type="text" id="childName" placeholder="Introdu prenumele copilului..." class="${formData.prenumeCopil ? 'form-filled' : ''}" value="${formData.prenumeCopil || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Vârsta copil
+                        </label>
+                        <input type="number" id="childAge" placeholder="Vârsta copilului" class="${formData.varstacopil ? 'form-filled' : ''}" value="${formData.varstacopil || ''}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Personaj
+                        </label>
+                        <input type="text" id="character" placeholder="Ex: Spiderman, Elsa, Batman..." style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb;">
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #6b7280;">
+                            Alte detalii
+                        </label>
+                        <textarea id="extraDetails" placeholder="Adaugă detalii suplimentare..." rows="4" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; background: #f9fafb; resize: vertical;"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
+                        <button onclick="saveEvent()" style="flex: 1; padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ✅ Salvează eveniment #${eventCounter}
+                        </button>
+                        <button onclick="closeEventForm()" style="padding: 16px 24px; background: #e5e7eb; color: #374151; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            Anulează
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('❌ Te rog încarcă o imagine (JPG, PNG, etc.)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage = e.target.result;
+                showImagePreview();
+                // Aici ar trebui să apelezi API-ul Claude pentru analiză
+                // Pentru demo, simulăm completarea
+                simulateAIAnalysis();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showImagePreview() {
+            const preview = document.getElementById('uploadPreview');
+            preview.innerHTML = `
+                <div style="padding: 20px; background: rgba(255, 255, 255, 0.15); border-radius: 12px; text-align: center; margin-top: 15px;">
+                    <img src="${uploadedImage}" alt="Formular" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 15px; object-fit: contain;">
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">✅ Formular analizat cu succes!</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <label for="camera-input-2" style="padding: 12px 24px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                            📸 Fă altă poză
+                        </label>
+                        <input id="camera-input-2" type="file" accept="image/*" capture="environment" onchange="handleImageUpload(event)" style="display: none;">
+                        <label for="file-input-2" style="padding: 12px 24px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                            🖼️ Încarcă alt formular
+                        </label>
+                        <input id="file-input-2" type="file" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+                    </div>
+                </div>
+                <div class="success-box">
+                    <span>✨</span>
+                    <span>Câmpurile au fost completate automat. Verifică și ajustează dacă e necesar.</span>
+                </div>
+            `;
+        }
+
+        function simulateAIAnalysis() {
+            // Simulare - în producție aici ar fi API call către Claude
+            formData = {
+                numarTelefon: '0723456789',
+                prenumeParinte: 'Maria',
+                prenumeCopil: 'Alex',
+                varstacopil: '5'
+            };
+            
+            // Update form fields
+            if (document.getElementById('phoneNumber')) {
+                document.getElementById('phoneNumber').value = formData.numarTelefon;
+                document.getElementById('phoneNumber').classList.add('form-filled');
+            }
+            if (document.getElementById('parentName')) {
+                document.getElementById('parentName').value = formData.prenumeParinte;
+                document.getElementById('parentName').classList.add('form-filled');
+            }
+            if (document.getElementById('childName')) {
+                document.getElementById('childName').value = formData.prenumeCopil;
+                document.getElementById('childName').classList.add('form-filled');
+            }
+            if (document.getElementById('childAge')) {
+                document.getElementById('childAge').value = formData.varstacopil;
+                document.getElementById('childAge').classList.add('form-filled');
+            }
+        }
+
+        function saveEvent() {
+            alert(`✅ Eveniment cu codul #${eventCounter} salvat cu succes!\n\nProxim cod disponibil: #${eventCounter + 1}`);
+            eventCounter++;
+            saveData();
+            closeEventForm();
+        }
+
+        // Close modal on outside click
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventForm();
+            }
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
