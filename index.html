@@ -3115,7 +3115,7 @@
         // END AI LEARNING SYSTEM
         // ============================================
         
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault();
             
             // Get form data
@@ -3317,6 +3317,82 @@
             
             // Save to localStorage
             localStorage.setItem('superpartyEvents', JSON.stringify(parties));
+            
+            // 🔥 NEW: Save to Supabase (Cloud Backup)
+            try {
+                if (supabase) {
+                    console.log('☁️ Salvare în Supabase...');
+                    
+                    // Save MAMA event to Supabase
+                    const { data: supabaseData, error: supabaseError } = await supabase
+                        .from('events')
+                        .insert([{
+                            event_code: data.codEveniment,
+                            title: data.titluEveniment || 'Petrecere',
+                            date: data.dataEveniment,
+                            time: data.oraEveniment || '00:00',
+                            location: data.locatie || '',
+                            client_name: data.numeClient,
+                            client_phone: data.telefonClient,
+                            client_email: data.emailClient || '',
+                            roles: JSON.stringify({
+                                parsed: roles,
+                                extras: extras,
+                                roleGroups: data.durataRoluri || [],
+                                breakdown: data.preturiBreakdown || []
+                            }),
+                            total_price: data.total || 0,
+                            payment_status: data.statusPlata || 'nepayat',
+                            notes: data.observatii || '',
+                            is_mama: true,
+                            duration_minutes: data.durata || 60
+                        }])
+                        .select();
+                    
+                    if (supabaseError) {
+                        console.error('❌ Eroare Supabase:', supabaseError);
+                    } else {
+                        console.log('✅ Salvat în Supabase:', supabaseData);
+                        
+                        // Save duplicates to Supabase
+                        if (duplicates.length > 0) {
+                            const duplicateInserts = duplicates.map(dup => ({
+                                event_code: dup.codEveniment,
+                                title: dup.titluEveniment || 'Petrecere',
+                                date: dup.dataEveniment,
+                                time: dup.oraEveniment || '00:00',
+                                location: dup.locatie || '',
+                                client_name: dup.numeClient,
+                                client_phone: dup.telefonClient,
+                                client_email: dup.emailClient || '',
+                                roles: JSON.stringify({
+                                    role: dup.cePersonajVreisaFi,
+                                    autoFilled: dup.autoFilled || false
+                                }),
+                                total_price: dup.totalRol || dup.total || 0,
+                                payment_status: dup.statusPlata || 'nepayat',
+                                notes: dup.observatii || '',
+                                is_mama: false,
+                                mama_event_code: data.codEveniment,
+                                duplicate_index: dup.duplicateIndex,
+                                duration_minutes: dup.durata || 60
+                            }));
+                            
+                            const { error: dupError } = await supabase
+                                .from('events')
+                                .insert(duplicateInserts);
+                            
+                            if (dupError) {
+                                console.error('❌ Eroare salvare duplicate:', dupError);
+                            } else {
+                                console.log(`✅ ${duplicates.length} duplicate salvate în Supabase`);
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('❌ Eroare generală Supabase:', err);
+            }
             
             console.log('📝 Eveniment salvat:', data);
             console.log('📊 Duplicate create:', duplicates.length);
