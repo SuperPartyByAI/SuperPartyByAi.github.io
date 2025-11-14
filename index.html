@@ -804,15 +804,18 @@
                     </div>
                 </div>
                 
-                <input type="file" id="aiPhotoInput" accept="image/*" capture="environment" style="display: none;" onchange="processPhotoWithAI(this)">
+                <!-- Input pentru cameră -->
+                <input type="file" id="aiPhotoCameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processPhotoWithAI(this)">
+                <!-- Input pentru galerie -->
+                <input type="file" id="aiPhotoGalleryInput" accept="image/*" style="display: none;" onchange="processPhotoWithAI(this)">
                 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" onclick="document.getElementById('aiPhotoInput').click()" style="flex: 1; min-width: 200px; background: white; color: #667eea; border: none; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button type="button" onclick="document.getElementById('aiPhotoCameraInput').click()" style="flex: 1; min-width: 200px; background: white; color: #667eea; border: none; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px;">📷</span>
                         <span>Fă Poză</span>
                     </button>
                     
-                    <button type="button" onclick="document.getElementById('aiPhotoInput').click()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button type="button" onclick="document.getElementById('aiPhotoGalleryInput').click()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px;">🖼️</span>
                         <span>Încarcă Poză</span>
                     </button>
@@ -1413,16 +1416,27 @@
             </div>
             
             <!-- Upload Section -->
-            <div id="uploadPhotoSection" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); border: 3px dashed #667eea; border-radius: 20px; padding: 50px 30px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: all 0.3s;" onclick="document.getElementById('verificationPhotoInput').click()">
+            <div id="uploadPhotoSection" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); border: 3px dashed #667eea; border-radius: 20px; padding: 50px 30px; text-align: center; margin-bottom: 30px; transition: all 0.3s;">
                 <div style="font-size: 80px; margin-bottom: 20px;">📷</div>
-                <div style="font-size: 22px; font-weight: 700; color: #374151; margin-bottom: 10px;">Click pentru a încărca poză sau face poză</div>
-                <div style="font-size: 15px; color: #6b7280;">Acceptă JPG, PNG, JPEG - Maximum 10MB</div>
-                <input type="file" id="verificationPhotoInput" accept="image/*" capture="environment" style="display: none;">
+                <div style="font-size: 22px; font-weight: 700; color: #374151; margin-bottom: 10px;">Alege o opțiune</div>
+                <div style="font-size: 15px; color: #6b7280; margin-bottom: 20px;">Acceptă JPG, PNG, JPEG - Maximum 10MB</div>
                 
-                <button onclick="event.stopPropagation(); document.getElementById('verificationPhotoInput').setAttribute('capture', 'environment'); document.getElementById('verificationPhotoInput').click();" style="margin-top: 20px; width: 100%; max-width: 300px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);">
-                    <span>📱</span>
-                    <span>Sau Deschide Camera</span>
-                </button>
+                <!-- Input pentru cameră -->
+                <input type="file" id="verificationPhotoCameraInput" accept="image/*" capture="environment" style="display: none;">
+                <!-- Input pentru galerie -->
+                <input type="file" id="verificationPhotoGalleryInput" accept="image/*" style="display: none;">
+                
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="document.getElementById('verificationPhotoCameraInput').click();" style="flex: 1; max-width: 250px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);">
+                        <span>📱</span>
+                        <span>Fă Poză</span>
+                    </button>
+                    
+                    <button onclick="document.getElementById('verificationPhotoGalleryInput').click();" style="flex: 1; max-width: 250px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);">
+                        <span>🖼️</span>
+                        <span>Încarcă Poză</span>
+                    </button>
+                </div>
             </div>
             
             <!-- Preview & Verification Section -->
@@ -4716,9 +4730,20 @@ IMPORTANT:
 
         // Handle photo upload for verification
         document.addEventListener('DOMContentLoaded', function() {
-            const photoInput = document.getElementById('verificationPhotoInput');
-            if (photoInput) {
-                photoInput.addEventListener('change', function(e) {
+            const photoCameraInput = document.getElementById('verificationPhotoCameraInput');
+            const photoGalleryInput = document.getElementById('verificationPhotoGalleryInput');
+            
+            if (photoCameraInput) {
+                photoCameraInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        handleVerificationPhotoUpload(file);
+                    }
+                });
+            }
+            
+            if (photoGalleryInput) {
+                photoGalleryInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
                         handleVerificationPhotoUpload(file);
@@ -4868,7 +4893,8 @@ IMPORTANT:
             document.getElementById('uploadPhotoSection').style.display = 'block';
             document.getElementById('photoVerificationSection').style.display = 'none';
             document.getElementById('verificationResult').style.display = 'none';
-            document.getElementById('verificationPhotoInput').value = '';
+            document.getElementById('verificationPhotoCameraInput').value = '';
+            document.getElementById('verificationPhotoGalleryInput').value = '';
             document.getElementById('receivedFormDate').value = '';
             currentVerificationPhotoData = null;
             
