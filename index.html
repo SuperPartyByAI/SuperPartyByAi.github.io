@@ -349,24 +349,6 @@
             <!-- Register Form -->
             <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
                 <div class="form-group">
-                    <label for="registerLicenseKey">Cheie de Acces *</label>
-                    <div class="license-key-input">
-                        <input 
-                            type="text" 
-                            id="registerLicenseKey" 
-                            required 
-                            placeholder="SP-XXXX-XXXX-XXXX"
-                            pattern="SP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}"
-                            title="Format: SP-XXXX-XXXX-XXXX"
-                            maxlength="17"
-                        >
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="registerName">Nume complet</label>
-                    <input type="text" id="registerName" required placeholder="Ion Popescu">
-                </div>
-                <div class="form-group">
                     <label for="registerEmail">Email</label>
                     <input type="email" id="registerEmail" required placeholder="exemplu@email.com">
                 </div>
@@ -379,10 +361,6 @@
                     <input type="password" id="registerPasswordConfirm" required placeholder="Repetă parola">
                 </div>
                 <button type="submit" class="submit-btn">Creează cont</button>
-                <p class="info-text">
-                    * Ai nevoie de o <strong>cheie de acces</strong> pentru a te înregistra.<br>
-                    Contactează administratorul pentru a primi o cheie.
-                </p>
             </form>
 
             <!-- Admin Link -->
@@ -397,30 +375,6 @@
         const SUPABASE_URL = 'https://bkhzilcjxuncyxpyhtbb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJraHppbGNqeHVuY3l4cHlodGJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODE5ODAsImV4cCI6MjA3ODU1Nzk4MH0._nYGKr3QqjCBhRDJ8zXrcEpG5pUA980ZZIivjC1VXS8';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Auto-format license key input
-        document.getElementById('registerLicenseKey').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
-            
-            // Add SP- prefix if not present
-            if (!value.startsWith('SP')) {
-                value = 'SP' + value;
-            }
-            
-            // Format as SP-XXXX-XXXX-XXXX
-            let formatted = value.substring(0, 2);
-            if (value.length > 2) {
-                formatted += '-' + value.substring(2, 6);
-            }
-            if (value.length > 6) {
-                formatted += '-' + value.substring(6, 10);
-            }
-            if (value.length > 10) {
-                formatted += '-' + value.substring(10, 14);
-            }
-            
-            e.target.value = formatted;
-        });
 
         // Switch between Login and Register tabs
         function switchTab(tab) {
@@ -531,8 +485,6 @@
             event.preventDefault();
             hideMessages();
             
-            const licenseKey = document.getElementById('registerLicenseKey').value.toUpperCase();
-            const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerPasswordConfirm').value;
@@ -548,36 +500,10 @@
                 showError('Parola trebuie să aibă minim 6 caractere!');
                 return;
             }
-
-            // Validate license key format
-            const keyPattern = /^SP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
-            if (!keyPattern.test(licenseKey)) {
-                showError('Format cheie invalid! Trebuie: SP-XXXX-XXXX-XXXX');
-                return;
-            }
             
             showLoading();
 
             try {
-                // Check if license key exists and is unused
-                const { data: keyData, error: keyError } = await supabase
-                    .from('license_keys')
-                    .select('*')
-                    .eq('key', licenseKey)
-                    .single();
-
-                if (keyError || !keyData) {
-                    throw new Error('Cheie de acces invalidă sau inexistentă!');
-                }
-
-                if (keyData.used) {
-                    throw new Error('Această cheie a fost deja folosită!');
-                }
-
-                if (!keyData.active) {
-                    throw new Error('Această cheie nu este activă!');
-                }
-
                 // Create auth user
                 const { data: authData, error: authError } = await supabase.auth.signUp({
                     email: email,
@@ -586,39 +512,12 @@
 
                 if (authError) throw authError;
 
-                // Create user profile
-                const { error: profileError } = await supabase
-                    .from('users')
-                    .insert([{
-                        id: authData.user.id,
-                        email: email,
-                        name: name,
-                        role: 'user',
-                        license_key: licenseKey,
-                        created_at: new Date().toISOString()
-                    }]);
-
-                if (profileError) throw profileError;
-
-                // Mark license key as used
-                const { error: updateError } = await supabase
-                    .from('license_keys')
-                    .update({ 
-                        used: true, 
-                        used_by: email,
-                        used_at: new Date().toISOString()
-                    })
-                    .eq('key', licenseKey);
-
-                if (updateError) throw updateError;
-
-                showSuccess('Cont creat cu succes! Poți să te loghezi acum.');
+                showSuccess('Cont creat cu succes! Te-ai logat automat.');
                 
-                // Switch to login tab
+                // Redirect to dashboard
                 setTimeout(() => {
-                    switchTab('login');
-                    document.getElementById('loginEmail').value = email;
-                }, 2000);
+                    window.location.href = 'dashboard.html';
+                }, 1500);
 
             } catch (error) {
                 console.error('Register error:', error);
