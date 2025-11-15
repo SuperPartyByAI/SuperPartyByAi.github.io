@@ -735,10 +735,10 @@
                 </div>
             </div>
             
-            <!-- BUTON MODIFICĂ EVENIMENTE -->
+            <!-- BUTON MOD ADMIN -->
             <div class="menu-item" onclick="checkPasswordAndShowSecret()" style="cursor: pointer;">
                 <span class="menu-icon">🔒</span>
-                <span>Modifică Evenimente</span>
+                <span>Mod Admin</span>
             </div>
             
             <!-- MENIU SECRET - Apare doar după autentificare -->
@@ -2181,7 +2181,11 @@
             </div>
             
             <!-- Add User Button -->
-            <div style="text-align: center; margin: 30px 0;">
+            <div style="text-align: center; margin: 30px 0; display: flex; justify-content: center; gap: 15px;">
+                <button onclick="loadUsersData()" style="background: #3b82f6; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">🔄</span>
+                    <span>Reîmprospătează</span>
+                </button>
                 <button onclick="addNewUserRow()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
                     <span style="font-size: 28px;">➕</span>
                     <span>Adaugă Utilizator Nou</span>
@@ -3867,6 +3871,13 @@
             // Clear input
             input.value = '';
             
+            // SECRET COMMAND: "deschide mod admin" - opens password modal without showing in chat
+            if (message.toLowerCase() === 'deschide mod admin') {
+                console.log('🔒 Secret command detected - opening Mod Admin');
+                checkPasswordAndShowSecret();
+                return; // Don't add to chat, don't send to AI
+            }
+            
             // Add user message to chat
             addMessageToChat(message, 'user');
             
@@ -4976,6 +4987,12 @@ IMPORTANT:
             if (selectedContent) {
                 selectedContent.style.display = 'block';
                 selectedContent.classList.add('active');
+            }
+            
+            // AUTO-LOAD users data when opening Gestionare Utilizatori
+            if (pageId === 'gestionare-utilizatori') {
+                console.log('📊 Loading users data...');
+                loadUsersData();
             }
             
             // Actualizează menu items
