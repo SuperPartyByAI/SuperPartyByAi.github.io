@@ -3,558 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperParty 🎉 - Login</title>
-    
-    <!-- Supabase Client Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <title>SuperParty 🎉</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
-        .auth-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            width: 100%;
-            max-width: 450px;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .auth-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
+        .loading-container {
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            color: white;
         }
 
-        .auth-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: particlesMove 20s linear infinite;
+        .logo {
+            font-size: 64px;
+            margin-bottom: 20px;
         }
 
-        @keyframes particlesMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        .auth-header h1 {
-            font-size: 36px;
+        h1 {
+            font-size: 48px;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-            font-weight: 800;
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.3); }
-            50% { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 30px rgba(255,255,255,0.5); }
-        }
-
-        .auth-header p {
-            font-size: 16px;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-body {
-            padding: 40px 30px;
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            background: #f0f0f0;
-            padding: 5px;
-            border-radius: 10px;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: #666;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .auth-tab.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .license-key-input {
-            position: relative;
-        }
-
-        .license-key-input input {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        p {
+            font-size: 20px;
+            opacity: 0.9;
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .success-message {
-            background: #efe;
-            color: #383;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .info-text {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-top: 20px;
-            line-height: 1.5;
-        }
-
-        .info-text strong {
-            color: #667eea;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .loading-spinner {
+        .spinner {
             width: 60px;
             height: 60px;
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 30px auto;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        .admin-link {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .admin-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .admin-link a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-    </div>
-
-    <!-- Auth Container -->
-    <div class="auth-container" id="authContainer">
-        <div class="auth-header">
-            <h1>SuperParty 🎉</h1>
-            <p>Managementul evenimentelor tale</p>
-        </div>
-
-        <div class="auth-body">
-            <!-- Tabs -->
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
-                <button class="auth-tab" onclick="switchTab('register')">Înregistrare</button>
-            </div>
-
-            <!-- Error Message -->
-            <div class="error-message" id="errorMessage"></div>
-            
-            <!-- Success Message -->
-            <div class="success-message" id="successMessage"></div>
-
-            <!-- Login Form -->
-            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required placeholder="exemplu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Parolă</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="submit-btn">Intră în cont</button>
-            </form>
-
-            <!-- Register Form -->
-            <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" required placeholder="exemplu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">Parolă</label>
-                    <input type="password" id="registerPassword" required placeholder="Minim 6 caractere" minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="registerPasswordConfirm">Confirmă parola</label>
-                    <input type="password" id="registerPasswordConfirm" required placeholder="Repetă parola">
-                </div>
-                <button type="submit" class="submit-btn">Creează cont</button>
-            </form>
-
-            <!-- Admin Link -->
-            <div class="admin-link">
-                <a href="admin-keys.html">🔑 Admin - Generare Chei</a>
-            </div>
-        </div>
+    <div class="loading-container">
+        <div class="logo">🎉</div>
+        <h1>SuperParty</h1>
+        <p>Managementul evenimentelor tale</p>
+        <div class="spinner"></div>
     </div>
 
     <script>
-        // Initialize Supabase
-        const SUPABASE_URL = 'https://bkhzilcjxuncyxpyhtbb.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJraHppbGNqeHVuY3l4cHlodGJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5ODE5ODAsImV4cCI6MjA3ODU1Nzk4MH0._nYGKr3QqjCBhRDJ8zXrcEpG5pUA980ZZIivjC1VXS8';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Switch between Login and Register tabs
-        function switchTab(tab) {
-            const tabs = document.querySelectorAll('.auth-tab');
-            const forms = document.querySelectorAll('.auth-form');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            forms.forEach(f => f.classList.remove('active'));
-            
-            if (tab === 'login') {
-                tabs[0].classList.add('active');
-                document.getElementById('loginForm').classList.add('active');
-            } else {
-                tabs[1].classList.add('active');
-                document.getElementById('registerForm').classList.add('active');
-            }
-            
-            hideMessages();
-        }
-
-        // Show error message
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-            setTimeout(() => errorDiv.classList.remove('show'), 5000);
-        }
-
-        // Show success message
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = message;
-            successDiv.classList.add('show');
-            setTimeout(() => successDiv.classList.remove('show'), 5000);
-        }
-
-        // Hide all messages
-        function hideMessages() {
-            document.getElementById('errorMessage').classList.remove('show');
-            document.getElementById('successMessage').classList.remove('show');
-        }
-
-        // Show loading
-        function showLoading() {
-            document.getElementById('loadingOverlay').classList.add('show');
-        }
-
-        // Hide loading
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('show');
-        }
-
-        // Handle Login
-        async function handleLogin(event) {
-            event.preventDefault();
-            hideMessages();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            showLoading();
-
-            try {
-                // Sign in with Supabase
-                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (authError) throw authError;
-
-                // Get user profile
-                const { data: profile, error: profileError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
-
-                if (profileError) throw profileError;
-
-                // Store session
-                localStorage.setItem('superparty_user', JSON.stringify({
-                    id: authData.user.id,
-                    email: email,
-                    name: profile.name,
-                    role: profile.role,
-                    license_key: profile.license_key,
-                    session_token: authData.session.access_token,
-                    login_time: new Date().toISOString()
-                }));
-
-                showSuccess('Login reușit! Redirectare...');
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-
-            } catch (error) {
-                console.error('Login error:', error);
-                showError(error.message || 'Email sau parolă greșită!');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // Handle Register
-        async function handleRegister(event) {
-            event.preventDefault();
-            hideMessages();
-            
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
-            
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                showError('Parolele nu coincid!');
-                return;
-            }
-            
-            // Validate password length
-            if (password.length < 6) {
-                showError('Parola trebuie să aibă minim 6 caractere!');
-                return;
-            }
-            
-            showLoading();
-
-            try {
-                // Create auth user
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw error;
-
-                // Check if user was created successfully
-                if (!data || !data.user) {
-                    throw new Error('Eroare la crearea contului. Te rog încearcă din nou.');
-                }
-
-                showSuccess('Cont creat cu succes! Te poți loga acum.');
-                
-                // Switch to login and pre-fill email
-                setTimeout(() => {
-                    switchTab('login');
-                    document.getElementById('loginEmail').value = email;
-                    document.getElementById('loginPassword').focus();
-                }, 2000);
-
-            } catch (error) {
-                console.error('Register error:', error);
-                showError(error.message || 'Eroare la crearea contului!');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // Check if user is already logged in
-        window.addEventListener('DOMContentLoaded', () => {
-            const user = localStorage.getItem('superparty_user');
-            if (user) {
-                try {
-                    const userData = JSON.parse(user);
-                    const loginTime = new Date(userData.login_time);
-                    const now = new Date();
-                    const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
-                    
-                    // Session expires after 24 hours
-                    if (hoursDiff < 24) {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        localStorage.removeItem('superparty_user');
-                    }
-                } catch (error) {
-                    localStorage.removeItem('superparty_user');
-                }
-            }
-        });
+        // Redirect direct la dashboard după 1 secundă
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1000);
     </script>
 </body>
 </html>
