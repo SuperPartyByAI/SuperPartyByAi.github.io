@@ -10,7 +10,7 @@ superparty-frontend-ready/
 ├── vercel.json            ← Configurare Vercel
 └── README.md              ← Acest fișier
 ```
-
+ 
 ---
 
 ## 🚀 DEPLOY PE VERCEL (2 MINUTE):
