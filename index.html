@@ -3875,10 +3875,10 @@
             if (message.toLowerCase() === 'deschide mod admin') {
                 console.log('🔒 Secret command detected - opening Mod Admin');
                 
-                // Close chat overlay
-                const chatOverlay = document.getElementById('chatOverlay');
-                if (chatOverlay) {
-                    chatOverlay.style.display = 'none';
+                // Close chat modal
+                const chatModal = document.getElementById('aiChatModal');
+                if (chatModal) {
+                    chatModal.style.display = 'none';
                 }
                 
                 // Open password modal for Mod Admin
