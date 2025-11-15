@@ -685,13 +685,9 @@
         </div>
         
         <div class="sidebar-menu" id="mainMenu">
-            <!-- BUTON INTRĂ ÎN CONT - deschide pagina de login -->
-            <div class="menu-item" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('intra-cont').classList.add('active');" style="cursor: pointer;">
-                <span class="menu-icon">👤</span>
-                <span>Intră în cont</span>
-            </div>
+            <!-- BUTON INTRĂ ÎN CONT - ASCUNS, va apărea doar după login -->
             
-            <!-- SUBMENIU INTRĂ ÎN CONT - apare doar după login -->
+            <!-- SUBMENIU - Apare doar după login -->
             <div id="intraContSubmenu" style="display: none; margin-left: 15px; border-left: 3px solid #667eea; padding-left: 5px;">
                 <div class="menu-item" onclick="showPage('home')" style="font-size: 14px; padding: 12px 20px;">
                     <span class="menu-icon">🏠</span>
@@ -801,9 +797,108 @@
     
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Welcome Home Page (Default - COMPLETELY EMPTY) -->
+        <!-- Welcome Home Page - LOGIN FORM -->
         <div class="page active" id="home">
-            <!-- GOL - Nimic aici -->
+            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">🎉</div>
+                        <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">SuperParty</h2>
+                        <p style="color: #6b7280; font-size: 15px; margin: 0;">Intră în contul tău</p>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form id="homeLoginForm" onsubmit="handleHomeLogin(event)" style="display: flex; flex-direction: column; gap: 25px;">
+                        <!-- Email -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                📧 Email
+                            </label>
+                            <input 
+                                type="text" 
+                                id="homeLoginEmail" 
+                                placeholder="Introdu email-ul" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Password -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                🔒 Parolă
+                            </label>
+                            <input 
+                                type="password" 
+                                id="homeLoginPassword" 
+                                placeholder="Introdu parola" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Access Key -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                🔑 Cheie de Acces
+                            </label>
+                            <input 
+                                type="password" 
+                                id="homeLoginAccessKey" 
+                                placeholder="Introdu cheia de acces" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-family: monospace; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Remember Me -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="homeRememberMe" checked style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="homeRememberMe" style="color: #6b7280; font-size: 14px; cursor: pointer; user-select: none;">
+                                Ține-mă minte
+                            </label>
+                        </div>
+                        
+                        <!-- Login Button -->
+                        <button 
+                            type="submit"
+                            style="width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.5)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)'"
+                        >
+                            🚀 Intră în cont
+                        </button>
+                        
+                        <!-- Register Button -->
+                        <button 
+                            type="button"
+                            onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('inregistreaza-te').classList.add('active');"
+                            style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);"
+                            onmouseover="this.style.background='#f0f4ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'"
+                            onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.2)'"
+                        >
+                            ✨ Înregistrează-te
+                        </button>
+                    </form>
+                    
+                    <!-- Error Message -->
+                    <div id="homeLoginError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border: 2px solid #fecaca; border-radius: 12px; color: #dc2626; font-size: 14px; font-weight: 600; text-align: center;">
+                        ❌ Email, parolă sau cheie incorectă!
+                    </div>
+                    
+                    <!-- Success Message -->
+                    <div id="homeLoginSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; font-size: 14px; font-weight: 600; text-align: center;">
+                        ✅ Autentificare reușită!
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- Page: Intră în cont (LOGIN FORM) -->
@@ -2103,6 +2198,8 @@
                             <th style="padding: 15px; text-align: left;">🔒 Parolă</th>
                             <th style="padding: 15px; text-align: left;">🔒 Repetă Parolă</th>
                             <th style="padding: 15px; text-align: left;">🔑 Cheie de Acces</th>
+                            <th style="padding: 15px; text-align: left;">📱 Ce cod ai</th>
+                            <th style="padding: 15px; text-align: center;">🔓 Status</th>
                             <th style="padding: 15px; text-align: center; border-radius: 0 10px 0 0;">⚙️ Acțiuni</th>
                         </tr>
                     </thead>
@@ -3515,9 +3612,9 @@
             }
             
             try {
-                // Auto-generate access key (random 8-character code)
+                // AUTO-GENERATE access key for user
                 const accessKey = 'SP' + Math.random().toString(36).substring(2, 8).toUpperCase();
-                console.log('Generated access key:', accessKey);
+                console.log('Auto-generated access key:', accessKey);
                 
                 // Check if email already exists in admin table
                 const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
@@ -3536,22 +3633,25 @@
                     email: email,
                     password: password,
                     passwordConfirm: passwordConfirm,
-                    accessKey: accessKey
+                    accessKey: accessKey, // AUTO-GENERATED
+                    userCode: '', // Empty - admin fills this
+                    blocked: false, // Active by default
+                    failedAttempts: 0 // No failed attempts yet
                 });
                 localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                console.log('User saved to admin table!');
+                console.log('User saved to admin table with auto-generated access key!');
                 
-                // Success
-                successDiv.textContent = '✅ Cont creat cu succes!';
+                // Success - show message telling user to wait for admin
+                successDiv.innerHTML = `✅ Cont creat cu succes!<br><small style="color: #6b7280; margin-top: 10px; display: block;">Administratorul îți va trimite cheia de acces pe email.</small>`;
                 successDiv.style.display = 'block';
                 console.log('Success message shown');
                 
-                // Redirect to login page immediately
+                // Redirect to login page after 3 seconds
                 setTimeout(() => {
                     console.log('Redirecting to login...');
                     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                    document.getElementById('intra-cont').classList.add('active');
-                }, 1000);
+                    document.getElementById('home').classList.add('active');
+                }, 3000);
             } catch (error) {
                 console.error('Error during registration:', error);
                 errorDiv.textContent = '❌ Eroare la înregistrare: ' + error.message;
@@ -3563,14 +3663,168 @@
         function checkLoginStatus() {
             const loggedIn = localStorage.getItem('superparty_logged_in') || sessionStorage.getItem('superparty_logged_in');
             if (loggedIn === 'true') {
-                // Auto-show submenu if logged in
+                console.log('✅ User already logged in - showing menu');
+                // Hide home login form
+                const homeLoginContainer = document.querySelector('#home > div');
+                if (homeLoginContainer) {
+                    homeLoginContainer.style.display = 'none';
+                }
+                // Show submenu
                 const submenu = document.getElementById('intraContSubmenu');
-                submenu.style.display = 'block';
+                if (submenu) {
+                    submenu.style.display = 'block';
+                }
+            } else {
+                console.log('❌ User not logged in - showing login form');
+            }
+        }
+        
+        // Home page login handler
+        function handleHomeLogin(event) {
+            event.preventDefault();
+            console.log('🔐 Home login attempt...');
+            
+            const username = document.getElementById('homeLoginEmail').value;
+            const password = document.getElementById('homeLoginPassword').value;
+            const accessKey = document.getElementById('homeLoginAccessKey').value;
+            const rememberMe = document.getElementById('homeRememberMe').checked;
+            
+            const errorDiv = document.getElementById('homeLoginError');
+            const successDiv = document.getElementById('homeLoginSuccess');
+            
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Check against ADMIN USERS TABLE (Gestionare Utilizatori)
+            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+            
+            // Find user by email first
+            const userIndex = adminUsers.findIndex(u => u.email === username);
+            const userAccount = userIndex >= 0 ? adminUsers[userIndex] : null;
+            
+            // Check if user is blocked
+            if (userAccount && userAccount.blocked) {
+                console.log('❌ User is BLOCKED!');
+                errorDiv.textContent = '🔒 Cont blocat! Contactează administratorul pentru a fi deblocat.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const registeredUser = adminUsers.find(u => 
+                u.email === username && 
+                u.password === password && 
+                u.accessKey === accessKey && 
+                u.accessKey !== '' && // Must have an access key (set by admin)
+                !u.blocked // Must not be blocked
+            );
+            
+            console.log('Checking admin users table:', adminUsers.length, 'users');
+            console.log('Found match:', registeredUser ? 'YES' : 'NO');
+            
+            // Hardcoded admin credentials (you can change these)
+            const validUsername = 'admin';
+            const validPassword = '1234';
+            const validAccessKey = 'ADMIN2024';
+            
+            const isValidLogin = registeredUser || (username === validUsername && password === validPassword && accessKey === validAccessKey);
+            
+            if (isValidLogin) {
+                // SUCCESS - Reset failed attempts if it was a regular user
+                if (userAccount) {
+                    userAccount.failedAttempts = 0;
+                    adminUsers[userIndex] = userAccount;
+                    localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                }
+                // Success
+                console.log('✅ Login successful!');
+                successDiv.style.display = 'block';
+                
+                // Save login state (always save to localStorage for persistence)
+                localStorage.setItem('superparty_logged_in', 'true');
+                localStorage.setItem('superparty_username', username);
+                
+                // Hide login form
+                setTimeout(() => {
+                    const homeLoginContainer = document.querySelector('#home > div');
+                    if (homeLoginContainer) {
+                        homeLoginContainer.style.display = 'none';
+                    }
+                    
+                    // Show submenu
+                    const submenu = document.getElementById('intraContSubmenu');
+                    if (submenu) {
+                        submenu.style.display = 'block';
+                    }
+                    
+                    // Show welcome message on home page
+                    const homePage = document.getElementById('home');
+                    homePage.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 80px; margin-bottom: 20px;">🎉</div>
+                            <h1 style="font-size: 48px; color: #1f2937; margin-bottom: 20px;">Bine ai venit!</h1>
+                            <p style="font-size: 20px; color: #6b7280;">Selectează o opțiune din meniul din stânga</p>
+                        </div>
+                    `;
+                }, 1000);
+                
+            } else {
+                // FAILED LOGIN - Increment failed attempts
+                console.log('❌ Login failed');
+                
+                if (userAccount) {
+                    // Increment failed attempts
+                    userAccount.failedAttempts = (userAccount.failedAttempts || 0) + 1;
+                    
+                    console.log(`Failed attempts for ${userAccount.email}: ${userAccount.failedAttempts}`);
+                    
+                    // Check if should be blocked (3 failed attempts)
+                    if (userAccount.failedAttempts >= 3) {
+                        userAccount.blocked = true;
+                        adminUsers[userIndex] = userAccount;
+                        localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                        
+                        console.log('🔒 User BLOCKED after 3 failed attempts!');
+                        errorDiv.textContent = '🔒 Cont blocat după 3 încercări eșuate! Contactează administratorul.';
+                    } else {
+                        adminUsers[userIndex] = userAccount;
+                        localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                        
+                        const remaining = 3 - userAccount.failedAttempts;
+                        errorDiv.textContent = `❌ Date incorecte! Mai ai ${remaining} ${remaining === 1 ? 'încercare' : 'încercări'}.`;
+                    }
+                } else {
+                    errorDiv.textContent = '❌ Email, parolă sau cheie incorectă!';
+                }
+                
+                errorDiv.style.display = 'block';
             }
         }
         
         // Check login status on page load
         window.addEventListener('load', checkLoginStatus);
+        
+        // Ensure secret menu is hidden on page load
+        window.addEventListener('load', function() {
+            const secretMenu = document.getElementById('secretMenuSection');
+            if (secretMenu) {
+                secretMenu.style.display = 'none';
+                console.log('🔒 Secret menu hidden on page load');
+            }
+            
+            // DEBUG: Check if password modal is accidentally visible
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                const isVisible = window.getComputedStyle(modal).display !== 'none';
+                console.log('🔍 Password Modal on load:', isVisible ? '⚠️ VISIBLE (BUG!)' : '✅ Hidden (OK)');
+                
+                // Force hide modal if it's somehow visible
+                if (isVisible) {
+                    console.log('🛠️ Forcing modal to hide...');
+                    modal.style.display = 'none';
+                }
+            }
+        });
         
         // Close sidebar when clicking outside on mobile
         document.addEventListener('click', function(event) {
@@ -4648,9 +4902,14 @@ IMPORTANT:
         // ============================================================
         
         function checkPasswordAndShowSecret() {
-            console.log('🔒 Deschid modal parola');
+            console.log('🔒 Deschid modal parola - APELAT DE BUTON');
             const modal = document.getElementById('passwordModal');
             const input = document.getElementById('passwordInput');
+            
+            if (!modal) {
+                console.error('❌ Modal nu există!');
+                return;
+            }
             
             modal.style.display = 'flex';
             input.value = '';
@@ -6787,7 +7046,7 @@ IMPORTANT:
             if (usersData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #9ca3af;">
                             <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
                             <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
                         </td>
@@ -6797,8 +7056,15 @@ IMPORTANT:
             }
 
             usersData.forEach((user, index) => {
+                const isBlocked = user.blocked || false;
+                const failedAttempts = user.failedAttempts || 0;
+                const statusColor = isBlocked ? '#dc2626' : '#10b981';
+                const statusText = isBlocked ? '🔒 Blocat' : '🔓 Activ';
+                const statusBg = isBlocked ? '#fee2e2' : '#d1fae5';
+                
                 const row = document.createElement('tr');
                 row.style.borderBottom = '1px solid #e5e7eb';
+                row.style.background = isBlocked ? '#fef2f2' : 'transparent';
                 row.innerHTML = `
                     <td style="padding: 15px;">
                         <input type="text" value="${user.name || ''}" onchange="updateUser(${index}, 'name', this.value)" 
@@ -6820,11 +7086,28 @@ IMPORTANT:
                         <input type="text" value="${user.accessKey || ''}" onchange="updateUser(${index}, 'accessKey', this.value)" 
                             style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
                     </td>
+                    <td style="padding: 15px;">
+                        <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
+                            placeholder="Ex: A1, B5, Z50"
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                    </td>
                     <td style="padding: 15px; text-align: center;">
-                        <button onclick="deleteUser(${index})" 
-                            style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s;">
-                            🗑️ Șterge
-                        </button>
+                        <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                            <span style="padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 8px; font-size: 13px; font-weight: 700;">${statusText}</span>
+                            ${failedAttempts > 0 ? `<span style="font-size: 11px; color: #ef4444;">⚠️ ${failedAttempts} încercări</span>` : ''}
+                        </div>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="toggleBlockUser(${index})" 
+                                style="background: ${isBlocked ? '#10b981' : '#ef4444'}; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                ${isBlocked ? '🔓 Deblochează' : '🔒 Blochează'}
+                            </button>
+                            <button onclick="deleteUser(${index})" 
+                                style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                🗑️ Șterge
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -6838,7 +7121,10 @@ IMPORTANT:
                 email: '',
                 password: '',
                 passwordConfirm: '',
-                accessKey: ''
+                accessKey: '',
+                userCode: '',
+                blocked: false,
+                failedAttempts: 0
             });
             renderUsersTable();
         }
@@ -6847,6 +7133,25 @@ IMPORTANT:
         function updateUser(index, field, value) {
             if (usersData[index]) {
                 usersData[index][field] = value;
+            }
+        }
+        
+        // Toggle block/unblock user
+        function toggleBlockUser(index) {
+            if (usersData[index]) {
+                const currentStatus = usersData[index].blocked || false;
+                usersData[index].blocked = !currentStatus;
+                
+                // Reset failed attempts when unblocking
+                if (!usersData[index].blocked) {
+                    usersData[index].failedAttempts = 0;
+                }
+                
+                renderUsersTable();
+                saveUsersData();
+                
+                const newStatus = usersData[index].blocked ? 'blocat' : 'deblocat';
+                alert(`✅ Utilizator ${usersData[index].name} a fost ${newStatus}!`);
             }
         }
 
@@ -6905,7 +7210,7 @@ IMPORTANT:
         <div class="password-modal-content">
             <h3>🔒 Acces Restricționat</h3>
             <p style="color: #6b7280; margin-bottom: 20px;">Introdu parola pentru a accesa pagina secretă</p>
-            <input type="password" id="passwordInput" placeholder="••••" maxlength="4" autofocus>
+            <input type="password" id="passwordInput" placeholder="••••" maxlength="4">
             <div class="password-modal-buttons">
                 <button class="password-cancel" onclick="closePasswordModal()">❌ Anulează</button>
                 <button class="password-submit" onclick="submitPassword()">✅ Accesează</button>
