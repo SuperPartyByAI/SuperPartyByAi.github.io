@@ -888,7 +888,7 @@
                         <!-- Register Button -->
                         <button 
                             type="button"
-                            onclick="showPage('inregistreaza-te')"
+                            onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('inregistreaza-te').classList.add('active');"
                             style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);"
                             onmouseover="this.style.background='#f0f4ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'"
                             onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.2)'"
