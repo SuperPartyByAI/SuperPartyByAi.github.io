@@ -2182,6 +2182,10 @@
             
             <!-- Add User Button -->
             <div style="text-align: center; margin: 30px 0; display: flex; justify-content: center; gap: 15px;">
+                <button onclick="testSaveUser()" style="background: #ef4444; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">🧪</span>
+                    <span>TEST Salvare</span>
+                </button>
                 <button onclick="loadUsersData()" style="background: #3b82f6; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
                     <span style="font-size: 28px;">🔄</span>
                     <span>Reîmprospătează</span>
@@ -7037,6 +7041,27 @@ IMPORTANT:
         // USERS MANAGEMENT FUNCTIONS
         // ============================================
 
+        // TEST function to force save a user
+        function testSaveUser() {
+            const testUser = {
+                name: 'Test User',
+                email: 'test@test.com',
+                password: '1234',
+                passwordConfirm: '1234',
+                accessKey: 'SPTEST123',
+                userCode: 'A1',
+                blocked: false,
+                failedAttempts: 0
+            };
+            
+            const users = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+            users.push(testUser);
+            localStorage.setItem('superparty_admin_users', JSON.stringify(users));
+            
+            alert('✅ TEST user salvat! Apasă Reîmprospătează pentru a vedea.');
+            console.log('TEST user saved:', testUser);
+        }
+        
         let usersData = [];
 
         // Load users from localStorage
