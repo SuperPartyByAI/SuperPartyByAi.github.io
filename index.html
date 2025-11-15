@@ -563,7 +563,7 @@
                 const { data: keyData, error: keyError } = await supabase
                     .from('license_keys')
                     .select('*')
-                    .eq('key', licenseKey)
+                    .eq('code', licenseKey)
                     .single();
 
                 if (keyError || !keyData) {
