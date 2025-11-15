@@ -7107,9 +7107,13 @@ IMPORTANT:
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <input id="pass-${index}" type="${passwordVisible ? 'text' : 'password'}" value="${user.password || ''}" onchange="updateUser(${index}, 'password', this.value)" 
                                 style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
-                            <button onclick="togglePasswordVisibility(${index})" 
+                            <button onclick="togglePasswordView(${index})" 
                                 style="background: #8b5cf6; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
                                 P
+                            </button>
+                            <button onclick="resetPassword(${index})" 
+                                style="background: #ef4444; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
+                                R
                             </button>
                         </div>
                     </td>
@@ -7171,23 +7175,25 @@ IMPORTANT:
             }
         }
         
-        // Toggle password visibility (P button)
-        function togglePasswordVisibility(index) {
+        // Toggle password VIEW (P button) - just show/hide
+        function togglePasswordView(index) {
             if (usersData[index]) {
                 const currentVisibility = usersData[index].passwordVisible || false;
-                
-                if (!currentVisibility) {
-                    // First click: SHOW passwords (toggle visibility)
-                    usersData[index].passwordVisible = true;
-                    renderUsersTable();
-                } else {
-                    // Second click: RESET passwords (clear fields and keep visible)
+                usersData[index].passwordVisible = !currentVisibility;
+                renderUsersTable();
+            }
+        }
+        
+        // Reset password (R button) - clear fields
+        function resetPassword(index) {
+            if (usersData[index]) {
+                if (confirm('Sigur vrei să resetezi parola pentru acest utilizator?')) {
                     usersData[index].password = '';
                     usersData[index].passwordConfirm = '';
                     usersData[index].passwordVisible = true; // Keep visible for editing
                     renderUsersTable();
                     saveUsersData();
-                    alert('🔄 Parole resetate! Utilizatorul poate seta o parolă nouă.');
+                    alert('🔄 Parolă resetată! Utilizatorul poate seta o parolă nouă.');
                 }
             }
         }
