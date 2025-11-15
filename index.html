@@ -505,19 +505,26 @@
 
             try {
                 // Create auth user
-                const { data: authData, error: authError } = await supabase.auth.signUp({
+                const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password
                 });
 
-                if (authError) throw authError;
+                if (error) throw error;
 
-                showSuccess('Cont creat cu succes! Te-ai logat automat.');
+                // Check if user was created successfully
+                if (!data || !data.user) {
+                    throw new Error('Eroare la crearea contului. Te rog încearcă din nou.');
+                }
+
+                showSuccess('Cont creat cu succes! Te poți loga acum.');
                 
-                // Redirect to dashboard
+                // Switch to login and pre-fill email
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
+                    switchTab('login');
+                    document.getElementById('loginEmail').value = email;
+                    document.getElementById('loginPassword').focus();
+                }, 2000);
 
             } catch (error) {
                 console.error('Register error:', error);
