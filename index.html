@@ -775,6 +775,10 @@
                     <span class="menu-icon">🔑</span>
                     <span>Generează Coduri</span>
                 </div>
+                <div class="menu-item" onclick="showSecretPage('gestionare-utilizatori')" style="font-size: 14px; padding: 12px 20px;">
+                    <span class="menu-icon">👥</span>
+                    <span>Gestionare Utilizatori</span>
+                </div>
             </div>
             
             <!-- ADMIN MENU - Dezactivat
@@ -815,15 +819,15 @@
                     
                     <!-- Login Form -->
                     <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 25px;">
-                        <!-- Username -->
+                        <!-- Email -->
                         <div>
                             <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
-                                👨‍💼 Nume utilizator
+                                📧 Email
                             </label>
                             <input 
                                 type="text" 
                                 id="loginUsername" 
-                                placeholder="Introdu username" 
+                                placeholder="Introdu email-ul" 
                                 required
                                 style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
                                 onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
@@ -847,6 +851,22 @@
                             >
                         </div>
                         
+                        <!-- Access Key -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                🔑 Cheie de Acces
+                            </label>
+                            <input 
+                                type="password" 
+                                id="loginAccessKey" 
+                                placeholder="Introdu cheia de acces" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-family: monospace; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
                         <!-- Remember Me -->
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer;">
@@ -864,6 +884,17 @@
                         >
                             🚀 Intră în cont
                         </button>
+                        
+                        <!-- Register Button -->
+                        <button 
+                            type="button"
+                            onclick="showPage('inregistreaza-te')"
+                            style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);"
+                            onmouseover="this.style.background='#f0f4ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'"
+                            onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.2)'"
+                        >
+                            ✨ Înregistrează-te
+                        </button>
                     </form>
                     
                     <!-- Error Message -->
@@ -874,6 +905,118 @@
                     <!-- Success Message -->
                     <div id="loginSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; font-size: 14px; font-weight: 600; text-align: center;">
                         ✅ Autentificare reușită!
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page: Înregistrează-te (REGISTRATION FORM) -->
+        <div class="page" id="inregistreaza-te">
+            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">✨</div>
+                        <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">Înregistrează-te</h2>
+                        <p style="color: #6b7280; font-size: 15px; margin: 0;">Creează un cont nou</p>
+                    </div>
+                    
+                    <!-- Registration Form -->
+                    <form id="registerForm" onsubmit="handleRegister(event)" style="display: flex; flex-direction: column; gap: 25px;">
+                        <!-- Name -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                👤 Nume
+                            </label>
+                            <input 
+                                type="text" 
+                                id="registerName" 
+                                placeholder="Introdu numele tău" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Email -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                📧 Email
+                            </label>
+                            <input 
+                                type="email" 
+                                id="registerEmail" 
+                                placeholder="exemplu@email.com" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Password -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                🔒 Parolă
+                            </label>
+                            <input 
+                                type="password" 
+                                id="registerPassword" 
+                                placeholder="Creează o parolă" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Confirm Password -->
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                🔒 Repetă parola
+                            </label>
+                            <input 
+                                type="password" 
+                                id="registerPasswordConfirm" 
+                                placeholder="Repetă parola" 
+                                required
+                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
+                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                            >
+                        </div>
+                        
+                        <!-- Register Button -->
+                        <button 
+                            type="submit"
+                            style="width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(16, 185, 129, 0.5)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.4)'"
+                        >
+                            ✨ Creează cont
+                        </button>
+                        
+                        <!-- Back to Login Button -->
+                        <button 
+                            type="button"
+                            onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('intra-cont').classList.add('active');"
+                            style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);"
+                            onmouseover="this.style.background='#f0f4ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'"
+                            onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.2)'"
+                        >
+                            👤 Am deja cont
+                        </button>
+                    </form>
+                    
+                    <!-- Error Message -->
+                    <div id="registerError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border: 2px solid #fecaca; border-radius: 12px; color: #dc2626; font-size: 14px; font-weight: 600; text-align: center;">
+                        ❌ Eroare la înregistrare!
+                    </div>
+                    
+                    <!-- Success Message -->
+                    <div id="registerSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; font-size: 14px; font-weight: 600; text-align: center;">
+                        ✅ Cont creat cu succes!
                     </div>
                 </div>
             </div>
@@ -1932,6 +2075,48 @@
                         <p>Apasă butonul de mai sus pentru a genera primul cod</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Gestionare Utilizatori (Secret) -->
+        <div class="secret-content" id="gestionare-utilizatori" style="display: none;">
+            <div class="page-header">
+                <h2>👥 Gestionare Utilizatori</h2>
+                <p>Administrează conturile utilizatorilor din sistem</p>
+            </div>
+            
+            <!-- Add User Button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <button onclick="addNewUserRow()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">➕</span>
+                    <span>Adaugă Utilizator Nou</span>
+                </button>
+            </div>
+            
+            <!-- Users Table -->
+            <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-x: auto;">
+                <table id="usersTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <th style="padding: 15px; text-align: left; border-radius: 10px 0 0 0;">👤 Nume</th>
+                            <th style="padding: 15px; text-align: left;">📧 Email</th>
+                            <th style="padding: 15px; text-align: left;">🔒 Parolă</th>
+                            <th style="padding: 15px; text-align: left;">🔒 Repetă Parolă</th>
+                            <th style="padding: 15px; text-align: left;">🔑 Cheie de Acces</th>
+                            <th style="padding: 15px; text-align: center; border-radius: 0 10px 0 0;">⚙️ Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Rows will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Save All Button -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="saveAllUsers()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 18px 50px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
+                    💾 Salvează Toate Modificările
+                </button>
             </div>
         </div>
 
@@ -3227,6 +3412,7 @@
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
+            const accessKey = document.getElementById('loginAccessKey').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
             const errorDiv = document.getElementById('loginError');
@@ -3236,11 +3422,18 @@
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
             
-            // Hardcoded credentials (you can change these)
+            // Check against registered users first (now using email + accessKey)
+            const users = JSON.parse(localStorage.getItem('superparty_users') || '[]');
+            const registeredUser = users.find(u => u.email === username && u.password === password && u.accessKey === accessKey);
+            
+            // Hardcoded admin credentials (you can change these)
             const validUsername = 'admin';
             const validPassword = '1234';
+            const validAccessKey = 'ADMIN2024';
             
-            if (username === validUsername && password === validPassword) {
+            const isValidLogin = registeredUser || (username === validUsername && password === validPassword && accessKey === validAccessKey);
+            
+            if (isValidLogin) {
                 // Success
                 successDiv.style.display = 'block';
                 
@@ -3265,6 +3458,103 @@
                 
             } else {
                 // Error
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        // Registration Handler
+        function handleRegister(event) {
+            event.preventDefault();
+            console.log('Register button clicked!');
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            console.log('Form data:', { name, email, password, passwordConfirm });
+            
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = '❌ Parolele nu se potrivesc!';
+                errorDiv.style.display = 'block';
+                console.error('Passwords do not match');
+                return;
+            }
+            
+            // Validate name length
+            if (name.length < 3) {
+                errorDiv.textContent = '❌ Numele trebuie să aibă cel puțin 3 caractere!';
+                errorDiv.style.display = 'block';
+                console.error('Name too short');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorDiv.textContent = '❌ Email invalid!';
+                errorDiv.style.display = 'block';
+                console.error('Invalid email');
+                return;
+            }
+            
+            // Validate password length
+            if (password.length < 4) {
+                errorDiv.textContent = '❌ Parola trebuie să aibă cel puțin 4 caractere!';
+                errorDiv.style.display = 'block';
+                console.error('Password too short');
+                return;
+            }
+            
+            try {
+                // Auto-generate access key (random 8-character code)
+                const accessKey = 'SP' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                console.log('Generated access key:', accessKey);
+                
+                // Check if email already exists in admin table
+                const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+                console.log('Existing admin users:', adminUsers.length);
+                
+                if (adminUsers.find(u => u.email === email)) {
+                    errorDiv.textContent = '❌ Email-ul există deja!';
+                    errorDiv.style.display = 'block';
+                    console.error('Email already exists');
+                    return;
+                }
+                
+                // ONLY add to admin users table (Gestionare Utilizatori)
+                adminUsers.push({
+                    name: name,
+                    email: email,
+                    password: password,
+                    passwordConfirm: passwordConfirm,
+                    accessKey: accessKey
+                });
+                localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                console.log('User saved to admin table!');
+                
+                // Success
+                successDiv.textContent = '✅ Cont creat cu succes!';
+                successDiv.style.display = 'block';
+                console.log('Success message shown');
+                
+                // Redirect to login page immediately
+                setTimeout(() => {
+                    console.log('Redirecting to login...');
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                    document.getElementById('intra-cont').classList.add('active');
+                }, 1000);
+            } catch (error) {
+                console.error('Error during registration:', error);
+                errorDiv.textContent = '❌ Eroare la înregistrare: ' + error.message;
                 errorDiv.style.display = 'block';
             }
         }
@@ -6466,6 +6756,149 @@ IMPORTANT:
                 alert('❌ Eroare la copiere');
             });
         }
+
+        // ============================================
+        // USERS MANAGEMENT FUNCTIONS
+        // ============================================
+
+        let usersData = [];
+
+        // Load users from localStorage
+        function loadUsersData() {
+            const stored = localStorage.getItem('superparty_admin_users');
+            if (stored) {
+                usersData = JSON.parse(stored);
+            }
+            renderUsersTable();
+        }
+
+        // Save users to localStorage
+        function saveUsersData() {
+            localStorage.setItem('superparty_admin_users', JSON.stringify(usersData));
+        }
+
+        // Render the users table
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            if (usersData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
+                            <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            usersData.forEach((user, index) => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #e5e7eb';
+                row.innerHTML = `
+                    <td style="padding: 15px;">
+                        <input type="text" value="${user.name || ''}" onchange="updateUser(${index}, 'name', this.value)" 
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </td>
+                    <td style="padding: 15px;">
+                        <input type="email" value="${user.email || ''}" onchange="updateUser(${index}, 'email', this.value)" 
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </td>
+                    <td style="padding: 15px;">
+                        <input type="password" value="${user.password || ''}" onchange="updateUser(${index}, 'password', this.value)" 
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </td>
+                    <td style="padding: 15px;">
+                        <input type="password" value="${user.passwordConfirm || ''}" onchange="updateUser(${index}, 'passwordConfirm', this.value)" 
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                    </td>
+                    <td style="padding: 15px;">
+                        <input type="text" value="${user.accessKey || ''}" onchange="updateUser(${index}, 'accessKey', this.value)" 
+                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <button onclick="deleteUser(${index})" 
+                            style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s;">
+                            🗑️ Șterge
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Add new user row
+        function addNewUserRow() {
+            usersData.push({
+                name: '',
+                email: '',
+                password: '',
+                passwordConfirm: '',
+                accessKey: ''
+            });
+            renderUsersTable();
+        }
+
+        // Update user field
+        function updateUser(index, field, value) {
+            if (usersData[index]) {
+                usersData[index][field] = value;
+            }
+        }
+
+        // Delete user
+        function deleteUser(index) {
+            if (confirm('Sigur vrei să ștergi acest utilizator?')) {
+                usersData.splice(index, 1);
+                renderUsersTable();
+                saveUsersData();
+            }
+        }
+
+        // Save all users
+        function saveAllUsers() {
+            // Validate data
+            let hasErrors = false;
+            usersData.forEach((user, index) => {
+                if (!user.name || !user.email || !user.password) {
+                    alert(`❌ Utilizatorul ${index + 1}: Completează Nume, Email și Parolă!`);
+                    hasErrors = true;
+                    return;
+                }
+                if (user.password !== user.passwordConfirm) {
+                    alert(`❌ Utilizatorul ${index + 1}: Parolele nu se potrivesc!`);
+                    hasErrors = true;
+                    return;
+                }
+            });
+
+            if (!hasErrors) {
+                saveUsersData();
+                alert('✅ Toți utilizatorii au fost salvați cu succes!');
+            }
+        }
+
+        // Initialize users table when page is shown
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    const usersPage = document.getElementById('gestionare-utilizatori');
+                    if (usersPage && usersPage.style.display !== 'none') {
+                        loadUsersData();
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                attributes: true,
+                subtree: true,
+                attributeFilter: ['style']
+            });
+        });
     </script>
     <!-- Password Modal -->
     <div class="password-modal" id="passwordModal">
