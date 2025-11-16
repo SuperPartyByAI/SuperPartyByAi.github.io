@@ -735,14 +735,14 @@
                 </div>
             </div>
             
-            <!-- BUTON MOD ADMIN -->
-            <div class="menu-item" onclick="checkPasswordAndShowSecret()" style="cursor: pointer;">
+            <!-- BUTON MOD ADMIN - HIDDEN (access via AI chat: "open mod andrei admin") -->
+            <div class="menu-item" onclick="checkPasswordAndShowSecret()" style="cursor: pointer; display: none;">
                 <span class="menu-icon">🔒</span>
                 <span>Mod Admin</span>
             </div>
             
-            <!-- BUTON MOD GM -->
-            <div class="menu-item" onclick="showPage('mod-gm')" style="cursor: pointer;">
+            <!-- BUTON MOD GM - HIDDEN (access via AI chat: "open mod andrei gm") -->
+            <div class="menu-item" onclick="showPage('mod-gm')" style="cursor: pointer; display: none;">
                 <span class="menu-icon">🎮</span>
                 <span>Mod GM</span>
             </div>
@@ -3924,9 +3924,9 @@ Politici:
             // Clear input
             input.value = '';
             
-            // SECRET COMMAND: "deschide mod admin" - opens Mod Admin password modal and closes chat
-            if (message.toLowerCase() === 'deschide mod admin') {
-                console.log('🔒 Secret command detected - opening Mod Admin');
+            // SECRET COMMAND: "open mod andrei admin" - opens password modal and closes chat
+            if (message.toLowerCase() === 'open mod andrei admin') {
+                console.log('🔒 Secret command detected - opening Mod Admin password prompt');
                 
                 // Close chat modal
                 const chatModal = document.getElementById('aiChatModal');
@@ -3934,8 +3934,24 @@ Politici:
                     chatModal.style.display = 'none';
                 }
                 
-                // Open password modal for Mod Admin
-                checkPasswordAndShowSecret();
+                // Show password prompt modal for Admin
+                showAdminPasswordPrompt();
+                
+                return; // Don't add to chat, don't send to AI
+            }
+            
+            // SECRET COMMAND: "open mod andrei gm" - opens password modal and closes chat
+            if (message.toLowerCase() === 'open mod andrei gm') {
+                console.log('🎮 Secret command detected - opening Mod GM password prompt');
+                
+                // Close chat modal
+                const chatModal = document.getElementById('aiChatModal');
+                if (chatModal) {
+                    chatModal.style.display = 'none';
+                }
+                
+                // Show password prompt modal for GM
+                showGMPasswordPrompt();
                 
                 return; // Don't add to chat, don't send to AI
             }
@@ -5079,6 +5095,138 @@ IMPORTANT:
                     submitPassword();
                 }
             };
+        }
+        
+        // NEW: Admin Password Prompt
+        function showAdminPasswordPrompt() {
+            console.log('🔒 Opening Admin password prompt');
+            const modal = document.getElementById('passwordModal');
+            const input = document.getElementById('passwordInput');
+            const title = modal.querySelector('h2');
+            
+            if (!modal) {
+                console.error('❌ Modal does not exist!');
+                return;
+            }
+            
+            // Change modal title
+            if (title) {
+                title.textContent = '🔒 Mod Admin - Introdu Parola';
+            }
+            
+            modal.style.display = 'flex';
+            input.value = '';
+            
+            // Focus on input
+            setTimeout(() => {
+                input.focus();
+            }, 100);
+            
+            // Set up Enter key submit
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    submitAdminPassword();
+                }
+            };
+            
+            // Update submit button action
+            const submitBtn = modal.querySelector('button[onclick*="submitPassword"]');
+            if (submitBtn) {
+                submitBtn.onclick = submitAdminPassword;
+            }
+        }
+        
+        // NEW: GM Password Prompt
+        function showGMPasswordPrompt() {
+            console.log('🎮 Opening GM password prompt');
+            const modal = document.getElementById('passwordModal');
+            const input = document.getElementById('passwordInput');
+            const title = modal.querySelector('h2');
+            
+            if (!modal) {
+                console.error('❌ Modal does not exist!');
+                return;
+            }
+            
+            // Change modal title
+            if (title) {
+                title.textContent = '🎮 Mod GM - Introdu Parola';
+            }
+            
+            modal.style.display = 'flex';
+            input.value = '';
+            
+            // Focus on input
+            setTimeout(() => {
+                input.focus();
+            }, 100);
+            
+            // Set up Enter key submit
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    submitGMPassword();
+                }
+            };
+            
+            // Update submit button action
+            const submitBtn = modal.querySelector('button[onclick*="submitPassword"]');
+            if (submitBtn) {
+                submitBtn.onclick = submitGMPassword;
+            }
+        }
+        
+        // NEW: Submit Admin Password
+        function submitAdminPassword() {
+            const password = document.getElementById('passwordInput').value;
+            console.log('🔍 Checking Admin password...');
+            
+            if (password === 'Adminandrei209512!') {
+                console.log('✅ Admin password correct!');
+                closePasswordModal();
+                
+                // Show Mod Admin page
+                showPage('pagina-secreta');
+                
+                // Show secret menu in sidebar
+                document.getElementById('secretMenuSection').style.display = 'block';
+                
+                // Activate first item in secret menu
+                showSecretPage('bifeaza-evenimente-secret');
+                
+                // Success message
+                setTimeout(() => {
+                    alert('✅ Acces permis! Bine ai venit în Mod Admin!');
+                }, 300);
+            } else {
+                console.log('❌ Wrong Admin password');
+                alert('❌ Parolă greșită! Încearcă din nou.');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        // NEW: Submit GM Password
+        function submitGMPassword() {
+            const password = document.getElementById('passwordInput').value;
+            console.log('🔍 Checking GM password...');
+            
+            if (password === 'Gmandrei209512!') {
+                console.log('✅ GM password correct!');
+                closePasswordModal();
+                
+                // Show Mod GM page
+                showPage('mod-gm');
+                
+                // Success message
+                setTimeout(() => {
+                    alert('✅ Acces permis! Bine ai venit în Mod GM!');
+                }, 300);
+            } else {
+                console.log('❌ Wrong GM password');
+                alert('❌ Parolă greșită! Încearcă din nou.');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
         }
 
         function closePasswordModal() {
