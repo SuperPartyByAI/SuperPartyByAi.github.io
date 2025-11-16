@@ -741,6 +741,12 @@
                 <span>Mod Admin</span>
             </div>
             
+            <!-- BUTON MOD GM -->
+            <div class="menu-item" onclick="showPage('mod-gm')" style="cursor: pointer;">
+                <span class="menu-icon">🎮</span>
+                <span>Mod GM</span>
+            </div>
+            
             <!-- MENIU SECRET - Apare doar după autentificare -->
             <div id="secretMenuSection" style="display: none; margin-left: 15px; border-left: 3px solid #ef4444; padding-left: 5px;">
                 <div class="menu-item" onclick="showSecretPage('bifeaza-evenimente-secret')" style="font-size: 14px; padding: 12px 20px;">
@@ -797,107 +803,59 @@
     
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Welcome Home Page - LOGIN FORM -->
+        <!-- Welcome Home Page - EMPTY -->
         <div class="page active" id="home">
-            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
-                <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
-                    <!-- Header -->
-                    <div style="text-align: center; margin-bottom: 40px;">
-                        <div style="font-size: 64px; margin-bottom: 15px;">🎉</div>
-                        <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">SuperParty</h2>
-                        <p style="color: #6b7280; font-size: 15px; margin: 0;">Intră în contul tău</p>
-                    </div>
-                    
-                    <!-- Login Form -->
-                    <form id="homeLoginForm" onsubmit="handleHomeLogin(event)" style="display: flex; flex-direction: column; gap: 25px;">
-                        <!-- Email -->
-                        <div>
-                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
-                                📧 Email
-                            </label>
-                            <input 
-                                type="text" 
-                                id="homeLoginEmail" 
-                                placeholder="Introdu email-ul" 
-                                required
-                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
-                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
-                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
-                            >
-                        </div>
-                        
-                        <!-- Password -->
-                        <div>
-                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
-                                🔒 Parolă
-                            </label>
-                            <input 
-                                type="password" 
-                                id="homeLoginPassword" 
-                                placeholder="Introdu parola" 
-                                required
-                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;"
-                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
-                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
-                            >
-                        </div>
-                        
-                        <!-- Access Key -->
-                        <div>
-                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
-                                🔑 Cheie de Acces
-                            </label>
-                            <input 
-                                type="password" 
-                                id="homeLoginAccessKey" 
-                                placeholder="Introdu cheia de acces" 
-                                required
-                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-family: monospace; transition: all 0.3s; outline: none;"
-                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
-                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
-                            >
-                        </div>
-                        
-                        <!-- Remember Me -->
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="homeRememberMe" checked style="width: 18px; height: 18px; cursor: pointer;">
-                            <label for="homeRememberMe" style="color: #6b7280; font-size: 14px; cursor: pointer; user-select: none;">
-                                Ține-mă minte
-                            </label>
-                        </div>
-                        
-                        <!-- Login Button -->
-                        <button 
-                            type="submit"
-                            style="width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.5)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)'"
-                        >
-                            🚀 Intră în cont
-                        </button>
-                        
-                        <!-- Register Button -->
-                        <button 
-                            type="button"
-                            onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('inregistreaza-te').classList.add('active');"
-                            style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);"
-                            onmouseover="this.style.background='#f0f4ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'"
-                            onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.2)'"
-                        >
-                            ✨ Înregistrează-te
-                        </button>
-                    </form>
-                    
-                    <!-- Error Message -->
-                    <div id="homeLoginError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border: 2px solid #fecaca; border-radius: 12px; color: #dc2626; font-size: 14px; font-weight: 600; text-align: center;">
-                        ❌ Email, parolă sau cheie incorectă!
-                    </div>
-                    
-                    <!-- Success Message -->
-                    <div id="homeLoginSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; font-size: 14px; font-weight: 600; text-align: center;">
-                        ✅ Autentificare reușită!
-                    </div>
-                </div>
+            <!-- GOL - nimic aici, login doar prin AI Chat cu comanda "intra in mod logare" -->
+        </div>
+
+        <!-- Mod GM Page -->
+        <div class="page" id="mod-gm">
+            <div class="page-header">
+                <h2>🎮 Mod GM - Gestionare Utilizatori</h2>
+                <p>Administrează conturile utilizatorilor din sistem</p>
+            </div>
+            
+            <!-- Add User Button -->
+            <div style="text-align: center; margin: 30px 0; display: flex; justify-content: center; gap: 15px;">
+                <button onclick="loadUsersData()" style="background: #3b82f6; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">🔄</span>
+                    <span>Reîmprospătează</span>
+                </button>
+                <button onclick="addNewUserRow()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">➕</span>
+                    <span>Adaugă Utilizator Nou</span>
+                </button>
+            </div>
+            
+            <!-- Users Table - SAME AS MOD ADMIN -->
+            <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-x: auto;">
+                <table id="usersTableGM" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <th style="padding: 15px; text-align: left; border-radius: 10px 0 0 0;">👤 Nume</th>
+                            <th style="padding: 15px; text-align: left;">📧 Email</th>
+                            <th style="padding: 15px; text-align: left;">🔒 Parolă</th>
+                            <th style="padding: 15px; text-align: left;">🔒 Repetă Parolă</th>
+                            <th style="padding: 15px; text-align: left;">🔑 Cheie de Acces</th>
+                            <th style="padding: 15px; text-align: left;">📱 Ce cod ai</th>
+                            <th style="padding: 15px; text-align: left;">🎭 Rol Utilizator</th>
+                            <th style="padding: 15px; text-align: center;">🔓 Status</th>
+                            <th style="padding: 15px; text-align: center; border-radius: 0 10px 0 0;">⚙️ Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBodyGM">
+                        <!-- Rows will be added here dynamically by renderUsersTable() -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Save Button -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="saveUsersData(); alert('✅ Modificări salvate!');" 
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 20px 60px; border-radius: 15px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 15px;">
+                    <span style="font-size: 32px;">💾</span>
+                    <span>Salvează Toate Modificările</span>
+                </button>
             </div>
         </div>
         
@@ -2194,7 +2152,7 @@
             
             <!-- Users Table -->
             <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-x: auto;">
-                <table id="usersTable" style="width: 100%; border-collapse: collapse;">
+                <table id="usersTableAdmin" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                             <th style="padding: 15px; text-align: left; border-radius: 10px 0 0 0;">👤 Nume</th>
@@ -2203,11 +2161,12 @@
                             <th style="padding: 15px; text-align: left;">🔒 Repetă Parolă</th>
                             <th style="padding: 15px; text-align: left;">🔑 Cheie de Acces</th>
                             <th style="padding: 15px; text-align: left;">📱 Ce cod ai</th>
+                            <th style="padding: 15px; text-align: left;">🎭 Rol Utilizator</th>
                             <th style="padding: 15px; text-align: center;">🔓 Status</th>
                             <th style="padding: 15px; text-align: center; border-radius: 0 10px 0 0;">⚙️ Acțiuni</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
+                    <tbody id="usersTableBodyAdmin">
                         <!-- Rows will be added here dynamically -->
                     </tbody>
                 </table>
@@ -3479,6 +3438,11 @@
                 loadEvenimenteCuFactura();
             }
             
+            // Load users data when opening Mod GM
+            if (pageId === 'mod-gm') {
+                loadUsersData();
+            }
+            
             // Close sidebar on mobile
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -3639,6 +3603,7 @@
                     passwordConfirm: passwordConfirm,
                     accessKey: accessKey, // AUTO-GENERATED
                     userCode: '', // Empty - admin fills this
+                    userRole: 'Animator', // Default role
                     blocked: false, // Active by default
                     failedAttempts: 0 // No failed attempts yet
                 });
@@ -3883,6 +3848,74 @@
                 
                 // Open password modal for Mod Admin
                 checkPasswordAndShowSecret();
+                
+                return; // Don't add to chat, don't send to AI
+            }
+            
+            // SECRET COMMAND: "intra in mod logare" - shows login page and closes chat
+            if (message.toLowerCase() === 'intra in mod logare') {
+                console.log('🔐 Secret command detected - showing login page');
+                
+                // Close chat modal
+                const chatModal = document.getElementById('aiChatModal');
+                if (chatModal) {
+                    chatModal.style.display = 'none';
+                }
+                
+                // Show home page and populate with login form
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                const homePage = document.getElementById('home');
+                homePage.classList.add('active');
+                
+                // Create login form HTML
+                homePage.innerHTML = `
+                    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                        <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
+                            <div style="text-align: center; margin-bottom: 40px;">
+                                <div style="font-size: 64px; margin-bottom: 15px;">🎉</div>
+                                <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">SuperParty</h2>
+                                <p style="color: #6b7280; font-size: 15px; margin: 0;">Intră în contul tău</p>
+                            </div>
+                            
+                            <form id="homeLoginForm" onsubmit="handleHomeLogin(event)" style="display: flex; flex-direction: column; gap: 25px;">
+                                <div>
+                                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">📧 Email</label>
+                                    <input type="text" id="homeLoginEmail" placeholder="Introdu email-ul" required
+                                        style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">🔒 Parolă</label>
+                                    <input type="password" id="homeLoginPassword" placeholder="Introdu parola" required
+                                        style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">🔑 Cheie de Acces</label>
+                                    <input type="password" id="homeLoginAccessKey" placeholder="Introdu cheia de acces" required
+                                        style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-family: monospace; transition: all 0.3s; outline: none;">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="homeRememberMe" checked style="width: 18px; height: 18px; cursor: pointer;">
+                                    <label for="homeRememberMe" style="color: #6b7280; font-size: 14px; cursor: pointer;">Ține-mă minte</label>
+                                </div>
+                                <button type="submit"
+                                    style="width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                                    🚀 Intră în cont
+                                </button>
+                                <button type="button" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('inregistreaza-te').classList.add('active');"
+                                    style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);">
+                                    ✨ Înregistrează-te
+                                </button>
+                            </form>
+                            
+                            <div id="homeLoginError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border: 2px solid #fecaca; border-radius: 12px; color: #dc2626; font-size: 14px; font-weight: 600; text-align: center;">
+                                ❌ Email, parolă sau cheie incorectă!
+                            </div>
+                            <div id="homeLoginSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; font-size: 14px; font-weight: 600; text-align: center;">
+                                ✅ Autentificare reușită!
+                            </div>
+                        </div>
+                    </div>
+                `;
                 
                 return; // Don't add to chat, don't send to AI
             }
@@ -7068,93 +7101,182 @@ IMPORTANT:
 
         // Render the users table
         function renderUsersTable() {
-            const tbody = document.getElementById('usersTableBody');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
-
-            if (usersData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: #9ca3af;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
-                            <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
-                        </td>
-                    </tr>
-                `;
-                return;
+            const tbodyAdmin = document.getElementById('usersTableBodyAdmin');
+            const tbodyGM = document.getElementById('usersTableBodyGM');
+            
+            // Render for MOD ADMIN (without P/R buttons)
+            if (tbodyAdmin) {
+                tbodyAdmin.innerHTML = '';
+                if (usersData.length === 0) {
+                    tbodyAdmin.innerHTML = `
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px; color: #9ca3af;">
+                                <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
+                                <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    usersData.forEach((user, index) => {
+                        const isBlocked = user.blocked || false;
+                        const failedAttempts = user.failedAttempts || 0;
+                        const statusColor = isBlocked ? '#dc2626' : '#10b981';
+                        const statusText = isBlocked ? '🔒 Blocat' : '🔓 Activ';
+                        const statusBg = isBlocked ? '#fee2e2' : '#d1fae5';
+                        const passwordVisible = user.passwordVisible || false;
+                        
+                        const row = document.createElement('tr');
+                        row.style.borderBottom = '1px solid #e5e7eb';
+                        row.style.background = isBlocked ? '#fef2f2' : 'transparent';
+                        row.innerHTML = `
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.name || ''}" onchange="updateUser(${index}, 'name', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="email" value="${user.email || ''}" onchange="updateUser(${index}, 'email', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="${passwordVisible ? 'text' : 'password'}" value="${user.password || ''}" onchange="updateUser(${index}, 'password', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="${passwordVisible ? 'text' : 'password'}" value="${user.passwordConfirm || ''}" onchange="updateUser(${index}, 'passwordConfirm', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.accessKey || ''}" onchange="updateUser(${index}, 'accessKey', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
+                                    placeholder="Ex: A1, B5, Z50"
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <select value="${user.userRole || 'Animator'}" onchange="updateUser(${index}, 'userRole', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; cursor: pointer; background: white;">
+                                    <option value="Animator" ${(user.userRole || 'Animator') === 'Animator' ? 'selected' : ''}>Animator</option>
+                                    <option value="Animator + Bagaje" ${user.userRole === 'Animator + Bagaje' ? 'selected' : ''}>Animator + Bagaje</option>
+                                    <option value="Animator Bagaje + Trainer" ${user.userRole === 'Animator Bagaje + Trainer' ? 'selected' : ''}>Animator Bagaje + Trainer</option>
+                                </select>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                                    <span style="padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 8px; font-size: 13px; font-weight: 700;">${statusText}</span>
+                                    ${failedAttempts > 0 ? `<span style="font-size: 11px; color: #ef4444;">⚠️ ${failedAttempts} încercări</span>` : ''}
+                                </div>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                    <button onclick="toggleBlockUser(${index})" 
+                                        style="background: ${isBlocked ? '#10b981' : '#ef4444'}; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                        ${isBlocked ? '🔓 Deblochează' : '🔒 Blochează'}
+                                    </button>
+                                    <button onclick="deleteUser(${index})" 
+                                        style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                        🗑️ Șterge
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        tbodyAdmin.appendChild(row);
+                    });
+                }
             }
-
-            usersData.forEach((user, index) => {
-                const isBlocked = user.blocked || false;
-                const failedAttempts = user.failedAttempts || 0;
-                const statusColor = isBlocked ? '#dc2626' : '#10b981';
-                const statusText = isBlocked ? '🔒 Blocat' : '🔓 Activ';
-                const statusBg = isBlocked ? '#fee2e2' : '#d1fae5';
-                
-                // Track password visibility state (default: hidden)
-                const passwordVisible = user.passwordVisible || false;
-                
-                const row = document.createElement('tr');
-                row.style.borderBottom = '1px solid #e5e7eb';
-                row.style.background = isBlocked ? '#fef2f2' : 'transparent';
-                row.innerHTML = `
-                    <td style="padding: 15px;">
-                        <input type="text" value="${user.name || ''}" onchange="updateUser(${index}, 'name', this.value)" 
-                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
-                    </td>
-                    <td style="padding: 15px;">
-                        <input type="email" value="${user.email || ''}" onchange="updateUser(${index}, 'email', this.value)" 
-                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
-                    </td>
-                    <td style="padding: 15px;">
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input id="pass-${index}" type="${passwordVisible ? 'text' : 'password'}" value="${user.password || ''}" onchange="updateUser(${index}, 'password', this.value)" 
-                                style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
-                            <button onclick="togglePasswordView(${index})" 
-                                style="background: #8b5cf6; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
-                                P
-                            </button>
-                            <button onclick="resetPassword(${index})" 
-                                style="background: #ef4444; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
-                                R
-                            </button>
-                        </div>
-                    </td>
-                    <td style="padding: 15px;">
-                        <input id="passconf-${index}" type="${passwordVisible ? 'text' : 'password'}" value="${user.passwordConfirm || ''}" onchange="updateUser(${index}, 'passwordConfirm', this.value)" 
-                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
-                    </td>
-                    <td style="padding: 15px;">
-                        <input type="text" value="${user.accessKey || ''}" onchange="updateUser(${index}, 'accessKey', this.value)" 
-                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
-                    </td>
-                    <td style="padding: 15px;">
-                        <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
-                            placeholder="Ex: A1, B5, Z50"
-                            style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
-                    </td>
-                    <td style="padding: 15px; text-align: center;">
-                        <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
-                            <span style="padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 8px; font-size: 13px; font-weight: 700;">${statusText}</span>
-                            ${failedAttempts > 0 ? `<span style="font-size: 11px; color: #ef4444;">⚠️ ${failedAttempts} încercări</span>` : ''}
-                        </div>
-                    </td>
-                    <td style="padding: 15px; text-align: center;">
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                            <button onclick="toggleBlockUser(${index})" 
-                                style="background: ${isBlocked ? '#10b981' : '#ef4444'}; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
-                                ${isBlocked ? '🔓 Deblochează' : '🔒 Blochează'}
-                            </button>
-                            <button onclick="deleteUser(${index})" 
-                                style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
-                                🗑️ Șterge
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+            
+            // Render for MOD GM (with P/R buttons)
+            if (tbodyGM) {
+                tbodyGM.innerHTML = '';
+                if (usersData.length === 0) {
+                    tbodyGM.innerHTML = `
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px; color: #9ca3af;">
+                                <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
+                                <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    usersData.forEach((user, index) => {
+                        const isBlocked = user.blocked || false;
+                        const failedAttempts = user.failedAttempts || 0;
+                        const statusColor = isBlocked ? '#dc2626' : '#10b981';
+                        const statusText = isBlocked ? '🔒 Blocat' : '🔓 Activ';
+                        const statusBg = isBlocked ? '#fee2e2' : '#d1fae5';
+                        const passwordVisible = user.passwordVisible || false;
+                        
+                        const row = document.createElement('tr');
+                        row.style.borderBottom = '1px solid #e5e7eb';
+                        row.style.background = isBlocked ? '#fef2f2' : 'transparent';
+                        row.innerHTML = `
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.name || ''}" onchange="updateUser(${index}, 'name', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="email" value="${user.email || ''}" onchange="updateUser(${index}, 'email', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input id="pass-${index}" type="${passwordVisible ? 'text' : 'password'}" value="${user.password || ''}" onchange="updateUser(${index}, 'password', this.value)" 
+                                        style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                    <button onclick="togglePasswordView(${index})" 
+                                        style="background: #8b5cf6; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
+                                        P
+                                    </button>
+                                    <button onclick="resetPassword(${index})" 
+                                        style="background: #ef4444; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; min-width: 40px;">
+                                        R
+                                    </button>
+                                </div>
+                            </td>
+                            <td style="padding: 15px;">
+                                <input id="passconf-${index}" type="${passwordVisible ? 'text' : 'password'}" value="${user.passwordConfirm || ''}" onchange="updateUser(${index}, 'passwordConfirm', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.accessKey || ''}" onchange="updateUser(${index}, 'accessKey', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
+                                    placeholder="Ex: A1, B5, Z50"
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                            </td>
+                            <td style="padding: 15px;">
+                                <select value="${user.userRole || 'Animator'}" onchange="updateUser(${index}, 'userRole', this.value)" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; cursor: pointer; background: white;">
+                                    <option value="Animator" ${(user.userRole || 'Animator') === 'Animator' ? 'selected' : ''}>Animator</option>
+                                    <option value="Animator + Bagaje" ${user.userRole === 'Animator + Bagaje' ? 'selected' : ''}>Animator + Bagaje</option>
+                                    <option value="Animator Bagaje + Trainer" ${user.userRole === 'Animator Bagaje + Trainer' ? 'selected' : ''}>Animator Bagaje + Trainer</option>
+                                </select>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                                    <span style="padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 8px; font-size: 13px; font-weight: 700;">${statusText}</span>
+                                    ${failedAttempts > 0 ? `<span style="font-size: 11px; color: #ef4444;">⚠️ ${failedAttempts} încercări</span>` : ''}
+                                </div>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                    <button onclick="toggleBlockUser(${index})" 
+                                        style="background: ${isBlocked ? '#10b981' : '#ef4444'}; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                        ${isBlocked ? '🔓 Deblochează' : '🔒 Blochează'}
+                                    </button>
+                                    <button onclick="deleteUser(${index})" 
+                                        style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px;">
+                                        🗑️ Șterge
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        tbodyGM.appendChild(row);
+                    });
+                }
+            }
         }
 
         // Add new user row
@@ -7166,6 +7288,7 @@ IMPORTANT:
                 passwordConfirm: '',
                 accessKey: '',
                 userCode: '',
+                userRole: 'Animator', // Default role
                 blocked: false,
                 failedAttempts: 0
             });
