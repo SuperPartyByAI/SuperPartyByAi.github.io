@@ -795,6 +795,15 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Separator before logout -->
+                <div style="border-top: 2px solid #e5e7eb; margin: 20px 20px 15px 20px;"></div>
+                
+                <!-- LOGOUT BUTTON - Always visible when logged in -->
+                <div class="menu-item" onclick="logoutUser()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer; margin: 0 10px 20px 10px; border-radius: 12px;">
+                    <span class="menu-icon">🚪</span>
+                    <span>Ieși din cont</span>
+                </div>
             </div>
             
             <!-- ADMIN MENU - Dezactivat
@@ -3733,17 +3742,33 @@ Politici:
         // Check if user is already logged in
         function checkLoginStatus() {
             const loggedIn = localStorage.getItem('superparty_logged_in') || sessionStorage.getItem('superparty_logged_in');
+            const username = localStorage.getItem('superparty_username') || sessionStorage.getItem('superparty_username');
+            
             if (loggedIn === 'true') {
                 console.log('✅ User already logged in - showing menu');
+                
                 // Hide home login form
                 const homeLoginContainer = document.querySelector('#home > div');
                 if (homeLoginContainer) {
                     homeLoginContainer.style.display = 'none';
                 }
+                
                 // Show submenu
                 const submenu = document.getElementById('intraContSubmenu');
                 if (submenu) {
                     submenu.style.display = 'block';
+                }
+                
+                // Show welcome message on home page
+                const homePage = document.getElementById('home');
+                if (homePage) {
+                    homePage.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 80px; margin-bottom: 20px;">🎉</div>
+                            <h1 style="font-size: 48px; color: #1f2937; margin-bottom: 20px;">Bine ai revenit${username ? ', ' + username : ''}!</h1>
+                            <p style="font-size: 20px; color: #6b7280;">Selectează o opțiune din meniul din stânga</p>
+                        </div>
+                    `;
                 }
             } else {
                 console.log('❌ User not logged in - showing login form');
@@ -5360,6 +5385,40 @@ IMPORTANT:
             setTimeout(() => {
                 showCreierAI();
             }, 100);
+        }
+        
+        // Logout user - clear login data and reload page
+        function logoutUser() {
+            console.log('🚪 Logging out user...');
+            
+            // Confirm logout
+            if (confirm('🚪 Ești sigur că vrei să ieși din cont?')) {
+                // Clear all login data from localStorage
+                localStorage.removeItem('superparty_logged_in');
+                localStorage.removeItem('superparty_username');
+                
+                // Clear from sessionStorage as well
+                sessionStorage.removeItem('superparty_logged_in');
+                sessionStorage.removeItem('superparty_username');
+                
+                // Hide sidebar menu
+                const submenu = document.getElementById('intraContSubmenu');
+                if (submenu) {
+                    submenu.style.display = 'none';
+                }
+                
+                // Hide Admin/GM sections
+                const adminSection = document.getElementById('adminMenuSection');
+                const gmSection = document.getElementById('gmMenuSection');
+                if (adminSection) adminSection.style.display = 'none';
+                if (gmSection) gmSection.style.display = 'none';
+                
+                // Reload page to reset everything
+                console.log('✅ Logout successful - reloading page');
+                setTimeout(() => {
+                    location.reload();
+                }, 300);
+            }
         }
 
         function showSecretPage(pageId) {
