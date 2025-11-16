@@ -7081,6 +7081,18 @@ IMPORTANT:
 
         let usersData = [];
 
+        // Generate all trainer codes (A1-A50, B1-B50, ..., Z1-Z50)
+        function generateAllTrainerCodes() {
+            const codes = [];
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < letters.length; i++) {
+                for (let num = 1; num <= 50; num++) {
+                    codes.push(letters[i] + num);
+                }
+            }
+            return codes;
+        }
+
         // Load users from localStorage
         function loadUsersData() {
             const stored = localStorage.getItem('superparty_admin_users');
@@ -7150,9 +7162,18 @@ IMPORTANT:
                                     style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
                             </td>
                             <td style="padding: 15px;">
-                                <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
-                                    placeholder="Ex: A1, B5, Z50"
-                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                                <div class="autocomplete-container">
+                                    <input type="text" value="${user.userCode || ''}" 
+                                        onchange="updateUser(${index}, 'userCode', this.value)"
+                                        oninput="showAutocompleteSuggestions(this, ${index})"
+                                        onfocus="showAutocompleteSuggestions(this, ${index})"
+                                        onblur="setTimeout(() => hideAutocompleteSuggestions(${index}), 200)"
+                                        id="userCode-admin-${index}"
+                                        placeholder="Scrie: A1, B5, Z50..."
+                                        autocomplete="off"
+                                        style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace; text-transform: uppercase;">
+                                    <div id="suggestions-admin-${index}" class="autocomplete-suggestions" style="display: none;"></div>
+                                </div>
                             </td>
                             <td style="padding: 15px;">
                                 <select value="${user.userRole || 'Animator'}" onchange="updateUser(${index}, 'userRole', this.value)" 
@@ -7242,9 +7263,18 @@ IMPORTANT:
                                     style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
                             </td>
                             <td style="padding: 15px;">
-                                <input type="text" value="${user.userCode || ''}" onchange="updateUser(${index}, 'userCode', this.value)" 
-                                    placeholder="Ex: A1, B5, Z50"
-                                    style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                                <div class="autocomplete-container">
+                                    <input type="text" value="${user.userCode || ''}" 
+                                        onchange="updateUser(${index}, 'userCode', this.value)"
+                                        oninput="showAutocompleteSuggestions(this, ${index})"
+                                        onfocus="showAutocompleteSuggestions(this, ${index})"
+                                        onblur="setTimeout(() => hideAutocompleteSuggestions(${index}), 200)"
+                                        id="userCode-gm-${index}"
+                                        placeholder="Scrie: A1, B5, Z50..."
+                                        autocomplete="off"
+                                        style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: monospace; text-transform: uppercase;">
+                                    <div id="suggestions-gm-${index}" class="autocomplete-suggestions" style="display: none;"></div>
+                                </div>
                             </td>
                             <td style="padding: 15px;">
                                 <select value="${user.userRole || 'Animator'}" onchange="updateUser(${index}, 'userRole', this.value)" 
@@ -7393,6 +7423,72 @@ IMPORTANT:
                 attributeFilter: ['style']
             });
         });
+        // Custom autocomplete for trainer codes (max 3 suggestions)
+        function showAutocompleteSuggestions(input, index) {
+            const value = input.value.toUpperCase();
+            
+            // Find the suggestions div - try both admin and gm IDs
+            let suggestionsDiv = document.getElementById(`suggestions-admin-${index}`);
+            if (!suggestionsDiv) {
+                suggestionsDiv = document.getElementById(`suggestions-gm-${index}`);
+            }
+            
+            if (!suggestionsDiv) return;
+            
+            if (!value) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+            
+            // Generate all codes and filter
+            const allCodes = generateAllTrainerCodes();
+            const matches = allCodes.filter(code => code.startsWith(value));
+            
+            // Show only first 3 matches
+            const topMatches = matches.slice(0, 3);
+            
+            if (topMatches.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+            
+            // Determine if admin or gm based on input id
+            const tableType = input.id.includes('admin') ? 'admin' : 'gm';
+            
+            // Build suggestions HTML
+            suggestionsDiv.innerHTML = topMatches.map(code => 
+                `<div class="autocomplete-suggestion" onclick="selectAutocompleteSuggestion(${index}, '${code}', '${tableType}')">${code}</div>`
+            ).join('');
+            
+            suggestionsDiv.style.display = 'block';
+        }
+        
+        function selectAutocompleteSuggestion(index, code, tableType) {
+            const input = document.getElementById(`userCode-${tableType}-${index}`);
+            if (input) {
+                input.value = code;
+                updateUser(index, 'userCode', code);
+            }
+            hideAutocompleteSuggestions(index, tableType);
+        }
+        
+        function hideAutocompleteSuggestions(index, tableType) {
+            // Try both if tableType not specified
+            if (!tableType) {
+                ['admin', 'gm'].forEach(type => {
+                    const suggestionsDiv = document.getElementById(`suggestions-${type}-${index}`);
+                    if (suggestionsDiv) {
+                        suggestionsDiv.style.display = 'none';
+                    }
+                });
+            } else {
+                const suggestionsDiv = document.getElementById(`suggestions-${tableType}-${index}`);
+                if (suggestionsDiv) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            }
+        }
+
     </script>
     <!-- Password Modal -->
     <div class="password-modal" id="passwordModal">
@@ -7407,5 +7503,39 @@ IMPORTANT:
         </div>
     </div>
     
+    <!-- Custom autocomplete styling -->
+    <style>
+        .autocomplete-container {
+            position: relative;
+        }
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 120px; /* Shows exactly 3 items at ~40px each */
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .autocomplete-suggestion {
+            padding: 10px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+        .autocomplete-suggestion:hover {
+            background: #f0f4ff;
+        }
+    </style>
+
 </body>
 </html>
