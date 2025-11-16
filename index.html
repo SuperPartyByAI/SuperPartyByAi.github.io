@@ -5203,11 +5203,27 @@ IMPORTANT:
                 closePasswordModal();
                 
                 // Show Admin section in sidebar
-                document.getElementById('adminMenuSection').style.display = 'block';
+                const adminSection = document.getElementById('adminMenuSection');
+                console.log('🔍 adminMenuSection element:', adminSection);
+                
+                if (adminSection) {
+                    adminSection.style.display = 'block';
+                    console.log('✅ Admin section shown!');
+                } else {
+                    console.error('❌ adminMenuSection NOT FOUND!');
+                }
                 
                 // Auto-expand Admin menu
-                document.getElementById('adminMenuItems').style.display = 'block';
-                document.getElementById('adminMenuToggle').textContent = '▲';
+                const adminItems = document.getElementById('adminMenuItems');
+                const adminToggle = document.getElementById('adminMenuToggle');
+                
+                if (adminItems) {
+                    adminItems.style.display = 'block';
+                    console.log('✅ Admin items expanded!');
+                }
+                if (adminToggle) {
+                    adminToggle.textContent = '▲';
+                }
                 
                 // Show Mod Admin page (pagina-secreta)
                 showPage('pagina-secreta');
@@ -5237,11 +5253,27 @@ IMPORTANT:
                 closePasswordModal();
                 
                 // Show GM section in sidebar
-                document.getElementById('gmMenuSection').style.display = 'block';
+                const gmSection = document.getElementById('gmMenuSection');
+                console.log('🔍 gmMenuSection element:', gmSection);
+                
+                if (gmSection) {
+                    gmSection.style.display = 'block';
+                    console.log('✅ GM section shown!');
+                } else {
+                    console.error('❌ gmMenuSection NOT FOUND!');
+                }
                 
                 // Auto-expand GM menu
-                document.getElementById('gmMenuItems').style.display = 'block';
-                document.getElementById('gmMenuToggle').textContent = '▲';
+                const gmItems = document.getElementById('gmMenuItems');
+                const gmToggle = document.getElementById('gmMenuToggle');
+                
+                if (gmItems) {
+                    gmItems.style.display = 'block';
+                    console.log('✅ GM items expanded!');
+                }
+                if (gmToggle) {
+                    gmToggle.textContent = '▲';
+                }
                 
                 // Show Mod GM page
                 showPage('mod-gm');
