@@ -5102,16 +5102,18 @@ IMPORTANT:
             console.log('🔒 Opening Admin password prompt');
             const modal = document.getElementById('passwordModal');
             const input = document.getElementById('passwordInput');
-            const title = modal.querySelector('h2');
             
             if (!modal) {
                 console.error('❌ Modal does not exist!');
                 return;
             }
             
-            // Change modal title
-            if (title) {
-                title.textContent = '🔒 Mod Admin - Introdu Parola';
+            // Update modal content for Admin
+            const modalContent = modal.querySelector('.password-modal-content');
+            if (modalContent) {
+                modalContent.querySelector('h3').textContent = '🔒 Mod Admin';
+                modalContent.querySelector('p').textContent = 'Introdu parola pentru a accesa Mod Admin';
+                modalContent.querySelector('input').setAttribute('maxlength', '100'); // Remove 4-char limit
             }
             
             modal.style.display = 'flex';
@@ -5130,7 +5132,7 @@ IMPORTANT:
             };
             
             // Update submit button action
-            const submitBtn = modal.querySelector('button[onclick*="submitPassword"]');
+            const submitBtn = modal.querySelector('.password-submit');
             if (submitBtn) {
                 submitBtn.onclick = submitAdminPassword;
             }
@@ -5141,16 +5143,18 @@ IMPORTANT:
             console.log('🎮 Opening GM password prompt');
             const modal = document.getElementById('passwordModal');
             const input = document.getElementById('passwordInput');
-            const title = modal.querySelector('h2');
             
             if (!modal) {
                 console.error('❌ Modal does not exist!');
                 return;
             }
             
-            // Change modal title
-            if (title) {
-                title.textContent = '🎮 Mod GM - Introdu Parola';
+            // Update modal content for GM
+            const modalContent = modal.querySelector('.password-modal-content');
+            if (modalContent) {
+                modalContent.querySelector('h3').textContent = '🎮 Mod GM';
+                modalContent.querySelector('p').textContent = 'Introdu parola pentru a accesa Mod GM';
+                modalContent.querySelector('input').setAttribute('maxlength', '100'); // Remove 4-char limit
             }
             
             modal.style.display = 'flex';
@@ -5169,7 +5173,7 @@ IMPORTANT:
             };
             
             // Update submit button action
-            const submitBtn = modal.querySelector('button[onclick*="submitPassword"]');
+            const submitBtn = modal.querySelector('.password-submit');
             if (submitBtn) {
                 submitBtn.onclick = submitGMPassword;
             }
