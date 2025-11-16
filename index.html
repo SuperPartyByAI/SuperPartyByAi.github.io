@@ -934,6 +934,9 @@ Politici:
                     <button onclick="clearChatDateFilter()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 30px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s;">
                         ❌ Resetează
                     </button>
+                    <button onclick="openGuestConversations()" style="background: #f59e0b; color: white; border: none; padding: 12px 30px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">
+                        👥 Conversații Vizitatori
+                    </button>
                 </div>
             </div>
             
@@ -8409,11 +8412,36 @@ IMPORTANT:
             }
         }
         
-        function loadUnansweredQuestions() {
-            const unanswered = JSON.parse(localStorage.getItem('superparty_unanswered_questions') || '[]');
+        async function loadUnansweredQuestions() {
             const listDiv = document.getElementById('unansweredQuestionsList');
             
-            if (unanswered.length === 0) {
+            // Show loading
+            listDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                    <p>Se încarcă...</p>
+                </div>
+            `;
+            
+            // Load from Supabase
+            const { data: unanswered, error } = await supabase
+                .from('unanswered_questions')
+                .select('*')
+                .eq('resolved', false)
+                .order('timestamp', { ascending: false });
+            
+            if (error) {
+                console.error('Error loading unanswered questions:', error);
+                listDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #dc2626;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">❌</div>
+                        <p>Eroare la încărcare</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!unanswered || unanswered.length === 0) {
                 listDiv.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #9ca3af;">
                         <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
@@ -8423,11 +8451,8 @@ IMPORTANT:
                 return;
             }
             
-            // Sort by date (newest first)
-            unanswered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
             let html = '';
-            unanswered.forEach((item, index) => {
+            unanswered.forEach((item) => {
                 const date = new Date(item.timestamp);
                 const dateStr = date.toLocaleDateString('ro-RO', { 
                     day: 'numeric', 
@@ -8438,17 +8463,17 @@ IMPORTANT:
                 
                 html += `
                     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: all 0.3s;"
-                         onclick="addQuestionToKnowledge('${escapeHtml(item.question).replace(/'/g, "\\'")}', '${escapeHtml(item.aiResponse).replace(/'/g, "\\'")}')"
+                         onclick="addQuestionToKnowledge('${escapeHtml(item.question).replace(/'/g, "\\'")}', '${escapeHtml(item.ai_response || '').replace(/'/g, "\\'")}', '${item.id}')"
                          onmouseover="this.style.background='#fde68a'"
                          onmouseout="this.style.background='#fef3c7'">
                         <div style="font-size: 11px; color: #92400e; margin-bottom: 5px; font-weight: 600;">
-                            📅 ${dateStr} | 👤 ${item.userEmail}
+                            📅 ${dateStr} | 👤 ${item.user_email}
                         </div>
                         <div style="font-weight: 700; color: #78350f; margin-bottom: 8px;">
                             ❓ ${escapeHtml(item.question)}
                         </div>
                         <div style="font-size: 13px; color: #92400e; background: white; padding: 8px; border-radius: 6px;">
-                            🤖 Răspuns dat: ${escapeHtml(item.aiResponse).substring(0, 100)}${item.aiResponse.length > 100 ? '...' : ''}
+                            🤖 Răspuns dat: ${escapeHtml(item.ai_response || 'Nu știu').substring(0, 100)}${(item.ai_response || '').length > 100 ? '...' : ''}
                         </div>
                         <div style="margin-top: 8px; font-size: 12px; color: #b45309; font-style: italic;">
                             💡 Click pentru a adăuga în Creier AI
@@ -8460,13 +8485,25 @@ IMPORTANT:
             listDiv.innerHTML = html;
         }
         
-        function addQuestionToKnowledge(question, aiResponse) {
+        async function addQuestionToKnowledge(question, aiResponse, questionId) {
             const textarea = document.getElementById('aiKnowledgeBase');
             const template = `\n\nÎntrebare: ${question}\nRăspuns: [Completează aici răspunsul corect]\n(Răspuns AI anterior: ${aiResponse})\n`;
             textarea.value += template;
             textarea.focus();
             textarea.scrollTop = textarea.scrollHeight;
+            
+            // Mark as resolved in Supabase
+            if (questionId) {
+                await supabase
+                    .from('unanswered_questions')
+                    .update({ resolved: true })
+                    .eq('id', questionId);
+            }
+            
             alert('📝 Întrebarea a fost adăugată în Creier AI!\n\nCompletează răspunsul corect și salvează.');
+            
+            // Reload list
+            loadUnansweredQuestions();
         }
 
         // CHAT HISTORY FUNCTIONS
@@ -8575,6 +8612,98 @@ IMPORTANT:
             document.getElementById('chatHistoryModal').style.display = 'none';
         }
         
+        // Open Guest/Anonymous conversations
+        async function openGuestConversations() {
+            const contentDiv = document.getElementById('chatHistoryContent');
+            
+            // Show loading
+            contentDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                    <p>Se încarcă conversațiile vizitatorilor...</p>
+                </div>
+            `;
+            
+            // Show modal
+            document.getElementById('chatHistoryModal').style.display = 'flex';
+            document.getElementById('chatHistoryUserName').textContent = '👥 Conversații Vizitatori Anonimi';
+            
+            // Query for guest conversations
+            let query = supabase
+                .from('conversations')
+                .select('*')
+                .like('user_email', '%@guest.superparty.ro')
+                .order('timestamp', { ascending: false })
+                .limit(100);
+            
+            // Apply date filter if set
+            if (currentChatFilterFrom && currentChatFilterTo) {
+                query = query
+                    .gte('date', currentChatFilterFrom)
+                    .lte('date', currentChatFilterTo);
+            }
+            
+            const { data: guestLogs, error } = await query;
+            
+            if (error) {
+                console.error('Error loading guest conversations:', error);
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #dc2626;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">❌</div>
+                        <p>Eroare la încărcare</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!guestLogs || guestLogs.length === 0) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #9ca3af;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">👥</div>
+                        <p style="font-size: 18px; margin: 0;">Nu există conversații de la vizitatori anonimi</p>
+                        ${currentChatFilterFrom && currentChatFilterTo ? '<p style="font-size: 14px; margin-top: 10px;">în intervalul selectat.</p>' : ''}
+                    </div>
+                `;
+            } else {
+                let html = '';
+                guestLogs.forEach((log) => {
+                    const date = new Date(log.timestamp);
+                    const dateStr = date.toLocaleDateString('ro-RO', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    // Extract session ID from email
+                    const sessionId = log.user_email.split('@')[0];
+                    
+                    html += `
+                        <div style="background: #fef3c7; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div style="font-size: 12px; color: #92400e; margin-bottom: 10px; font-weight: 600;">
+                                📅 ${dateStr} | 🆔 ${sessionId}
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
+                                    <strong>👤 Vizitator:</strong><br>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.user_message)}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="background: #f3f4f6; color: #111827; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
+                                    <strong>🤖 AI:</strong><br>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.ai_response)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                contentDiv.innerHTML = html;
+            }
+        }
+        
         function applyChatDateFilter() {
             const fromInput = document.getElementById('chatFilterFrom');
             const toInput = document.getElementById('chatFilterTo');
@@ -8601,13 +8730,26 @@ IMPORTANT:
         // SILENT CONVERSATION LOGGING - Saves all AI conversations (NO user notification)
         function saveConversationToLog(userMessage, aiResponse) {
             try {
-                // Get current logged-in user email
+                // Get current logged-in user email OR use guest
                 const currentUser = localStorage.getItem('superparty_current_user');
-                if (!currentUser) return; // Only log if user is logged in
                 
-                const userData = JSON.parse(currentUser);
-                const userEmail = userData.email || 'unknown';
-                const userName = userData.name || userEmail;
+                let userEmail, userName;
+                
+                if (currentUser) {
+                    // Logged in user
+                    const userData = JSON.parse(currentUser);
+                    userEmail = userData.email || 'guest@superparty.ro';
+                    userName = userData.name || 'Guest';
+                } else {
+                    // Anonymous/Guest user - generate session ID if not exists
+                    let guestId = localStorage.getItem('superparty_guest_id');
+                    if (!guestId) {
+                        guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        localStorage.setItem('superparty_guest_id', guestId);
+                    }
+                    userEmail = guestId + '@guest.superparty.ro';
+                    userName = 'Vizitator Anonim';
+                }
                 
                 // Create new conversation entry for Supabase
                 const logEntry = {
@@ -8637,7 +8779,7 @@ IMPORTANT:
         }
         
         // SILENT LOGGING for unanswered questions (when AI used web search, not knowledge base)
-        function saveUnansweredQuestion(question, aiResponse) {
+        async function saveUnansweredQuestion(question, aiResponse) {
             try {
                 const currentUser = localStorage.getItem('superparty_current_user');
                 if (!currentUser) return;
@@ -8645,22 +8787,30 @@ IMPORTANT:
                 const userData = JSON.parse(currentUser);
                 const userEmail = userData.email || 'unknown';
                 
-                let unanswered = JSON.parse(localStorage.getItem('superparty_unanswered_questions') || '[]');
+                // Check if question already exists in Supabase (avoid duplicates)
+                const { data: existing } = await supabase
+                    .from('unanswered_questions')
+                    .select('id')
+                    .ilike('question', question)
+                    .eq('resolved', false)
+                    .single();
                 
-                // Check if question already exists (avoid duplicates)
-                const exists = unanswered.some(item => 
-                    item.question.toLowerCase() === question.toLowerCase()
-                );
-                
-                if (!exists) {
-                    unanswered.push({
-                        question: question,
-                        aiResponse: aiResponse,
-                        userEmail: userEmail,
-                        timestamp: new Date().toISOString()
-                    });
+                if (!existing) {
+                    // Save to Supabase
+                    const { error } = await supabase
+                        .from('unanswered_questions')
+                        .insert([{
+                            question: question,
+                            ai_response: aiResponse,
+                            user_email: userEmail,
+                            resolved: false
+                        }]);
                     
-                    localStorage.setItem('superparty_unanswered_questions', JSON.stringify(unanswered));
+                    if (error) {
+                        console.error('Error saving unanswered question:', error);
+                    } else {
+                        console.log('📝 Unanswered question saved to Supabase');
+                    }
                 }
             } catch (error) {
                 // Silent fail
