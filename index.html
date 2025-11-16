@@ -8105,19 +8105,47 @@ IMPORTANT:
         }
 
         // Add new user row
-        function addNewUserRow() {
-            usersData.push({
-                name: '',
-                email: '',
-                password: '',
-                passwordConfirm: '',
-                accessKey: '',
-                userCode: '',
-                userRole: 'Animator', // Default role
-                blocked: false,
-                failedAttempts: 0
-            });
-            renderUsersTable();
+        async function addNewUserRow() {
+            // Create new user in Supabase
+            const { data, error } = await supabase
+                .from('users')
+                .insert([{
+                    name: 'Utilizator Nou',
+                    email: 'email@example.com',
+                    password: '',
+                    user_code: '',
+                    user_role: 'Animator',
+                    blocked: false,
+                    approved: true, // Auto-approve when created by GM
+                    failed_attempts: 0
+                }])
+                .select();
+            
+            if (error) {
+                console.error('❌ Error creating user:', error);
+                alert('Eroare la crearea utilizatorului: ' + error.message);
+                return;
+            }
+            
+            if (data && data[0]) {
+                // Add to local array
+                usersData.push({
+                    id: data[0].id,
+                    name: data[0].name,
+                    email: data[0].email,
+                    password: data[0].password,
+                    passwordConfirm: data[0].password,
+                    accessKey: '',
+                    userCode: data[0].user_code || '',
+                    userRole: data[0].user_role || 'Animator',
+                    blocked: data[0].blocked || false,
+                    approved: data[0].approved || true,
+                    failedAttempts: data[0].failed_attempts || 0,
+                    passwordVisible: false
+                });
+                renderUsersTable();
+                console.log('✅ New user created in Supabase');
+            }
         }
 
         // Update user field
@@ -8158,49 +8186,98 @@ IMPORTANT:
         }
         
         // Reset password (R button) - clear fields
-        function resetPassword(index) {
+        async function resetPassword(index) {
             if (usersData[index]) {
                 if (confirm('Sigur vrei să resetezi parola pentru acest utilizator?')) {
-                    usersData[index].password = '';
-                    usersData[index].passwordConfirm = '';
-                    usersData[index].passwordVisible = true; // Keep visible for editing
+                    const user = usersData[index];
+                    user.password = '';
+                    user.passwordConfirm = '';
+                    user.passwordVisible = true; // Keep visible for editing
+                    
+                    // Save to Supabase
+                    if (user.id) {
+                        const { error } = await supabase
+                            .from('users')
+                            .update({ password: '' })
+                            .eq('id', user.id);
+                        
+                        if (error) {
+                            console.error('❌ Error resetting password:', error);
+                            alert('Eroare la resetarea parolei: ' + error.message);
+                        } else {
+                            console.log('✅ Password reset in Supabase');
+                            alert('🔄 Parolă resetată! Utilizatorul poate seta o parolă nouă.');
+                        }
+                    }
+                    
                     renderUsersTable();
-                    saveUsersData();
-                    alert('🔄 Parolă resetată! Utilizatorul poate seta o parolă nouă.');
                 }
             }
         }
         
         // Toggle block/unblock user
-        function toggleBlockUser(index) {
+        async function toggleBlockUser(index) {
             if (usersData[index]) {
-                const currentStatus = usersData[index].blocked || false;
-                usersData[index].blocked = !currentStatus;
+                const user = usersData[index];
+                const currentStatus = user.blocked || false;
+                user.blocked = !currentStatus;
                 
                 // Reset failed attempts when unblocking
-                if (!usersData[index].blocked) {
-                    usersData[index].failedAttempts = 0;
+                if (!user.blocked) {
+                    user.failedAttempts = 0;
+                }
+                
+                // Save to Supabase
+                if (user.id) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({ 
+                            blocked: user.blocked,
+                            failed_attempts: user.failedAttempts
+                        })
+                        .eq('id', user.id);
+                    
+                    if (error) {
+                        console.error('❌ Error toggling block:', error);
+                        alert('Eroare: ' + error.message);
+                        return;
+                    }
                 }
                 
                 renderUsersTable();
-                saveUsersData();
                 
-                const newStatus = usersData[index].blocked ? 'blocat' : 'deblocat';
-                alert(`✅ Utilizator ${usersData[index].name} a fost ${newStatus}!`);
+                const newStatus = user.blocked ? 'blocat' : 'deblocat';
+                alert(`✅ Utilizator ${user.name} a fost ${newStatus}!`);
             }
         }
 
         // Delete user
-        function deleteUser(index) {
+        async function deleteUser(index) {
             if (confirm('Sigur vrei să ștergi acest utilizator?')) {
+                const user = usersData[index];
+                
+                // Delete from Supabase
+                if (user.id) {
+                    const { error } = await supabase
+                        .from('users')
+                        .delete()
+                        .eq('id', user.id);
+                    
+                    if (error) {
+                        console.error('❌ Error deleting user:', error);
+                        alert('Eroare la ștergere: ' + error.message);
+                        return;
+                    }
+                }
+                
                 usersData.splice(index, 1);
                 renderUsersTable();
-                saveUsersData();
+                alert('✅ Utilizator șters!');
             }
         }
 
         // Save all users
-        function saveAllUsers() {
+        async function saveAllUsers() {
             // Validate data
             let hasErrors = false;
             usersData.forEach((user, index) => {
@@ -8217,7 +8294,7 @@ IMPORTANT:
             });
 
             if (!hasErrors) {
-                saveUsersData();
+                await saveUsersData();
                 alert('✅ Toți utilizatorii au fost salvați cu succes!');
             }
         }
@@ -8341,24 +8418,49 @@ IMPORTANT:
         let currentChatFilterFrom = null;
         let currentChatFilterTo = null;
         
-        function openChatHistory(userEmail) {
+        async function openChatHistory(userEmail) {
             if (!userEmail) {
                 alert('Email utilizator invalid!');
                 return;
             }
             
-            // Get all conversation logs
-            const allLogs = JSON.parse(localStorage.getItem('superparty_conversation_logs') || '[]');
+            // Show loading
+            const contentDiv = document.getElementById('chatHistoryContent');
+            contentDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                    <p>Se încarcă conversațiile...</p>
+                </div>
+            `;
             
-            // Filter by user email
-            let userLogs = allLogs.filter(log => log.email === userEmail);
+            // Show modal immediately
+            document.getElementById('chatHistoryModal').style.display = 'flex';
+            
+            // Get conversations from Supabase
+            let query = supabase
+                .from('conversations')
+                .select('*')
+                .eq('user_email', userEmail)
+                .order('timestamp', { ascending: false });
             
             // Apply date filter if set
             if (currentChatFilterFrom && currentChatFilterTo) {
-                userLogs = userLogs.filter(log => {
-                    const logDate = log.date; // YYYY-MM-DD
-                    return logDate >= currentChatFilterFrom && logDate <= currentChatFilterTo;
-                });
+                query = query
+                    .gte('date', currentChatFilterFrom)
+                    .lte('date', currentChatFilterTo);
+            }
+            
+            const { data: userLogs, error } = await query;
+            
+            if (error) {
+                console.error('Error loading conversations:', error);
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #dc2626;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">❌</div>
+                        <p>Eroare la încărcarea conversațiilor</p>
+                    </div>
+                `;
+                return;
             }
             
             // Get user name
@@ -8369,9 +8471,7 @@ IMPORTANT:
             document.getElementById('chatHistoryUserName').textContent = `Conversații - ${userName}`;
             
             // Build conversation HTML
-            const contentDiv = document.getElementById('chatHistoryContent');
-            
-            if (userLogs.length === 0) {
+            if (!userLogs || userLogs.length === 0) {
                 contentDiv.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #9ca3af;">
                         <div style="font-size: 64px; margin-bottom: 15px;">💬</div>
@@ -8380,9 +8480,6 @@ IMPORTANT:
                     </div>
                 `;
             } else {
-                // Sort by timestamp (newest first)
-                userLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
                 let html = '';
                 userLogs.forEach((log, index) => {
                     const date = new Date(log.timestamp);
@@ -8402,13 +8499,13 @@ IMPORTANT:
                             <div style="margin-bottom: 15px;">
                                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
                                     <strong>👤 User:</strong><br>
-                                    <span style="white-space: pre-wrap;">${escapeHtml(log.userMessage)}</span>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.user_message)}</span>
                                 </div>
                             </div>
                             <div>
                                 <div style="background: #f3f4f6; color: #111827; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
                                     <strong>🤖 AI:</strong><br>
-                                    <span style="white-space: pre-wrap;">${escapeHtml(log.aiResponse)}</span>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.ai_response)}</span>
                                 </div>
                             </div>
                         </div>
@@ -8417,9 +8514,6 @@ IMPORTANT:
                 
                 contentDiv.innerHTML = html;
             }
-            
-            // Show modal
-            document.getElementById('chatHistoryModal').style.display = 'flex';
         }
         
         function closeChatHistory() {
@@ -8458,24 +8552,30 @@ IMPORTANT:
                 
                 const userData = JSON.parse(currentUser);
                 const userEmail = userData.email || 'unknown';
+                const userName = userData.name || userEmail;
                 
-                // Get existing conversation logs
-                let conversationLogs = JSON.parse(localStorage.getItem('superparty_conversation_logs') || '[]');
-                
-                // Create new conversation entry
+                // Create new conversation entry for Supabase
                 const logEntry = {
-                    email: userEmail,
-                    userMessage: userMessage,
-                    aiResponse: aiResponse,
+                    user_email: userEmail,
+                    user_name: userName,
+                    user_message: userMessage,
+                    ai_response: aiResponse,
                     timestamp: new Date().toISOString(),
                     date: new Date().toISOString().split('T')[0] // YYYY-MM-DD for filtering
                 };
                 
-                // Add to logs
-                conversationLogs.push(logEntry);
+                // Save to Supabase (async, fire-and-forget)
+                supabase
+                    .from('conversations')
+                    .insert([logEntry])
+                    .then(({ error }) => {
+                        if (error) {
+                            console.error('Error saving conversation to Supabase:', error);
+                        } else {
+                            console.log('✅ Conversation saved to Supabase');
+                        }
+                    });
                 
-                // Save back to localStorage (SILENTLY - no console.log, no alerts)
-                localStorage.setItem('superparty_conversation_logs', JSON.stringify(conversationLogs));
             } catch (error) {
                 // Silent fail - don't show any errors to user
             }
