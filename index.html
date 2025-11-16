@@ -3697,14 +3697,21 @@ Politici:
                 
                 // Check if email already exists in admin table
                 const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
-                console.log('Existing admin users:', adminUsers.length);
+                console.log('🔍 DEBUG: Existing admin users:', adminUsers.length);
+                console.log('🔍 DEBUG: Checking for email:', email);
+                console.log('🔍 DEBUG: All emails in system:', adminUsers.map(u => u.email));
                 
-                if (adminUsers.find(u => u.email === email)) {
+                const existingUser = adminUsers.find(u => u.email === email);
+                console.log('🔍 DEBUG: Found existing user?', existingUser);
+                
+                if (existingUser) {
                     errorDiv.textContent = '❌ Email-ul există deja!';
                     errorDiv.style.display = 'block';
-                    console.error('Email already exists');
+                    console.error('❌ Email already exists:', existingUser);
                     return;
                 }
+                
+                console.log('✅ DEBUG: Email is unique, proceeding with registration');
                 
                 // ONLY add to admin users table (Gestionare Utilizatori)
                 adminUsers.push({
