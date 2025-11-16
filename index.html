@@ -7053,6 +7053,10 @@ IMPORTANT:
             const stored = localStorage.getItem('superparty_admin_users');
             if (stored) {
                 usersData = JSON.parse(stored);
+                // RESET password visibility to HIDDEN for all users
+                usersData.forEach(user => {
+                    user.passwordVisible = false;
+                });
             }
             renderUsersTable();
         }
