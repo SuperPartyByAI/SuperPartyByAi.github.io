@@ -3686,7 +3686,7 @@ Politici:
                 
                 // Save current user object for conversation logging
                 localStorage.setItem('superparty_current_user', JSON.stringify({
-                    email: userAccount.user_email || userAccount.email,
+                    email: username, // Use the username (which IS the email)
                     name: userAccount.name
                 }));
                 
@@ -4028,7 +4028,7 @@ Politici:
                 
                 // Save current user object for conversation logging
                 localStorage.setItem('superparty_current_user', JSON.stringify({
-                    email: userAccount.user_email || userAccount.email,
+                    email: username, // Use the username (which IS the email)
                     name: userAccount.name
                 }));
                 
