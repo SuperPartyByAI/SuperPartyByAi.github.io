@@ -3681,6 +3681,12 @@ Politici:
                 localStorage.setItem('superparty_username', username);
                 localStorage.setItem('superparty_user_id', userAccount.id); // Save user ID
                 
+                // Save current user object for conversation logging
+                localStorage.setItem('superparty_current_user', JSON.stringify({
+                    email: userAccount.user_email || userAccount.email,
+                    name: userAccount.name
+                }));
+                
                 // Reset failed attempts in Supabase
                 await supabase
                     .from('users')
@@ -4016,6 +4022,12 @@ Politici:
                 // Save login state (always save to localStorage for persistence)
                 localStorage.setItem('superparty_logged_in', 'true');
                 localStorage.setItem('superparty_username', username);
+                
+                // Save current user object for conversation logging
+                localStorage.setItem('superparty_current_user', JSON.stringify({
+                    email: userAccount.user_email || userAccount.email,
+                    name: userAccount.name
+                }));
                 
                 // Hide login form
                 setTimeout(() => {
