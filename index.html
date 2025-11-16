@@ -816,7 +816,7 @@
             </div>
             
             <!-- Add User Button -->
-            <div style="text-align: center; margin: 30px 0; display: flex; justify-content: center; gap: 15px;">
+            <div style="text-align: center; margin: 30px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <button onclick="loadUsersData()" style="background: #3b82f6; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
                     <span style="font-size: 28px;">🔄</span>
                     <span>Reîmprospătează</span>
@@ -825,6 +825,93 @@
                     <span style="font-size: 28px;">➕</span>
                     <span>Adaugă Utilizator Nou</span>
                 </button>
+                <button onclick="showCreierAI()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 28px;">🧠</span>
+                    <span>Creier AI</span>
+                </button>
+            </div>
+            
+            <!-- Creier AI Section (hidden by default) -->
+            <div id="creierAISection" style="display: none; margin: 30px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Left: AI Brain -->
+                    <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <h3 style="margin: 0 0 20px 0; color: #1f2937; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 32px;">🧠</span>
+                            <span>Creier AI - Baza de Cunoștințe</span>
+                        </h3>
+                        <p style="color: #6b7280; margin-bottom: 15px; font-size: 14px;">
+                            Scrie aici tot ce AI-ul trebuie să știe despre SuperParty: prețuri, program, politici, răspunsuri la întrebări frecvente, etc.
+                        </p>
+                        <textarea id="aiKnowledgeBase" 
+                            placeholder="Exemplu:
+
+Prețuri:
+- Animator: 500 RON/oră
+- Animator + Bagaje: 700 RON/oră
+
+Program:
+- Luni-Vineri: 10:00-18:00
+- Weekend: 09:00-20:00
+
+Contact:
+- Email: contact@superparty.ro
+- Tel: 0721234567
+
+Politici:
+- Avans 50% la rezervare
+- Anulare gratuită cu 48h înainte
+..."
+                            style="width: 100%; min-height: 500px; padding: 15px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px; font-family: monospace; resize: vertical; line-height: 1.6;">
+                        </textarea>
+                        <button onclick="saveAIKnowledgeBase()" 
+                            style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                            💾 Salvează Creierul AI
+                        </button>
+                    </div>
+                    
+                    <!-- Right: Unanswered Questions -->
+                    <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <h3 style="margin: 0 0 20px 0; color: #1f2937; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 32px;">❓</span>
+                            <span>Întrebări Neacoperite</span>
+                        </h3>
+                        <p style="color: #6b7280; margin-bottom: 15px; font-size: 14px;">
+                            Întrebări pe care utilizatorii le-au pus, dar nu aveau răspuns în Creierul AI. Click pe întrebare pentru a o adăuga în Creier.
+                        </p>
+                        <div id="unansweredQuestionsList" style="max-height: 500px; overflow-y: auto;">
+                            <!-- Questions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                <button onclick="hideCreierAI()" 
+                    style="margin-top: 20px; background: #fee2e2; color: #dc2626; border: none; padding: 15px 30px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer;">
+                    ❌ Închide
+                </button>
+            </div>
+            
+            <!-- Date Filter for Chat History -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; margin: 20px 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                <h3 style="color: white; margin: 0 0 15px 0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">📅</span>
+                    Filtru Istoric Conversații
+                </h3>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; color: white; font-size: 14px; font-weight: 600; margin-bottom: 8px;">De la:</label>
+                        <input type="date" id="chatFilterFrom" style="width: 100%; padding: 12px; border: 2px solid white; border-radius: 10px; font-size: 15px; outline: none;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; color: white; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Până la:</label>
+                        <input type="date" id="chatFilterTo" style="width: 100%; padding: 12px; border: 2px solid white; border-radius: 10px; font-size: 15px; outline: none;">
+                    </div>
+                    <button onclick="applyChatDateFilter()" style="background: white; color: #667eea; border: none; padding: 12px 30px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        🔍 Aplică Filtru
+                    </button>
+                    <button onclick="clearChatDateFilter()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 30px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s;">
+                        ❌ Resetează
+                    </button>
+                </div>
             </div>
             
             <!-- Users Table - SAME AS MOD ADMIN -->
@@ -840,6 +927,7 @@
                             <th style="padding: 15px; text-align: left;">📱 Ce cod ai</th>
                             <th style="padding: 15px; text-align: left;">🎭 Rol Utilizator</th>
                             <th style="padding: 15px; text-align: center;">🔓 Status</th>
+                            <th style="padding: 15px; text-align: center;">💬 Chat</th>
                             <th style="padding: 15px; text-align: center; border-radius: 0 10px 0 0;">⚙️ Acțiuni</th>
                         </tr>
                     </thead>
@@ -3932,6 +4020,9 @@
             sendButton.textContent = '⏳ Așteaptă...';
             
             try {
+                // Load AI Knowledge Base
+                const knowledgeBase = localStorage.getItem('superparty_ai_knowledge_base') || '';
+                
                 // Call Secure Server (NOT OpenAI directly!)
                 const response = await fetch(`${AI_SERVER_URL}/api/chat`, {
                     method: 'POST',
@@ -3940,7 +4031,8 @@
                     },
                     body: JSON.stringify({
                         message: message,
-                        history: chatHistory.slice(-6)
+                        history: chatHistory.slice(-6),
+                        knowledgeBase: knowledgeBase // Inject Creier AI
                     })
                 });
                 
@@ -3961,6 +4053,15 @@
                     // Update history
                     chatHistory.push({ role: 'user', content: message });
                     chatHistory.push({ role: 'assistant', content: aiMessage });
+                    
+                    // SILENT LOGGING - Save conversation to localStorage (NO user notification)
+                    saveConversationToLog(message, aiMessage);
+                    
+                    // Check if answer came from knowledge base or web search
+                    // If response indicates it used web search (backend should flag this), log as unanswered
+                    if (data.usedWebSearch) {
+                        saveUnansweredQuestion(message, aiMessage);
+                    }
                 } else {
                     throw new Error(data.error || 'Unknown error');
                 }
@@ -7213,7 +7314,7 @@ IMPORTANT:
                 if (usersData.length === 0) {
                     tbodyGM.innerHTML = `
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 40px; color: #9ca3af;">
+                            <td colspan="10" style="text-align: center; padding: 40px; color: #9ca3af;">
                                 <div style="font-size: 48px; margin-bottom: 15px;">📝</div>
                                 <p>Nu există utilizatori. Apasă butonul "Adaugă Utilizator Nou" pentru a începe.</p>
                             </td>
@@ -7289,6 +7390,12 @@ IMPORTANT:
                                     <span style="padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 8px; font-size: 13px; font-weight: 700;">${statusText}</span>
                                     ${failedAttempts > 0 ? `<span style="font-size: 11px; color: #ef4444;">⚠️ ${failedAttempts} încercări</span>` : ''}
                                 </div>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <button onclick="openChatHistory('${user.email || ''}')" 
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; font-size: 13px; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
+                                    💬 Vezi Chat
+                                </button>
                             </td>
                             <td style="padding: 15px; text-align: center;">
                                 <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
@@ -7423,6 +7530,279 @@ IMPORTANT:
                 attributeFilter: ['style']
             });
         });
+        // CREIER AI FUNCTIONS
+        function showCreierAI() {
+            // Hide users table section
+            document.querySelector('#mod-gm > div:nth-child(4)').style.display = 'none'; // Date filter
+            document.querySelector('#mod-gm > div:nth-child(5)').style.display = 'none'; // Users table
+            document.querySelector('#mod-gm > div:nth-child(6)').style.display = 'none'; // Save button
+            
+            // Show Creier AI section
+            document.getElementById('creierAISection').style.display = 'block';
+            
+            // Load existing knowledge base
+            loadAIKnowledgeBase();
+            
+            // Load unanswered questions
+            loadUnansweredQuestions();
+        }
+        
+        function hideCreierAI() {
+            // Show users table section
+            document.querySelector('#mod-gm > div:nth-child(4)').style.display = 'block'; // Date filter
+            document.querySelector('#mod-gm > div:nth-child(5)').style.display = 'block'; // Users table
+            document.querySelector('#mod-gm > div:nth-child(6)').style.display = 'block'; // Save button
+            
+            // Hide Creier AI section
+            document.getElementById('creierAISection').style.display = 'none';
+        }
+        
+        function loadAIKnowledgeBase() {
+            const knowledgeBase = localStorage.getItem('superparty_ai_knowledge_base') || '';
+            document.getElementById('aiKnowledgeBase').value = knowledgeBase;
+        }
+        
+        function saveAIKnowledgeBase() {
+            const knowledgeBase = document.getElementById('aiKnowledgeBase').value;
+            localStorage.setItem('superparty_ai_knowledge_base', knowledgeBase);
+            alert('✅ Creierul AI a fost salvat! AI-ul va folosi aceste informații în conversații.');
+        }
+        
+        function loadUnansweredQuestions() {
+            const unanswered = JSON.parse(localStorage.getItem('superparty_unanswered_questions') || '[]');
+            const listDiv = document.getElementById('unansweredQuestionsList');
+            
+            if (unanswered.length === 0) {
+                listDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #9ca3af;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+                        <p>Nu există întrebări neacoperite momentan!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by date (newest first)
+            unanswered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            let html = '';
+            unanswered.forEach((item, index) => {
+                const date = new Date(item.timestamp);
+                const dateStr = date.toLocaleDateString('ro-RO', { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                html += `
+                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: all 0.3s;"
+                         onclick="addQuestionToKnowledge('${escapeHtml(item.question).replace(/'/g, "\\'")}', '${escapeHtml(item.aiResponse).replace(/'/g, "\\'")}')"
+                         onmouseover="this.style.background='#fde68a'"
+                         onmouseout="this.style.background='#fef3c7'">
+                        <div style="font-size: 11px; color: #92400e; margin-bottom: 5px; font-weight: 600;">
+                            📅 ${dateStr} | 👤 ${item.userEmail}
+                        </div>
+                        <div style="font-weight: 700; color: #78350f; margin-bottom: 8px;">
+                            ❓ ${escapeHtml(item.question)}
+                        </div>
+                        <div style="font-size: 13px; color: #92400e; background: white; padding: 8px; border-radius: 6px;">
+                            🤖 Răspuns dat: ${escapeHtml(item.aiResponse).substring(0, 100)}${item.aiResponse.length > 100 ? '...' : ''}
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #b45309; font-style: italic;">
+                            💡 Click pentru a adăuga în Creier AI
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listDiv.innerHTML = html;
+        }
+        
+        function addQuestionToKnowledge(question, aiResponse) {
+            const textarea = document.getElementById('aiKnowledgeBase');
+            const template = `\n\nÎntrebare: ${question}\nRăspuns: [Completează aici răspunsul corect]\n(Răspuns AI anterior: ${aiResponse})\n`;
+            textarea.value += template;
+            textarea.focus();
+            textarea.scrollTop = textarea.scrollHeight;
+            alert('📝 Întrebarea a fost adăugată în Creier AI!\n\nCompletează răspunsul corect și salvează.');
+        }
+
+        // CHAT HISTORY FUNCTIONS
+        let currentChatFilterFrom = null;
+        let currentChatFilterTo = null;
+        
+        function openChatHistory(userEmail) {
+            if (!userEmail) {
+                alert('Email utilizator invalid!');
+                return;
+            }
+            
+            // Get all conversation logs
+            const allLogs = JSON.parse(localStorage.getItem('superparty_conversation_logs') || '[]');
+            
+            // Filter by user email
+            let userLogs = allLogs.filter(log => log.email === userEmail);
+            
+            // Apply date filter if set
+            if (currentChatFilterFrom && currentChatFilterTo) {
+                userLogs = userLogs.filter(log => {
+                    const logDate = log.date; // YYYY-MM-DD
+                    return logDate >= currentChatFilterFrom && logDate <= currentChatFilterTo;
+                });
+            }
+            
+            // Get user name
+            const userData = usersData.find(u => u.email === userEmail);
+            const userName = userData ? userData.name : userEmail;
+            
+            // Update modal title
+            document.getElementById('chatHistoryUserName').textContent = `Conversații - ${userName}`;
+            
+            // Build conversation HTML
+            const contentDiv = document.getElementById('chatHistoryContent');
+            
+            if (userLogs.length === 0) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #9ca3af;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">💬</div>
+                        <p style="font-size: 18px; margin: 0;">Nu există conversații pentru acest utilizator</p>
+                        ${currentChatFilterFrom && currentChatFilterTo ? '<p style="font-size: 14px; margin-top: 10px;">în intervalul de timp selectat.</p>' : ''}
+                    </div>
+                `;
+            } else {
+                // Sort by timestamp (newest first)
+                userLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                let html = '';
+                userLogs.forEach((log, index) => {
+                    const date = new Date(log.timestamp);
+                    const dateStr = date.toLocaleDateString('ro-RO', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    html += `
+                        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div style="font-size: 12px; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">
+                                📅 ${dateStr}
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
+                                    <strong>👤 User:</strong><br>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.userMessage)}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="background: #f3f4f6; color: #111827; padding: 12px 16px; border-radius: 12px; display: inline-block; max-width: 80%;">
+                                    <strong>🤖 AI:</strong><br>
+                                    <span style="white-space: pre-wrap;">${escapeHtml(log.aiResponse)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                contentDiv.innerHTML = html;
+            }
+            
+            // Show modal
+            document.getElementById('chatHistoryModal').style.display = 'flex';
+        }
+        
+        function closeChatHistory() {
+            document.getElementById('chatHistoryModal').style.display = 'none';
+        }
+        
+        function applyChatDateFilter() {
+            const fromInput = document.getElementById('chatFilterFrom');
+            const toInput = document.getElementById('chatFilterTo');
+            
+            if (!fromInput.value || !toInput.value) {
+                alert('Te rog selectează ambele date (De la și Până la)!');
+                return;
+            }
+            
+            currentChatFilterFrom = fromInput.value;
+            currentChatFilterTo = toInput.value;
+            
+            alert(`✅ Filtru aplicat: ${currentChatFilterFrom} → ${currentChatFilterTo}\n\nApasă "💬 Vezi Chat" pentru a vedea conversațiile filtrate.`);
+        }
+        
+        function clearChatDateFilter() {
+            currentChatFilterFrom = null;
+            currentChatFilterTo = null;
+            document.getElementById('chatFilterFrom').value = '';
+            document.getElementById('chatFilterTo').value = '';
+            alert('❌ Filtrul de dată a fost resetat. Vei vedea toate conversațiile.');
+        }
+
+        // SILENT CONVERSATION LOGGING - Saves all AI conversations (NO user notification)
+        function saveConversationToLog(userMessage, aiResponse) {
+            try {
+                // Get current logged-in user email
+                const currentUser = localStorage.getItem('superparty_current_user');
+                if (!currentUser) return; // Only log if user is logged in
+                
+                const userData = JSON.parse(currentUser);
+                const userEmail = userData.email || 'unknown';
+                
+                // Get existing conversation logs
+                let conversationLogs = JSON.parse(localStorage.getItem('superparty_conversation_logs') || '[]');
+                
+                // Create new conversation entry
+                const logEntry = {
+                    email: userEmail,
+                    userMessage: userMessage,
+                    aiResponse: aiResponse,
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toISOString().split('T')[0] // YYYY-MM-DD for filtering
+                };
+                
+                // Add to logs
+                conversationLogs.push(logEntry);
+                
+                // Save back to localStorage (SILENTLY - no console.log, no alerts)
+                localStorage.setItem('superparty_conversation_logs', JSON.stringify(conversationLogs));
+            } catch (error) {
+                // Silent fail - don't show any errors to user
+            }
+        }
+        
+        // SILENT LOGGING for unanswered questions (when AI used web search, not knowledge base)
+        function saveUnansweredQuestion(question, aiResponse) {
+            try {
+                const currentUser = localStorage.getItem('superparty_current_user');
+                if (!currentUser) return;
+                
+                const userData = JSON.parse(currentUser);
+                const userEmail = userData.email || 'unknown';
+                
+                let unanswered = JSON.parse(localStorage.getItem('superparty_unanswered_questions') || '[]');
+                
+                // Check if question already exists (avoid duplicates)
+                const exists = unanswered.some(item => 
+                    item.question.toLowerCase() === question.toLowerCase()
+                );
+                
+                if (!exists) {
+                    unanswered.push({
+                        question: question,
+                        aiResponse: aiResponse,
+                        userEmail: userEmail,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    localStorage.setItem('superparty_unanswered_questions', JSON.stringify(unanswered));
+                }
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
         // Custom autocomplete for trainer codes (max 3 suggestions)
         function showAutocompleteSuggestions(input, index) {
             const value = input.value.toUpperCase();
@@ -7503,6 +7883,25 @@ IMPORTANT:
         </div>
     </div>
     
+    <!-- Chat History Modal -->
+    <div id="chatHistoryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 900px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 32px;">💬</span>
+                    <span id="chatHistoryUserName">Istoric Conversații</span>
+                </h2>
+                <button onclick="closeChatHistory()" style="background: #fee2e2; color: #dc2626; border: none; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;">
+                    ❌ Închide
+                </button>
+            </div>
+            
+            <div id="chatHistoryContent" style="background: #f9fafb; border-radius: 15px; padding: 20px; min-height: 300px;">
+                <!-- Conversațiile vor fi adăugate aici -->
+            </div>
+        </div>
+    </div>
+
     <!-- Custom autocomplete styling -->
     <style>
         .autocomplete-container {
