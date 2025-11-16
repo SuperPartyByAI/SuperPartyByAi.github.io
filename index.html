@@ -3624,7 +3624,7 @@ Politici:
         }
         
         // Login Handler
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             
             const username = document.getElementById('loginUsername').value;
@@ -3638,11 +3638,24 @@ Politici:
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
             
-            // Check against ADMIN USERS TABLE (same as handleHomeLogin)
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+            // Check against SUPABASE users table
+            const { data: users, error: fetchError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', username)
+                .single();
             
-            // Find user by email
-            const userAccount = adminUsers.find(u => u.email === username);
+            if (fetchError) {
+                if (fetchError.code === 'PGRST116') {
+                    errorDiv.textContent = '❌ Email sau parolă incorectă!';
+                } else {
+                    errorDiv.textContent = '❌ Eroare la autentificare: ' + fetchError.message;
+                }
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const userAccount = users;
             
             // Check if user is blocked
             if (userAccount && userAccount.blocked) {
@@ -3658,28 +3671,21 @@ Politici:
                 return;
             }
             
-            // Check email + password + approved
-            const registeredUser = adminUsers.find(u => 
-                u.email === username && 
-                u.password === password && 
-                !u.blocked && 
-                u.approved === true
-            );
-            
-            if (registeredUser) {
+            // Check password
+            if (userAccount && userAccount.password === password && userAccount.approved === true && !userAccount.blocked) {
                 // Success
                 successDiv.style.display = 'block';
                 
-                // Save login state (always to localStorage for persistence)
+                // Save login state
                 localStorage.setItem('superparty_logged_in', 'true');
                 localStorage.setItem('superparty_username', username);
+                localStorage.setItem('superparty_user_id', userAccount.id); // Save user ID
                 
-                // Reset failed attempts
-                const userIndex = adminUsers.findIndex(u => u.email === username);
-                if (userIndex >= 0) {
-                    adminUsers[userIndex].failedAttempts = 0;
-                    localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                }
+                // Reset failed attempts in Supabase
+                await supabase
+                    .from('users')
+                    .update({ failed_attempts: 0 })
+                    .eq('id', userAccount.id);
                 
                 // Redirect to home page after 1 second and show submenu
                 setTimeout(() => {
@@ -3696,24 +3702,24 @@ Politici:
             } else {
                 // Failed login - increment failed attempts
                 if (userAccount) {
-                    userAccount.failedAttempts = (userAccount.failedAttempts || 0) + 1;
+                    const newFailedAttempts = (userAccount.failed_attempts || 0) + 1;
                     
                     // Block after 3 failed attempts
-                    if (userAccount.failedAttempts >= 3) {
-                        userAccount.blocked = true;
-                        const userIndex = adminUsers.findIndex(u => u.email === username);
-                        if (userIndex >= 0) {
-                            adminUsers[userIndex] = userAccount;
-                            localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                        }
+                    if (newFailedAttempts >= 3) {
+                        await supabase
+                            .from('users')
+                            .update({ 
+                                blocked: true,
+                                failed_attempts: newFailedAttempts
+                            })
+                            .eq('id', userAccount.id);
                         errorDiv.textContent = '🔒 Cont blocat după 3 încercări eșuate!';
                     } else {
-                        const userIndex = adminUsers.findIndex(u => u.email === username);
-                        if (userIndex >= 0) {
-                            adminUsers[userIndex] = userAccount;
-                            localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                        }
-                        const remaining = 3 - userAccount.failedAttempts;
+                        await supabase
+                            .from('users')
+                            .update({ failed_attempts: newFailedAttempts })
+                            .eq('id', userAccount.id);
+                        const remaining = 3 - newFailedAttempts;
                         errorDiv.textContent = `❌ Date incorecte! Mai ai ${remaining} ${remaining === 1 ? 'încercare' : 'încercări'}.`;
                     }
                 } else {
@@ -3767,8 +3773,8 @@ Politici:
             }, 500);
         }
         
-        // Registration Handler
-        function handleRegister(event) {
+        // Registration Handler - ASYNC for Supabase
+        async function handleRegister(event) {
             event.preventDefault();
             console.log('Register button clicked!');
             
@@ -3820,16 +3826,21 @@ Politici:
             }
             
             try {
-                // Check if email already exists in admin table
-                const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
-                console.log('🔍 DEBUG: Existing admin users:', adminUsers.length);
-                console.log('🔍 DEBUG: Checking for email:', email);
-                console.log('🔍 DEBUG: All emails in system:', adminUsers.map(u => u.email));
+                // Check if email already exists in SUPABASE
+                const { data: existingUsers, error: checkError } = await supabase
+                    .from('users')
+                    .select('email, approved, blocked')
+                    .eq('email', email);
                 
-                const existingUser = adminUsers.find(u => u.email === email);
-                console.log('🔍 DEBUG: Found existing user?', existingUser);
+                if (checkError) {
+                    console.error('❌ Error checking email:', checkError);
+                    errorDiv.textContent = '❌ Eroare la verificare: ' + checkError.message;
+                    errorDiv.style.display = 'block';
+                    return;
+                }
                 
-                if (existingUser) {
+                if (existingUsers && existingUsers.length > 0) {
+                    const existingUser = existingUsers[0];
                     // Check status of existing account
                     if (existingUser.approved === false) {
                         errorDiv.innerHTML = '⏳ Email-ul există deja și așteaptă aprobarea administratorului.<br><small style="display: block; margin-top: 5px;">Vei putea face login după ce contul va fi aprobat.</small>';
@@ -3843,23 +3854,39 @@ Politici:
                     return;
                 }
                 
-                console.log('✅ DEBUG: Email is unique, proceeding with registration');
+                console.log('✅ DEBUG: Email is unique, proceeding with Supabase registration');
                 
-                // Add user with PENDING status (requires admin approval)
-                adminUsers.push({
-                    name: name,
-                    email: email,
-                    password: password,
-                    passwordConfirm: passwordConfirm,
-                    accessKey: '', // Empty - no access key needed
-                    userCode: '', // Empty - admin fills this
-                    userRole: 'Animator', // Default role
-                    blocked: false, // Not blocked
-                    approved: false, // ⏳ PENDING APPROVAL - requires admin to approve!
-                    failedAttempts: 0 // No failed attempts yet
-                });
-                localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                console.log('✅ User registered with PENDING status - awaiting admin approval!');
+                // Save to SUPABASE instead of localStorage
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([
+                        {
+                            name: name,
+                            email: email,
+                            password: password, // ⚠️ In production, hash this!
+                            user_code: '',
+                            user_role: 'Animator',
+                            blocked: false,
+                            approved: false, // Pending approval
+                            failed_attempts: 0
+                        }
+                    ])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Supabase error:', error);
+                    
+                    // Check if it's a duplicate email error
+                    if (error.code === '23505') {
+                        errorDiv.innerHTML = '❌ Email-ul există deja!<br><small style="display: block; margin-top: 5px;">Dacă ai uitat parola, contactează administratorul.</small>';
+                    } else {
+                        errorDiv.textContent = '❌ Eroare la înregistrare: ' + error.message;
+                    }
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                console.log('✅ User registered in Supabase:', data);
                 
                 // Success - show message telling user to wait for admin approval
                 successDiv.innerHTML = `✅ Cont creat cu succes!<br><small style="color: #6b7280; margin-top: 10px; display: block;">⏳ Contul tău așteaptă aprobarea administratorului. Vei primi notificare când contul va fi aprobat.</small>`;
@@ -3916,7 +3943,7 @@ Politici:
         }
         
         // Home page login handler
-        function handleHomeLogin(event) {
+        async function handleHomeLogin(event) {
             event.preventDefault();
             console.log('🔐 Home login attempt...');
             
@@ -3931,12 +3958,25 @@ Politici:
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
             
-            // Check against ADMIN USERS TABLE (Gestionare Utilizatori)
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+            // Check against SUPABASE users table
+            const { data: users, error: fetchError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', username)
+                .single();
             
-            // Find user by email first
-            const userIndex = adminUsers.findIndex(u => u.email === username);
-            const userAccount = userIndex >= 0 ? adminUsers[userIndex] : null;
+            if (fetchError) {
+                console.log('❌ Supabase fetch error:', fetchError);
+                if (fetchError.code === 'PGRST116') {
+                    errorDiv.textContent = '❌ Email sau parolă incorectă!';
+                } else {
+                    errorDiv.textContent = '❌ Eroare la autentificare: ' + fetchError.message;
+                }
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const userAccount = users;
             
             // Check if user is blocked
             if (userAccount && userAccount.blocked) {
@@ -3954,26 +3994,21 @@ Politici:
                 return;
             }
             
-            // NEW LOGIC: Check ONLY email + password + approved (NO access key needed!)
-            const registeredUser = adminUsers.find(u => 
-                u.email === username && 
-                u.password === password && 
-                !u.blocked && // Must not be blocked
-                u.approved === true // Must be approved by admin
-            );
+            // Check password + approved
+            console.log('Checking password match...');
             
-            console.log('Checking admin users table:', adminUsers.length, 'users');
-            console.log('Found match:', registeredUser ? 'YES' : 'NO');
-            
-            const isValidLogin = registeredUser;
+            const isValidLogin = userAccount && 
+                                userAccount.password === password && 
+                                !userAccount.blocked && 
+                                userAccount.approved === true;
             
             if (isValidLogin) {
-                // SUCCESS - Reset failed attempts if it was a regular user
-                if (userAccount) {
-                    userAccount.failedAttempts = 0;
-                    adminUsers[userIndex] = userAccount;
-                    localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                }
+                // SUCCESS - Reset failed attempts in Supabase
+                await supabase
+                    .from('users')
+                    .update({ failed_attempts: 0 })
+                    .eq('id', userAccount.id);
+                
                 // Success
                 console.log('✅ Login successful!');
                 successDiv.style.display = 'block';
@@ -5550,9 +5585,8 @@ IMPORTANT:
         }
         
         // ADMIN SIMPLIFIED USER MANAGEMENT - Approve/Block Only
-        function loadUsersDataAdmin() {
-            console.log('🔄 Loading users for Admin (simplified view)...');
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+        async function loadUsersDataAdmin() {
+            console.log('🔄 Loading users for Admin (simplified view) from Supabase...');
             const tbody = document.getElementById('usersTableBodyAdminSimple');
             
             if (!tbody) {
@@ -5560,9 +5594,30 @@ IMPORTANT:
                 return;
             }
             
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">⏳ Se încarcă...</td></tr>';
+            
+            // Fetch users from Supabase
+            const { data: adminUsers, error } = await supabase
+                .from('users')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="padding: 40px; text-align: center; color: #dc2626;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">❌</div>
+                            <p>Eroare la încărcarea utilizatorilor: ${error.message}</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
             tbody.innerHTML = '';
             
-            if (adminUsers.length === 0) {
+            if (!adminUsers || adminUsers.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="padding: 40px; text-align: center; color: #9ca3af;">
@@ -5574,7 +5629,7 @@ IMPORTANT:
                 return;
             }
             
-            adminUsers.forEach((user, index) => {
+            adminUsers.forEach((user) => {
                 const isBlocked = user.blocked || false;
                 const isApproved = user.approved === true;
                 const isPending = user.approved === false;
@@ -5609,7 +5664,7 @@ IMPORTANT:
                         ${user.email || 'N/A'}
                     </td>
                     <td style="padding: 15px;">
-                        ${user.userRole || 'Animator'}
+                        ${user.user_role || 'Animator'}
                     </td>
                     <td style="padding: 15px; text-align: center;">
                         <span style="display: inline-block; padding: 8px 16px; background: ${statusBg}; color: ${statusColor}; border-radius: 20px; font-weight: 600; font-size: 13px;">
@@ -5619,16 +5674,16 @@ IMPORTANT:
                     <td style="padding: 15px; text-align: center;">
                         <div style="display: flex; gap: 8px; justify-content: center;">
                             ${isPending ? `
-                                <button onclick="approveUserAdmin(${index})" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                <button onclick="approveUserAdmin('${user.id}')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
                                     ✅ Aprobă
                                 </button>
                             ` : ''}
                             ${!isBlocked ? `
-                                <button onclick="blockUserAdmin(${index})" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                <button onclick="blockUserAdmin('${user.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
                                     🔒 Blochează
                                 </button>
                             ` : `
-                                <button onclick="unblockUserAdmin(${index})" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                <button onclick="unblockUserAdmin('${user.id}')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.3s;">
                                     🔓 Deblochează
                                 </button>
                             `}
@@ -5641,43 +5696,66 @@ IMPORTANT:
             console.log(`✅ Loaded ${adminUsers.length} users for Admin view`);
         }
         
-        // Approve user (Admin)
-        function approveUserAdmin(index) {
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
-            if (index >= 0 && index < adminUsers.length) {
-                adminUsers[index].approved = true;
-                localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                console.log(`✅ User ${adminUsers[index].email} APPROVED!`);
-                alert(`✅ Utilizator ${adminUsers[index].name} a fost aprobat!`);
-                loadUsersDataAdmin(); // Refresh table
+        // Approve user (Admin) - Supabase version
+        async function approveUserAdmin(userId) {
+            const { data, error } = await supabase
+                .from('users')
+                .update({ approved: true })
+                .eq('id', userId)
+                .select();
+            
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                alert(`❌ Eroare la aprobare: ${error.message}`);
+                return;
             }
+            
+            console.log(`✅ User ${userId} APPROVED!`);
+            alert(`✅ Utilizator aprobat cu succes!`);
+            loadUsersDataAdmin(); // Refresh table
         }
         
-        // Block user (Admin)
-        function blockUserAdmin(index) {
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
-            if (index >= 0 && index < adminUsers.length) {
-                if (confirm(`🔒 Ești sigur că vrei să blochezi utilizatorul ${adminUsers[index].name}?`)) {
-                    adminUsers[index].blocked = true;
-                    localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                    console.log(`🔒 User ${adminUsers[index].email} BLOCKED!`);
-                    alert(`🔒 Utilizator ${adminUsers[index].name} a fost blocat!`);
-                    loadUsersDataAdmin(); // Refresh table
+        // Block user (Admin) - Supabase version
+        async function blockUserAdmin(userId) {
+            if (confirm(`🔒 Ești sigur că vrei să blochezi acest utilizator?`)) {
+                const { data, error } = await supabase
+                    .from('users')
+                    .update({ blocked: true })
+                    .eq('id', userId)
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Supabase error:', error);
+                    alert(`❌ Eroare la blocare: ${error.message}`);
+                    return;
                 }
+                
+                console.log(`🔒 User ${userId} BLOCKED!`);
+                alert(`🔒 Utilizator blocat cu succes!`);
+                loadUsersDataAdmin(); // Refresh table
             }
         }
         
-        // Unblock user (Admin)
-        function unblockUserAdmin(index) {
-            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
-            if (index >= 0 && index < adminUsers.length) {
-                adminUsers[index].blocked = false;
-                adminUsers[index].failedAttempts = 0; // Reset failed attempts
-                localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
-                console.log(`🔓 User ${adminUsers[index].email} UNBLOCKED!`);
-                alert(`🔓 Utilizator ${adminUsers[index].name} a fost deblocat!`);
-                loadUsersDataAdmin(); // Refresh table
+        // Unblock user (Admin) - Supabase version
+        async function unblockUserAdmin(userId) {
+            const { data, error } = await supabase
+                .from('users')
+                .update({ 
+                    blocked: false,
+                    failed_attempts: 0
+                })
+                .eq('id', userId)
+                .select();
+            
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                alert(`❌ Eroare la deblocare: ${error.message}`);
+                return;
             }
+            
+            console.log(`🔓 User ${userId} UNBLOCKED!`);
+            alert(`🔓 Utilizator deblocat cu succes!`);
+            loadUsersDataAdmin(); // Refresh table
         }
 
         function showSecretPage(pageId) {
