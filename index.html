@@ -1015,22 +1015,6 @@ Politici:
                             >
                         </div>
                         
-                        <!-- Access Key -->
-                        <div>
-                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
-                                🔑 Cheie de Acces
-                            </label>
-                            <input 
-                                type="password" 
-                                id="loginAccessKey" 
-                                placeholder="Introdu cheia de acces" 
-                                required
-                                style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; font-family: monospace; transition: all 0.3s; outline: none;"
-                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
-                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
-                            >
-                        </div>
-                        
                         <!-- Remember Me -->
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer;">
@@ -3627,7 +3611,6 @@ Politici:
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
-            const accessKey = document.getElementById('loginAccessKey').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
             const errorDiv = document.getElementById('loginError');
@@ -3637,42 +3620,87 @@ Politici:
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
             
-            // Check against registered users first (now using email + accessKey)
-            const users = JSON.parse(localStorage.getItem('superparty_users') || '[]');
-            const registeredUser = users.find(u => u.email === username && u.password === password && u.accessKey === accessKey);
+            // Check against ADMIN USERS TABLE (same as handleHomeLogin)
+            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
             
-            // Hardcoded admin credentials (you can change these)
-            const validUsername = 'admin';
-            const validPassword = '1234';
-            const validAccessKey = 'ADMIN2024';
+            // Find user by email
+            const userAccount = adminUsers.find(u => u.email === username);
             
-            const isValidLogin = registeredUser || (username === validUsername && password === validPassword && accessKey === validAccessKey);
+            // Check if user is blocked
+            if (userAccount && userAccount.blocked) {
+                errorDiv.textContent = '🔒 Cont blocat! Contactează administratorul.';
+                errorDiv.style.display = 'block';
+                return;
+            }
             
-            if (isValidLogin) {
+            // Check if user is pending approval
+            if (userAccount && userAccount.approved === false) {
+                errorDiv.textContent = '⏳ Contul tău așteaptă aprobarea administratorului.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Check email + password + approved
+            const registeredUser = adminUsers.find(u => 
+                u.email === username && 
+                u.password === password && 
+                !u.blocked && 
+                u.approved === true
+            );
+            
+            if (registeredUser) {
                 // Success
                 successDiv.style.display = 'block';
                 
-                // Save login state if "remember me" is checked
-                if (rememberMe) {
-                    localStorage.setItem('superparty_logged_in', 'true');
-                    localStorage.setItem('superparty_username', username);
-                } else {
-                    sessionStorage.setItem('superparty_logged_in', 'true');
-                    sessionStorage.setItem('superparty_username', username);
+                // Save login state (always to localStorage for persistence)
+                localStorage.setItem('superparty_logged_in', 'true');
+                localStorage.setItem('superparty_username', username);
+                
+                // Reset failed attempts
+                const userIndex = adminUsers.findIndex(u => u.email === username);
+                if (userIndex >= 0) {
+                    adminUsers[userIndex].failedAttempts = 0;
+                    localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
                 }
                 
                 // Redirect to home page after 1 second and show submenu
                 setTimeout(() => {
                     // Show submenu after successful login
                     const submenu = document.getElementById('intraContSubmenu');
-                    submenu.style.display = 'block';
+                    if (submenu) {
+                        submenu.style.display = 'block';
+                    }
                     
                     // Go to home page
                     showPage('home');
                 }, 1000);
                 
             } else {
-                // Error
+                // Failed login - increment failed attempts
+                if (userAccount) {
+                    userAccount.failedAttempts = (userAccount.failedAttempts || 0) + 1;
+                    
+                    // Block after 3 failed attempts
+                    if (userAccount.failedAttempts >= 3) {
+                        userAccount.blocked = true;
+                        const userIndex = adminUsers.findIndex(u => u.email === username);
+                        if (userIndex >= 0) {
+                            adminUsers[userIndex] = userAccount;
+                            localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                        }
+                        errorDiv.textContent = '🔒 Cont blocat după 3 încercări eșuate!';
+                    } else {
+                        const userIndex = adminUsers.findIndex(u => u.email === username);
+                        if (userIndex >= 0) {
+                            adminUsers[userIndex] = userAccount;
+                            localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+                        }
+                        const remaining = 3 - userAccount.failedAttempts;
+                        errorDiv.textContent = `❌ Date incorecte! Mai ai ${remaining} ${remaining === 1 ? 'încercare' : 'încercări'}.`;
+                    }
+                } else {
+                    errorDiv.textContent = '❌ Email sau parolă incorectă!';
+                }
                 errorDiv.style.display = 'block';
             }
         }
@@ -3740,7 +3768,14 @@ Politici:
                 console.log('🔍 DEBUG: Found existing user?', existingUser);
                 
                 if (existingUser) {
-                    errorDiv.textContent = '❌ Email-ul există deja!';
+                    // Check status of existing account
+                    if (existingUser.approved === false) {
+                        errorDiv.innerHTML = '⏳ Email-ul există deja și așteaptă aprobarea administratorului.<br><small style="display: block; margin-top: 5px;">Vei putea face login după ce contul va fi aprobat.</small>';
+                    } else if (existingUser.blocked) {
+                        errorDiv.innerHTML = '🔒 Contul cu acest email este blocat.<br><small style="display: block; margin-top: 5px;">Contactează administratorul pentru detalii.</small>';
+                    } else {
+                        errorDiv.innerHTML = '❌ Email-ul există deja!<br><small style="display: block; margin-top: 5px;">Dacă ai uitat parola, contactează administratorul.</small>';
+                    }
                     errorDiv.style.display = 'block';
                     console.error('❌ Email already exists:', existingUser);
                     return;
@@ -3868,12 +3903,7 @@ Politici:
             console.log('Checking admin users table:', adminUsers.length, 'users');
             console.log('Found match:', registeredUser ? 'YES' : 'NO');
             
-            // Hardcoded admin credentials (you can change these)
-            const validUsername = 'admin';
-            const validPassword = '1234';
-            const validAccessKey = 'ADMIN2024';
-            
-            const isValidLogin = registeredUser || (username === validUsername && password === validPassword && accessKey === validAccessKey);
+            const isValidLogin = registeredUser;
             
             if (isValidLogin) {
                 // SUCCESS - Reset failed attempts if it was a regular user
