@@ -7837,21 +7837,67 @@ IMPORTANT:
         }
 
         // Load users from localStorage
-        function loadUsersData() {
-            const stored = localStorage.getItem('superparty_admin_users');
-            if (stored) {
-                usersData = JSON.parse(stored);
-                // RESET password visibility to HIDDEN for all users
-                usersData.forEach(user => {
-                    user.passwordVisible = false;
-                });
+        async function loadUsersData() {
+            console.log('🔄 Loading users from Supabase...');
+            
+            // Fetch users from Supabase
+            const { data: supabaseUsers, error } = await supabase
+                .from('users')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('❌ Error loading users from Supabase:', error);
+                alert('Eroare la încărcarea utilizatorilor: ' + error.message);
+                usersData = [];
+            } else {
+                // Convert Supabase format to app format
+                usersData = supabaseUsers.map(user => ({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    password: user.password,
+                    passwordConfirm: user.password, // Same as password
+                    accessKey: '', // Not used anymore
+                    userCode: user.user_code || '',
+                    userRole: user.user_role || 'Animator',
+                    blocked: user.blocked || false,
+                    approved: user.approved || false,
+                    failedAttempts: user.failed_attempts || 0,
+                    passwordVisible: false // Always hidden initially
+                }));
+                console.log(`✅ Loaded ${usersData.length} users from Supabase`);
             }
+            
             renderUsersTable();
         }
 
-        // Save users to localStorage
-        function saveUsersData() {
-            localStorage.setItem('superparty_admin_users', JSON.stringify(usersData));
+        // Save users to Supabase (instead of localStorage)
+        async function saveUsersData() {
+            console.log('💾 Saving users to Supabase...');
+            
+            // Update all users in Supabase
+            for (const user of usersData) {
+                const { error } = await supabase
+                    .from('users')
+                    .update({
+                        name: user.name,
+                        email: user.email,
+                        password: user.password,
+                        user_code: user.userCode,
+                        user_role: user.userRole,
+                        blocked: user.blocked,
+                        approved: user.approved,
+                        failed_attempts: user.failedAttempts
+                    })
+                    .eq('id', user.id);
+                
+                if (error) {
+                    console.error('❌ Error saving user:', error);
+                }
+            }
+            
+            console.log('✅ Users saved to Supabase');
         }
 
         // Render the users table
@@ -8075,9 +8121,30 @@ IMPORTANT:
         }
 
         // Update user field
-        function updateUser(index, field, value) {
+        async function updateUser(index, field, value) {
             if (usersData[index]) {
                 usersData[index][field] = value;
+                
+                // Save to Supabase immediately
+                const user = usersData[index];
+                const supabaseField = field === 'userCode' ? 'user_code' : 
+                                     field === 'userRole' ? 'user_role' : 
+                                     field === 'accessKey' ? null : // Not saved
+                                     field === 'passwordConfirm' ? null : // Not saved separately
+                                     field;
+                
+                if (supabaseField && user.id) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({ [supabaseField]: value })
+                        .eq('id', user.id);
+                    
+                    if (error) {
+                        console.error('❌ Error updating user:', error);
+                    } else {
+                        console.log(`✅ Updated ${field} for user ${user.email}`);
+                    }
+                }
             }
         }
         
