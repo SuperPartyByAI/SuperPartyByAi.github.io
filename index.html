@@ -687,99 +687,113 @@
         <div class="sidebar-menu" id="mainMenu">
             <!-- BUTON INTRĂ ÎN CONT - ASCUNS, va apărea doar după login -->
             
-            <!-- SUBMENIU - Apare doar după login -->
-            <div id="intraContSubmenu" style="display: none; margin-left: 15px; border-left: 3px solid #667eea; padding-left: 5px;">
-                <div class="menu-item" onclick="showPage('home')" style="font-size: 14px; padding: 12px 20px;">
+            <!-- SUBMENIU GENERAL - Apare doar după login -->
+            <div id="intraContSubmenu" style="display: none;">
+                <!-- General Menu Items -->
+                <div class="menu-item" onclick="showPage('home')">
                     <span class="menu-icon">🏠</span>
                     <span>Acasă</span>
                 </div>
-                <div class="menu-item" onclick="showPage('noteaza-eveniment')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('noteaza-eveniment')">
                     <span class="menu-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 20px;">➕</span>
                     <span style="color: #10b981; font-weight: 600;">Notează Eveniment</span>
                 </div>
-                <div class="menu-item" onclick="showPage('petreceri-nealocate')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('petreceri-nealocate')">
                     <span class="menu-icon">📋</span>
                     <span>Petreceri Nealocate</span>
                 </div>
-                <div class="menu-item" onclick="showPage('ce-petreceri-am')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('ce-petreceri-am')">
                     <span class="menu-icon">🎊</span>
                     <span>Ce Petreceri Am</span>
                 </div>
-                <div class="menu-item" onclick="showPage('total-petreceri')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('total-petreceri')">
                     <span class="menu-icon">📈</span>
                     <span>Total Petreceri</span>
                 </div>
-                <div class="menu-item" onclick="showPage('soferi')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('soferi')">
                     <span class="menu-icon">🚗</span>
                     <span>Evenimente cu Șoferi</span>
                 </div>
-                <div class="menu-item" onclick="showPage('cu-factura')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('cu-factura')">
                     <span class="menu-icon">🧾</span>
                     <span>Cu Factură</span>
                 </div>
-                <div class="menu-item" onclick="showPage('echipa')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('echipa')">
                     <span class="menu-icon">👥</span>
                     <span>Echipa</span>
                 </div>
-                <div class="menu-item" onclick="showPage('inventar')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('inventar')">
                     <span class="menu-icon">📦</span>
                     <span>Inventar</span>
                 </div>
-                <div class="menu-item" onclick="showPage('piniata')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('piniata')">
                     <span class="menu-icon">🎯</span>
                     <span>Piniata</span>
                 </div>
-                <div class="menu-item" onclick="showPage('verifica-formular')" style="font-size: 14px; padding: 12px 20px;">
+                <div class="menu-item" onclick="showPage('verifica-formular')">
                     <span class="menu-icon">📸</span>
                     <span>Verifică Formular</span>
                 </div>
-            </div>
-            
-            <!-- BUTON MOD ADMIN - HIDDEN (access via AI chat: "open mod andrei admin") -->
-            <div class="menu-item" onclick="checkPasswordAndShowSecret()" style="cursor: pointer; display: none;">
-                <span class="menu-icon">🔒</span>
-                <span>Mod Admin</span>
-            </div>
-            
-            <!-- BUTON MOD GM - HIDDEN (access via AI chat: "open mod andrei gm") -->
-            <div class="menu-item" onclick="showPage('mod-gm')" style="cursor: pointer; display: none;">
-                <span class="menu-icon">🎮</span>
-                <span>Mod GM</span>
-            </div>
-            
-            <!-- MENIU SECRET - Apare doar după autentificare -->
-            <div id="secretMenuSection" style="display: none; margin-left: 15px; border-left: 3px solid #ef4444; padding-left: 5px;">
-                <div class="menu-item" onclick="showSecretPage('bifeaza-evenimente-secret')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">✅</span>
-                    <span>Bifează Evenimente</span>
+                <div class="menu-item" onclick="toggleCreierAI()">
+                    <span class="menu-icon">🧠</span>
+                    <span>Creier AI</span>
                 </div>
-                <div class="menu-item" onclick="showSecretPage('vezi-statistici')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">📊</span>
-                    <span>Vezi Statistici</span>
+                
+                <!-- Separator -->
+                <div style="border-top: 2px solid #e5e7eb; margin: 15px 20px;"></div>
+                
+                <!-- MOD ADMIN SECTION - Hidden by default, shown after password -->
+                <div id="adminMenuSection" style="display: none;">
+                    <div class="menu-item" onclick="toggleAdminMenu()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer;">
+                        <span class="menu-icon">🔒</span>
+                        <span>Mod Admin</span>
+                        <span id="adminMenuToggle" style="margin-left: auto; font-size: 16px;">▼</span>
+                    </div>
+                    <div id="adminMenuItems" style="display: none; margin-left: 15px; border-left: 3px solid #ef4444; padding-left: 5px;">
+                        <div class="menu-item" onclick="showSecretPage('bifeaza-evenimente-secret')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">✅</span>
+                            <span>Bifează Evenimente</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('vezi-statistici')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">📊</span>
+                            <span>Vezi Statistici</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('total-statistici')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">📈</span>
+                            <span>Total Statistici</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('target-traineri')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">💰</span>
+                            <span>Target Traineri</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('target-animatie')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">🎭</span>
+                            <span>Target Animație</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('target-vanzari')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">💵</span>
+                            <span>Target Vânzări</span>
+                        </div>
+                        <div class="menu-item" onclick="showSecretPage('genereaza-coduri-secret')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">🔑</span>
+                            <span>Generează Coduri</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="menu-item" onclick="showSecretPage('total-statistici')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">📈</span>
-                    <span>Total Statistici</span>
-                </div>
-                <div class="menu-item" onclick="showSecretPage('target-traineri')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">💰</span>
-                    <span>Target Traineri</span>
-                </div>
-                <div class="menu-item" onclick="showSecretPage('target-animatie')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">🎭</span>
-                    <span>Target Animație</span>
-                </div>
-                <div class="menu-item" onclick="showSecretPage('target-vanzari')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">💵</span>
-                    <span>Target Vânzări</span>
-                </div>
-                <div class="menu-item" onclick="showSecretPage('genereaza-coduri-secret')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">🔑</span>
-                    <span>Generează Coduri</span>
-                </div>
-                <div class="menu-item" onclick="showSecretPage('gestionare-utilizatori')" style="font-size: 14px; padding: 12px 20px;">
-                    <span class="menu-icon">👥</span>
-                    <span>Gestionare Utilizatori</span>
+                
+                <!-- MOD GM SECTION - Hidden by default, shown after password -->
+                <div id="gmMenuSection" style="display: none;">
+                    <div class="menu-item" onclick="toggleGMMenu()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; font-weight: 700; cursor: pointer;">
+                        <span class="menu-icon">🎮</span>
+                        <span>Mod GM</span>
+                        <span id="gmMenuToggle" style="margin-left: auto; font-size: 16px;">▼</span>
+                    </div>
+                    <div id="gmMenuItems" style="display: none; margin-left: 15px; border-left: 3px solid #8b5cf6; padding-left: 5px;">
+                        <div class="menu-item" onclick="showPage('mod-gm')" style="font-size: 14px; padding: 12px 20px;">
+                            <span class="menu-icon">👥</span>
+                            <span>Gestionare Utilizatori</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -5188,13 +5202,17 @@ IMPORTANT:
                 console.log('✅ Admin password correct!');
                 closePasswordModal();
                 
-                // Show Mod Admin page
+                // Show Admin section in sidebar
+                document.getElementById('adminMenuSection').style.display = 'block';
+                
+                // Auto-expand Admin menu
+                document.getElementById('adminMenuItems').style.display = 'block';
+                document.getElementById('adminMenuToggle').textContent = '▲';
+                
+                // Show Mod Admin page (pagina-secreta)
                 showPage('pagina-secreta');
                 
-                // Show secret menu in sidebar
-                document.getElementById('secretMenuSection').style.display = 'block';
-                
-                // Activate first item in secret menu
+                // Activate first item in Admin menu
                 showSecretPage('bifeaza-evenimente-secret');
                 
                 // Success message
@@ -5217,6 +5235,13 @@ IMPORTANT:
             if (password === 'Gmandrei209512!') {
                 console.log('✅ GM password correct!');
                 closePasswordModal();
+                
+                // Show GM section in sidebar
+                document.getElementById('gmMenuSection').style.display = 'block';
+                
+                // Auto-expand GM menu
+                document.getElementById('gmMenuItems').style.display = 'block';
+                document.getElementById('gmMenuToggle').textContent = '▲';
                 
                 // Show Mod GM page
                 showPage('mod-gm');
@@ -5249,8 +5274,8 @@ IMPORTANT:
                 closePasswordModal();
                 showPage('pagina-secreta');
                 
-                // Arată meniul secret în bara laterală
-                document.getElementById('secretMenuSection').style.display = 'block';
+                // Arată meniul secret în bara laterală (OLD - replaced by new structure)
+                // document.getElementById('secretMenuSection').style.display = 'block';
                 
                 // Activează primul item din meniul secret
                 showSecretPage('bifeaza-evenimente-secret');
@@ -5266,6 +5291,43 @@ IMPORTANT:
                 document.getElementById('passwordInput').value = '';
                 document.getElementById('passwordInput').focus();
             }
+        }
+        
+        // Toggle Admin Menu (expand/collapse)
+        function toggleAdminMenu() {
+            const menuItems = document.getElementById('adminMenuItems');
+            const toggleIcon = document.getElementById('adminMenuToggle');
+            
+            if (menuItems.style.display === 'none') {
+                menuItems.style.display = 'block';
+                toggleIcon.textContent = '▲';
+            } else {
+                menuItems.style.display = 'none';
+                toggleIcon.textContent = '▼';
+            }
+        }
+        
+        // Toggle GM Menu (expand/collapse)
+        function toggleGMMenu() {
+            const menuItems = document.getElementById('gmMenuItems');
+            const toggleIcon = document.getElementById('gmMenuToggle');
+            
+            if (menuItems.style.display === 'none') {
+                menuItems.style.display = 'block';
+                toggleIcon.textContent = '▲';
+            } else {
+                menuItems.style.display = 'none';
+                toggleIcon.textContent = '▼';
+            }
+        }
+        
+        // Toggle Creier AI (show/hide in sidebar or navigate to page)
+        function toggleCreierAI() {
+            // Navigate to Mod GM page and show Creier AI section
+            showPage('mod-gm');
+            setTimeout(() => {
+                showCreierAI();
+            }, 100);
         }
 
         function showSecretPage(pageId) {
