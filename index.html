@@ -1155,6 +1155,17 @@ Politici:
                         >
                             👤 Am deja cont
                         </button>
+                        
+                        <!-- Create First Admin Button (for initial setup) -->
+                        <button 
+                            type="button"
+                            onclick="createFirstAdmin()"
+                            style="width: 100%; padding: 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(239, 68, 68, 0.5)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(239, 68, 68, 0.4)'"
+                        >
+                            🔧 Creează Primul Admin (Setup)
+                        </button>
                     </form>
                     
                     <!-- Error Message -->
@@ -3587,8 +3598,15 @@ Politici:
         }
         
         function toggleSidebar() {
+            console.log('🍔 Toggle sidebar called!');
             const sidebar = document.getElementById('sidebar');
+            if (!sidebar) {
+                console.error('❌ Sidebar element not found!');
+                return;
+            }
+            console.log('📱 Current sidebar classes:', sidebar.classList.toString());
             sidebar.classList.toggle('open');
+            console.log('✅ After toggle:', sidebar.classList.toString());
         }
         
         // Toggle Intră în cont submenu
@@ -3703,6 +3721,50 @@ Politici:
                 }
                 errorDiv.style.display = 'block';
             }
+        }
+        
+        // Create First Admin - Easy setup for initial administrator
+        function createFirstAdmin() {
+            console.log('🔧 Creating first admin...');
+            
+            // Check if users already exist
+            const adminUsers = JSON.parse(localStorage.getItem('superparty_admin_users') || '[]');
+            
+            if (adminUsers.length > 0) {
+                const hasApproved = adminUsers.some(u => u.approved === true);
+                if (hasApproved) {
+                    alert('⚠️ Există deja utilizatori aprobați în sistem!\n\nAcest buton e doar pentru setup-ul inițial. Folosește formularul normal de înregistrare.');
+                    return;
+                }
+            }
+            
+            // Create first admin with pre-approved status
+            const firstAdmin = {
+                name: "Admin SuperParty",
+                email: "admin@superparty.ro",
+                password: "admin123",
+                passwordConfirm: "admin123",
+                accessKey: "",
+                userCode: "A1",
+                userRole: "Admin",
+                blocked: false,
+                approved: true,  // ✅ Pre-approved!
+                failedAttempts: 0
+            };
+            
+            adminUsers.push(firstAdmin);
+            localStorage.setItem('superparty_admin_users', JSON.stringify(adminUsers));
+            
+            console.log('✅ First admin created successfully!');
+            
+            // Show success message with credentials
+            alert('✅ Primul Admin a fost creat!\n\n📧 Email: admin@superparty.ro\n🔒 Parolă: admin123\n\n👉 Acum poți face login cu aceste date!\n\n⚠️ IMPORTANT: După login, schimbă datele din Mod GM!');
+            
+            // Redirect to login page
+            setTimeout(() => {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('intra-cont').classList.add('active');
+            }, 500);
         }
         
         // Registration Handler
