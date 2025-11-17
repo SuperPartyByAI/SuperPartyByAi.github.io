@@ -4233,13 +4233,10 @@ Politici:
         
         // Open AI Chat function
         // AI Chat Functions
+        let chatHistory = [];
         
         // AI Chat Server Configuration
-        // ✅ Backend deployed on Vercel
         const AI_SERVER_URL = 'https://superparty-backend.vercel.app';
-        
-        // Conversation history for context
-        let conversationHistory = [];
         
         
         function openAIChat() {
@@ -4306,94 +4303,53 @@ Politici:
                     };
                 }
                 
-                // Prepare arcade list for AI prompt
-                let arcadeList = 'Arcade disponibile în catalog:\n\n';
-                arcades.forEach((arcade, index) => {
-                    arcadeList += `${index + 1}. ${arcade.name}\n`;
-                    arcadeList += `   Preț: ${arcade.price} lei\n`;
-                    arcadeList += `   Descriere: ${arcade.description}\n\n`;
-                });
+                // Prepare catalog for comparison
+                const catalogImages = arcades.map(arcade => ({
+                    name: arcade.name,
+                    description: arcade.description,
+                    price: arcade.price,
+                    imageUrl: arcade.image_url
+                }));
                 
-                const prompt = `${arcadeList}
-
-Analizează imaginea încărcată și identifică dacă aparține uneia dintre arcade-le de mai sus.
-
-Răspunde DOAR în următorul format JSON:
-{
-  "match": true/false,
-  "arcade_name": "numele arcade-ului identificat (sau null)",
-  "confidence": "procentul de încredere 0-100",
-  "reason": "explicație scurtă"
-}`;
+                // CORS WORKAROUND: Use different fetch configuration
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
                 
-                // Call Vision API
-                const response = await fetch(`${AI_SERVER_URL}/api/vision`, {
+                const response = await fetch('https://superparty-ai.vercel.app/api/compare-arcade', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'omit',
                     body: JSON.stringify({
-                        image: currentArcadeImage,
-                        prompt: prompt
-                    })
+                        userImage: currentArcadeImage,
+                        catalogImages: catalogImages
+                    }),
+                    signal: controller.signal
+                }).catch(err => {
+                    clearTimeout(timeoutId);
+                    // If CORS fails, return mock response for now
+                    console.warn('CORS issue detected, using fallback');
+                    throw err;
                 });
                 
+                clearTimeout(timeoutId);
+                
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || `API error: ${response.status}`);
+                    throw new Error('API error');
                 }
                 
                 const data = await response.json();
-                
-                // Parse AI response
-                try {
-                    const aiResponse = data.response;
-                    // Try to extract JSON from response
-                    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        const result = JSON.parse(jsonMatch[0]);
-                        
-                        if (result.match && result.arcade_name) {
-                            // Find matching arcade
-                            const matchedArcade = arcades.find(a => 
-                                a.name.toLowerCase() === result.arcade_name.toLowerCase()
-                            );
-                            
-                            if (matchedArcade) {
-                                return {
-                                    success: true,
-                                    match: true,
-                                    message: `Am identificat arcade-ul cu ${result.confidence}% încredere!`,
-                                    arcade: {
-                                        name: matchedArcade.name,
-                                        price: matchedArcade.price,
-                                        description: matchedArcade.description
-                                    }
-                                };
-                            }
-                        }
-                    }
-                    
-                    // No match found
-                    return {
-                        success: true,
-                        match: false,
-                        message: 'Nu am putut identifica arcade-ul din imagine. Te rog trimite o poză mai clară sau contactează-ne direct!'
-                    };
-                    
-                } catch (parseError) {
-                    console.error('Error parsing AI response:', parseError);
-                    return {
-                        success: false,
-                        message: 'Eroare la procesarea răspunsului AI. Te rog încearcă din nou!'
-                    };
-                }
+                return data;
                 
             } catch (error) {
                 console.error('Error comparing arcade:', error);
                 return {
                     success: false,
-                    message: 'Eroare la analiza imaginii. Backend-ul nu răspunde corect. Te rog verifică configurarea AI_SERVER_URL!'
+                    message: 'Eroare la compararea imaginii. Backend-ul nu răspunde corect. Te rog încearcă din nou sau contactează administratorul!'
                 };
             }
         }
@@ -4553,6 +4509,14 @@ Răspunde DOAR în următorul format JSON:
             // Add user message to chat
             addMessageToChat(message, 'user');
             
+            // ========================================
+            // PARTY NOTATION INTENT DETECTION
+            // ========================================
+            if (detectPartyIntent(message)) {
+                showPhotoOptionsInChat();
+                return; // Don't send to regular AI
+            }
+            
             // Show loading indicator
             const loadingId = addLoadingMessage();
             
@@ -4579,31 +4543,43 @@ Răspunde DOAR în următorul format JSON:
                     console.log('⚠️ Using localStorage knowledge base');
                 }
                 
-                // Build conversation context with knowledge base
-                const systemMessage = knowledgeBase ? 
-                    `Baza de cunoștințe SuperParty:\n${knowledgeBase}\n\nFolosește această informație pentru a răspunde întrebărilor.` : 
-                    '';
+                // Call OpenAI directly for chat
+                const messages = [
+                    {
+                        role: 'system',
+                        content: `Tu ești asistentul AI pentru SuperParty, o companie de petreceri pentru copii. 
+                        
+${knowledgeBase}
+
+Răspunde în limba română, prietenos și profesional. Ajută utilizatorii cu:
+- Informații despre servicii și prețuri
+- Notarea evenimentelor (când spun "vreau să notez o petrecere" sau similar)
+- Întrebări generale despre petreceri copii
+
+Dacă nu știi răspunsul, spune clar că nu ai informația.`
+                    },
+                    ...chatHistory.slice(-6),
+                    {
+                        role: 'user',
+                        content: message
+                    }
+                ];
                 
-                // Prepare conversation history
-                const contextHistory = systemMessage ? 
-                    [{ role: 'system', content: systemMessage }, ...conversationHistory.slice(-8)] :
-                    conversationHistory.slice(-8);
-                
-                // Call NEW Backend on Vercel
-                const response = await fetch(`${AI_SERVER_URL}/api/chat`, {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
                     },
                     body: JSON.stringify({
-                        message: message,
-                        conversationHistory: contextHistory
+                        model: 'gpt-4o-mini',
+                        max_tokens: 1000,
+                        messages: messages
                     })
                 });
                 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || `Server error: ${response.status}`);
+                    throw new Error('Server error: ' + response.status);
                 }
                 
                 const data = await response.json();
@@ -4612,20 +4588,20 @@ Răspunde DOAR în următorul format JSON:
                 removeLoadingMessage(loadingId);
                 
                 // Add AI response
-                const aiMessage = data.response;
+                const aiMessage = data.choices[0].message.content;
                 addMessageToChat(aiMessage, 'assistant');
                 
-                // Update conversation history
-                conversationHistory.push({ role: 'user', content: message });
-                conversationHistory.push({ role: 'assistant', content: aiMessage });
+                // Update history
+                chatHistory.push({ role: 'user', content: message });
+                chatHistory.push({ role: 'assistant', content: aiMessage });
                 
-                // Keep only last 10 messages (5 pairs)
-                if (conversationHistory.length > 10) {
-                    conversationHistory = conversationHistory.slice(-10);
-                }
-                
-                // SILENT LOGGING - Save conversation to Supabase
+                // SILENT LOGGING - Save conversation to localStorage (NO user notification)
                 saveConversationToLog(message, aiMessage);
+                
+                // Keep only last 10 messages (5 pairs) to avoid token limits
+                if (chatHistory.length > 10) {
+                    chatHistory = chatHistory.slice(-10);
+                }
                 
             } catch (error) {
                 console.error('AI Chat Error:', error);
@@ -9442,6 +9418,437 @@ IMPORTANT:
                     suggestionsDiv.style.display = 'none';
                 }
             }
+        }
+
+        // ========================================
+        // 🎉 PARTY NOTATION SYSTEM WITH AI CHAT
+        // ========================================
+        
+        // Global variables for party notation
+        let currentFormPhoto = null;
+        let currentFormData = null;
+        let partyNotationActive = false;
+        
+        // ========================================
+        // 1. DETECT PARTY NOTATION INTENT
+        // ========================================
+        
+        function detectPartyIntent(message) {
+            const lowerMessage = message.toLowerCase();
+            const triggers = [
+                'vreau să notez',
+                'notez o petrecere',
+                'notează eveniment',
+                'adaug eveniment',
+                'formular nou',
+                'scanează formular',
+                'înregistrez petrecere',
+                'adaugă petrecere'
+            ];
+            
+            return triggers.some(trigger => lowerMessage.includes(trigger));
+        }
+        
+        // ========================================
+        // 2. SHOW PHOTO OPTIONS IN CHAT
+        // ========================================
+        
+        function showPhotoOptionsInChat() {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // AI response with buttons
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; animation: fadeIn 0.3s ease;';
+            messageDiv.innerHTML = `
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span style="font-size: 20px;">🤖</span>
+                </div>
+                <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;">
+                    <p style="margin: 0 0 15px 0; color: #111827; line-height: 1.5; font-weight: 600;">
+                        Perfect! Cum vrei să introduci datele pentru petrecere?
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="openCameraForParty()" style="flex: 1; min-width: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 18px;">📷</span>
+                            <span>Fă Poză</span>
+                        </button>
+                        <button onclick="openGalleryForParty()" style="flex: 1; min-width: 140px; background: white; color: #667eea; border: 2px solid #667eea; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 18px;">🖼️</span>
+                            <span>Din Galerie</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            partyNotationActive = true;
+        }
+        
+        // ========================================
+        // 3. OPEN CAMERA/GALLERY
+        // ========================================
+        
+        function openCameraForParty() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            input.style.display = 'none';
+            input.onchange = (e) => handlePartyPhotoUpload(e.target.files[0]);
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+            
+            // Show loading message
+            addMessageToChat('📸 Deschid camera...', 'user');
+        }
+        
+        function openGalleryForParty() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            input.onchange = (e) => handlePartyPhotoUpload(e.target.files[0]);
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+            
+            // Show loading message
+            addMessageToChat('🖼️ Deschid galeria...', 'user');
+        }
+        
+        // ========================================
+        // 4. HANDLE PHOTO UPLOAD & SCAN
+        // ========================================
+        
+        async function handlePartyPhotoUpload(file) {
+            if (!file) return;
+            
+            // Validate file size
+            if (file.size > 10 * 1024 * 1024) {
+                addMessageToChat('❌ Fișierul este prea mare! Maximum 10MB.', 'assistant', true);
+                return;
+            }
+            
+            // Show user message
+            addMessageToChat('✅ Poză încărcată! Analizez formularul...', 'user');
+            
+            // Show loading
+            const loadingId = addLoadingMessage();
+            
+            try {
+                // Convert to base64
+                const reader = new FileReader();
+                const base64Image = await new Promise((resolve, reject) => {
+                    reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                
+                currentFormPhoto = base64Image;
+                
+                // Call OpenAI GPT-4 Vision API directly
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4o',
+                        max_tokens: 2000,
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: `data:${file.type};base64,${base64Image}`
+                                    }
+                                },
+                                {
+                                    type: 'text',
+                                    text: `Analizează această imagine și extrage TOATE informațiile pentru un formular de eveniment petrecere copii. Răspunde DOAR cu un obiect JSON valid, fără text suplimentar.
+        
+        {
+          "dataFormular": "zi/luna/an (ex: 09/11/2025)",
+          "nume": "nume client",
+          "prenume": "prenume client", 
+          "telefon": "telefon cu +40",
+          "sursa": "de unde a venit (Facebook/Instagram/Recomandare/Site/TikTok/Alte)",
+          "titlu": "personaje separate cu + (ex: Elsa + Ana, Chase + Skye)",
+          "dataPetrecere": "zi/luna/an",
+          "oraPetrecere": "HH:MM (24h)",
+          "durataText": "text exact cum scrie durata pentru fiecare rol (ex: 'Elsa 2 ore, Ana 2 ore' sau 'Chase 2h Skye 1h')",
+          "varsta": "numar ani",
+          "numarCopii": "numar",
+          "adresa": "adresa completa",
+          "detaliiAdresa": "detalii extra",
+          "sofer": "DA/NU",
+          "avans": "suma RON",
+          "rest": "suma RON", 
+          "total": "suma RON totală",
+          "preturiDetaliate": "prețuri per rol dacă sunt specificate (ex: 'Elsa 600 RON, Ana 600 RON')",
+          "observatii": "text liber"
+        }
+        
+        IMPORTANT: 
+        - Pentru "titlu" extrage numele personajelor separate cu +
+        - Pentru "durataText" extrage EXACT durata pentru fiecare personaj/rol
+        - Dacă un câmp nu e vizibil, pune null`
+                                }
+                            ]
+                        }]
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                let jsonText = data.choices[0].message.content;
+                
+                // Clean JSON response
+                jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                currentFormData = JSON.parse(jsonText);
+                
+                // Remove loading
+                removeLoadingMessage(loadingId);
+                
+                // Show summary for confirmation
+                showFormSummary(currentFormData);
+                
+            } catch (error) {
+                console.error('Photo scan error:', error);
+                removeLoadingMessage(loadingId);
+                
+                let errorMsg = '❌ Eroare la procesarea imaginii.\n\n';
+                if (error.message) {
+                    errorMsg += `Detalii: ${error.message}\n\n`;
+                }
+                errorMsg += 'Te rog încearcă din nou sau contactează administratorul.';
+                
+                addMessageToChat(errorMsg, 'assistant', true);
+                partyNotationActive = false;
+            }
+        }
+        
+        // ========================================
+        // 5. SHOW FORM SUMMARY WITH CONFIRMATION
+        // ========================================
+        
+        function showFormSummary(data) {
+            // Parse roles and durations
+            const roles = parseRolesFromData(data);
+            
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; animation: fadeIn 0.3s ease;';
+            
+            // Build roles summary
+            let rolesSummary = '';
+            roles.forEach((role, index) => {
+                rolesSummary += `   ${index + 1}. ${role.name} - ${role.duration} ore\n`;
+            });
+            
+            messageDiv.innerHTML = `
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span style="font-size: 20px;">🤖</span>
+                </div>
+                <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;">
+                    <p style="margin: 0 0 12px 0; color: #111827; font-weight: 700; font-size: 16px;">
+                        ✨ Am analizat formularul! Iată ce am înțeles:
+                    </p>
+                    <div style="background: #f9fafb; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: monospace; font-size: 13px; line-height: 1.8;">
+                        <div style="margin-bottom: 8px;"><strong>👥 Personaje:</strong> ${data.titlu || 'N/A'}</div>
+                        <div style="margin-bottom: 8px;"><strong>⏱️ Roluri detectate:</strong></div>
+                        <pre style="margin: 0 0 8px 0; white-space: pre-wrap;">${rolesSummary}</pre>
+                        <div style="margin-bottom: 8px;"><strong>👤 Animatori necesari:</strong> ${roles.length}</div>
+                        <div style="margin-bottom: 8px;"><strong>📅 Data:</strong> ${data.dataPetrecere || 'N/A'} la ${data.oraPetrecere || 'N/A'}</div>
+                        <div style="margin-bottom: 8px;"><strong>👶 Vârstă copil:</strong> ${data.varsta || 'N/A'} ani</div>
+                        <div style="margin-bottom: 8px;"><strong>👥 Nr. copii:</strong> ${data.numarCopii || 'N/A'}</div>
+                        <div style="margin-bottom: 8px;"><strong>💰 Total:</strong> ${data.total || 'N/A'} RON</div>
+                        <div style="margin-bottom: 8px;"><strong>📞 Client:</strong> ${data.nume || ''} ${data.prenume || ''}</div>
+                        <div><strong>📱 Telefon:</strong> ${data.telefon || 'N/A'}</div>
+                    </div>
+                    <p style="margin: 0 0 12px 0; color: #6b7280; font-size: 14px;">
+                        Este totul corect?
+                    </p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="confirmAndSaveParty()" style="flex: 1; min-width: 120px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>✅</span>
+                            <span>Da, Salvează</span>
+                        </button>
+                        <button onclick="cancelPartyNotation()" style="flex: 1; min-width: 120px; background: white; color: #ef4444; border: 2px solid #ef4444; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>❌</span>
+                            <span>Anulează</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // ========================================
+        // 6. PARSE ROLES FROM DATA
+        // ========================================
+        
+        function parseRolesFromData(data) {
+            const roles = [];
+            
+            if (!data.titlu) return roles;
+            
+            // Split by + or comma
+            const roleNames = data.titlu.split(/[+,]/).map(r => r.trim()).filter(r => r.length > 0);
+            
+            // Try to extract durations from durataText
+            const durataText = data.durataText || '';
+            
+            roleNames.forEach(roleName => {
+                // Try to find duration for this role
+                const lowerDurata = durataText.toLowerCase();
+                const lowerRole = roleName.toLowerCase();
+                
+                // Pattern: "rolename 2 ore" or "rolename 2h"
+                const regex = new RegExp(`${lowerRole}[^\\d]*(\\d+)\\s*(h|ore|ora)`, 'i');
+                const match = durataText.match(regex);
+                
+                let duration = 2; // Default 2 ore
+                if (match && match[1]) {
+                    duration = parseInt(match[1]);
+                }
+                
+                roles.push({
+                    name: roleName,
+                    duration: duration
+                });
+            });
+            
+            return roles;
+        }
+        
+        // ========================================
+        // 7. CONFIRM AND SAVE PARTY
+        // ========================================
+        
+        async function confirmAndSaveParty() {
+            if (!currentFormData) return;
+            
+            // Show loading
+            addMessageToChat('💾 Salvez evenimentul...', 'user');
+            const loadingId = addLoadingMessage();
+            
+            try {
+                // Parse roles
+                const roles = parseRolesFromData(currentFormData);
+                
+                // Get next event number
+                let lastEventNumber = localStorage.getItem('lastEventNumber');
+                let eventNumber = lastEventNumber ? parseInt(lastEventNumber) + 1 : 1;
+                localStorage.setItem('lastEventNumber', eventNumber);
+                
+                // Create MAMA event
+                const mamaEvent = {
+                    id: Date.now(),
+                    codEveniment: eventNumber,
+                    isMama: true,
+                    isDuplicate: false,
+                    createdAt: new Date().toISOString(),
+                    status: 'pending',
+                    
+                    // Form data
+                    dataFormular: currentFormData.dataFormular,
+                    nume: currentFormData.nume,
+                    prenume: currentFormData.prenume,
+                    telefon: currentFormData.telefon,
+                    sursa: currentFormData.sursa,
+                    personaj: currentFormData.titlu,
+                    dataPetrecere: currentFormData.dataPetrecere,
+                    oraPetrecere: currentFormData.oraPetrecere,
+                    varsta: currentFormData.varsta,
+                    numarCopii: currentFormData.numarCopii,
+                    adresa: currentFormData.adresa,
+                    detaliiAdresa: currentFormData.detaliiAdresa,
+                    sofer: currentFormData.sofer,
+                    avans: currentFormData.avans,
+                    rest: currentFormData.rest,
+                    total: currentFormData.total,
+                    observatii: currentFormData.observatii
+                };
+                
+                // Save MAMA to localStorage
+                let parties = JSON.parse(localStorage.getItem('superpartyEvents') || '[]');
+                parties.push(mamaEvent);
+                
+                // Create duplicate events for each role
+                const duplicates = [];
+                roles.forEach((role, index) => {
+                    const duplicateEvent = {
+                        ...mamaEvent,
+                        id: Date.now() + index + 1,
+                        codEveniment: `${eventNumber}-${index + 1}`,
+                        isMama: false,
+                        isDuplicate: true,
+                        duplicateOf: mamaEvent.id,
+                        personaj: role.name,
+                        durata: role.duration,
+                        durataDisplay: `${role.duration} ${role.duration === 1 ? 'oră' : 'ore'}`
+                    };
+                    duplicates.push(duplicateEvent);
+                    parties.push(duplicateEvent);
+                });
+                
+                // Save all to localStorage
+                localStorage.setItem('superpartyEvents', JSON.stringify(parties));
+                
+                // Save to Supabase if available
+                if (typeof supabase !== 'undefined') {
+                    try {
+                        await supabase.from('events').insert([mamaEvent, ...duplicates]);
+                    } catch (e) {
+                        console.warn('Supabase save failed:', e);
+                    }
+                }
+                
+                removeLoadingMessage(loadingId);
+                
+                // Show success message
+                let successMsg = `✅ Perfect! Am creat evenimentele:\n\n`;
+                successMsg += `📋 Eveniment #${eventNumber} - MAMA (${currentFormData.titlu})\n`;
+                roles.forEach((role, index) => {
+                    successMsg += `   └─ 👤 Eveniment #${eventNumber}-${index + 1} - ${role.name} (${role.duration} ${role.duration === 1 ? 'oră' : 'ore'})\n`;
+                });
+                successMsg += `\n✅ Total ${roles.length + 1} evenimente salvate!\n\nMai vrei să notezi o petrecere?`;
+                
+                addMessageToChat(successMsg, 'assistant');
+                
+                // Reset state
+                currentFormPhoto = null;
+                currentFormData = null;
+                partyNotationActive = false;
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                removeLoadingMessage(loadingId);
+                addMessageToChat('❌ Eroare la salvarea evenimentului. Te rog încearcă din nou.', 'assistant', true);
+            }
+        }
+        
+        // ========================================
+        // 8. CANCEL PARTY NOTATION
+        // ========================================
+        
+        function cancelPartyNotation() {
+            currentFormPhoto = null;
+            currentFormData = null;
+            partyNotationActive = false;
+            
+            addMessageToChat('❌ Notare anulată. Cu ce te pot ajuta?', 'assistant');
         }
 
     </script>
