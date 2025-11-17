@@ -4233,10 +4233,13 @@ Politici:
         
         // Open AI Chat function
         // AI Chat Functions
-        let chatHistory = [];
         
         // AI Chat Server Configuration
-        const AI_SERVER_URL = 'https://super-party-by-ai-github-io.vercel.app';
+        // ✅ Backend deployed on Vercel
+        const AI_SERVER_URL = 'https://superparty-backend.vercel.app';
+        
+        // Conversation history for context
+        let conversationHistory = [];
         
         
         function openAIChat() {
@@ -4303,53 +4306,94 @@ Politici:
                     };
                 }
                 
-                // Prepare catalog for comparison
-                const catalogImages = arcades.map(arcade => ({
-                    name: arcade.name,
-                    description: arcade.description,
-                    price: arcade.price,
-                    imageUrl: arcade.image_url
-                }));
-                
-                // CORS WORKAROUND: Use different fetch configuration
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-                
-                const response = await fetch('https://superparty-ai.vercel.app/api/compare-arcade', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    credentials: 'omit',
-                    body: JSON.stringify({
-                        userImage: currentArcadeImage,
-                        catalogImages: catalogImages
-                    }),
-                    signal: controller.signal
-                }).catch(err => {
-                    clearTimeout(timeoutId);
-                    // If CORS fails, return mock response for now
-                    console.warn('CORS issue detected, using fallback');
-                    throw err;
+                // Prepare arcade list for AI prompt
+                let arcadeList = 'Arcade disponibile în catalog:\n\n';
+                arcades.forEach((arcade, index) => {
+                    arcadeList += `${index + 1}. ${arcade.name}\n`;
+                    arcadeList += `   Preț: ${arcade.price} lei\n`;
+                    arcadeList += `   Descriere: ${arcade.description}\n\n`;
                 });
                 
-                clearTimeout(timeoutId);
+                const prompt = `${arcadeList}
+
+Analizează imaginea încărcată și identifică dacă aparține uneia dintre arcade-le de mai sus.
+
+Răspunde DOAR în următorul format JSON:
+{
+  "match": true/false,
+  "arcade_name": "numele arcade-ului identificat (sau null)",
+  "confidence": "procentul de încredere 0-100",
+  "reason": "explicație scurtă"
+}`;
+                
+                // Call Vision API
+                const response = await fetch(`${AI_SERVER_URL}/api/vision`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: currentArcadeImage,
+                        prompt: prompt
+                    })
+                });
                 
                 if (!response.ok) {
-                    throw new Error('API error');
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `API error: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                return data;
+                
+                // Parse AI response
+                try {
+                    const aiResponse = data.response;
+                    // Try to extract JSON from response
+                    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const result = JSON.parse(jsonMatch[0]);
+                        
+                        if (result.match && result.arcade_name) {
+                            // Find matching arcade
+                            const matchedArcade = arcades.find(a => 
+                                a.name.toLowerCase() === result.arcade_name.toLowerCase()
+                            );
+                            
+                            if (matchedArcade) {
+                                return {
+                                    success: true,
+                                    match: true,
+                                    message: `Am identificat arcade-ul cu ${result.confidence}% încredere!`,
+                                    arcade: {
+                                        name: matchedArcade.name,
+                                        price: matchedArcade.price,
+                                        description: matchedArcade.description
+                                    }
+                                };
+                            }
+                        }
+                    }
+                    
+                    // No match found
+                    return {
+                        success: true,
+                        match: false,
+                        message: 'Nu am putut identifica arcade-ul din imagine. Te rog trimite o poză mai clară sau contactează-ne direct!'
+                    };
+                    
+                } catch (parseError) {
+                    console.error('Error parsing AI response:', parseError);
+                    return {
+                        success: false,
+                        message: 'Eroare la procesarea răspunsului AI. Te rog încearcă din nou!'
+                    };
+                }
                 
             } catch (error) {
                 console.error('Error comparing arcade:', error);
                 return {
                     success: false,
-                    message: 'Eroare la compararea imaginii. Backend-ul nu răspunde corect. Te rog încearcă din nou sau contactează administratorul!'
+                    message: 'Eroare la analiza imaginii. Backend-ul nu răspunde corect. Te rog verifică configurarea AI_SERVER_URL!'
                 };
             }
         }
@@ -4535,7 +4579,17 @@ Politici:
                     console.log('⚠️ Using localStorage knowledge base');
                 }
                 
-                // Call Secure Server (NOT OpenAI directly!)
+                // Build conversation context with knowledge base
+                const systemMessage = knowledgeBase ? 
+                    `Baza de cunoștințe SuperParty:\n${knowledgeBase}\n\nFolosește această informație pentru a răspunde întrebărilor.` : 
+                    '';
+                
+                // Prepare conversation history
+                const contextHistory = systemMessage ? 
+                    [{ role: 'system', content: systemMessage }, ...conversationHistory.slice(-8)] :
+                    conversationHistory.slice(-8);
+                
+                // Call NEW Backend on Vercel
                 const response = await fetch(`${AI_SERVER_URL}/api/chat`, {
                     method: 'POST',
                     headers: {
@@ -4543,13 +4597,13 @@ Politici:
                     },
                     body: JSON.stringify({
                         message: message,
-                        history: chatHistory.slice(-6),
-                        knowledgeBase: knowledgeBase // Inject Creier AI
+                        conversationHistory: contextHistory
                     })
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Server error: ' + response.status);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Server error: ${response.status}`);
                 }
                 
                 const data = await response.json();
@@ -4557,31 +4611,21 @@ Politici:
                 // Remove loading
                 removeLoadingMessage(loadingId);
                 
-                // Add AI response from server
-                if (data.success) {
-                    const aiMessage = data.response;
-                    addMessageToChat(aiMessage, 'assistant');
-                    
-                    // Update history
-                    chatHistory.push({ role: 'user', content: message });
-                    chatHistory.push({ role: 'assistant', content: aiMessage });
-                    
-                    // SILENT LOGGING - Save conversation to localStorage (NO user notification)
-                    saveConversationToLog(message, aiMessage);
-                    
-                    // Check if answer came from knowledge base or web search
-                    // If response indicates it used web search (backend should flag this), log as unanswered
-                    if (data.usedWebSearch) {
-                        saveUnansweredQuestion(message, aiMessage);
-                    }
-                } else {
-                    throw new Error(data.error || 'Unknown error');
+                // Add AI response
+                const aiMessage = data.response;
+                addMessageToChat(aiMessage, 'assistant');
+                
+                // Update conversation history
+                conversationHistory.push({ role: 'user', content: message });
+                conversationHistory.push({ role: 'assistant', content: aiMessage });
+                
+                // Keep only last 10 messages (5 pairs)
+                if (conversationHistory.length > 10) {
+                    conversationHistory = conversationHistory.slice(-10);
                 }
                 
-                // Keep only last 10 messages (5 pairs) to avoid token limits
-                if (chatHistory.length > 10) {
-                    chatHistory = chatHistory.slice(-10);
-                }
+                // SILENT LOGGING - Save conversation to Supabase
+                saveConversationToLog(message, aiMessage);
                 
             } catch (error) {
                 console.error('AI Chat Error:', error);
