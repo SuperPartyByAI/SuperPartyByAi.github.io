@@ -1288,15 +1288,16 @@ Politici:
                     </div>
                 </div>
                 
-                <input type="file" id="aiPhotoInput" accept="image/*" style="display: none;" onchange="processPhotoWithAI(this)">
+                <input type="file" id="aiPhotoInputCamera" accept="image/*" capture="environment" style="display: none;" onchange="processPhotoWithAI(this)">
+                <input type="file" id="aiPhotoInputGallery" accept="image/*" style="display: none;" onchange="processPhotoWithAI(this)">
                 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" onclick="document.getElementById('aiPhotoInput').click()" style="flex: 1; min-width: 200px; background: white; color: #667eea; border: none; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button type="button" onclick="document.getElementById('aiPhotoInputCamera').click()" style="flex: 1; min-width: 200px; background: white; color: #667eea; border: none; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px;">📷</span>
                         <span>Fă Poză</span>
                     </button>
                     
-                    <button type="button" onclick="document.getElementById('aiPhotoInput').click()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button type="button" onclick="document.getElementById('aiPhotoInputGallery').click()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 15px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px;">🖼️</span>
                         <span>Încarcă Poză</span>
                     </button>
@@ -9484,3 +9485,5 @@ IMPORTANT:
 
 </body>
 </html>
+
+    
