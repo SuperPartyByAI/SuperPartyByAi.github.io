@@ -1502,50 +1502,58 @@
         }
         
         async function loadUnansweredQuestions() {
-            try {
-                const { data, error } = await supabase
-                    .from('unanswered_questions')
-                    .select('*')
-                    .eq('answered', false)
-                    .order('asked_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                // Update counter
-                document.getElementById('unansweredCount').textContent = data ? data.length : 0;
-                
-                const container = document.getElementById('unansweredQuestionsList');
-                container.innerHTML = '';
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există întrebări noi! Toate au fost răspunse.</p>';
-                    return;
-                }
-                
-                data.forEach(q => {
-                    const qCard = document.createElement('div');
-                    qCard.style.cssText = 'background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 10px;';
-                    qCard.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: #92400e; margin-bottom: 8px; font-size: 16px;">❓ ${q.question}</div>
-                                <div style="font-size: 13px; color: #78350f;">
-                                    ${q.user_id ? `👤 User ID: ${q.user_id}` : `👻 Utilizator anonim (${q.session_id ? q.session_id.substring(0,8) + '...' : 'N/A'})`}
-                                    <br>🕐 Întrebată: ${new Date(q.asked_at).toLocaleString('ro-RO')}
-                                </div>
-                            </div>
-                            <button onclick="addAnswerToKB('${q.id}', \`${q.question.replace(/`/g, '\\`')}\`)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; margin-left: 15px;">
-                                🧠 Adaugă în Creier
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(qCard);
-                });
-            } catch (error) {
-                console.error('Error loading unanswered questions:', error);
-                alert('❌ Eroare la încărcarea întrebărilor!');
-            }
+    try {
+        if (!supabase) {
+            console.error('Supabase not initialized');
+            return;
         }
+
+        const { data, error } = await supabase
+            .from('unanswered_questions')
+            .select('*')
+            .eq('answered', false)
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Error loading questions:', error);
+            alert('❌ Eroare la încărcarea întrebărilor: ' + error.message);
+            return;
+        }
+        
+        document.getElementById('unansweredCount').textContent = data ? data.length : 0;
+        
+        const container = document.getElementById('unansweredQuestionsList');
+        container.innerHTML = '';
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există întrebări noi! Toate au fost răspunse.</p>';
+            return;
+        }
+        
+        data.forEach(q => {
+            const qCard = document.createElement('div');
+            qCard.style.cssText = 'background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 10px;';
+            qCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: #92400e; margin-bottom: 8px; font-size: 16px;">❓ ${q.question}</div>
+                        <div style="font-size: 13px; color: #78350f;">
+                            ${q.user_id ? `👤 User ID: ${q.user_id}` : `👻 Utilizator anonim (${q.session_id ? q.session_id.substring(0,8) + '...' : 'N/A'})`}
+                            <br>🕐 Întrebată: ${new Date(q.created_at || q.asked_at).toLocaleString('ro-RO')}
+                        </div>
+                    </div>
+                    <button onclick="addAnswerToKB('${q.id}', \`${q.question.replace(/`/g, '\\`')}\`)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; margin-left: 15px;">
+                        🧠 Adaugă în Creier
+                    </button>
+                </div>
+            `;
+            container.appendChild(qCard);
+        });
+    } catch (error) {
+        console.error('Exception in loadUnansweredQuestions:', error);
+        alert('❌ Eroare: ' + error.message);
+    }
+}
         
         async function addNewKnowledge() {
             const question = document.getElementById('newKbQuestion').value.trim();
