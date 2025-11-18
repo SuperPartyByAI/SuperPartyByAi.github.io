@@ -1466,32 +1466,29 @@
                 return;
             }
             
-            if (!supabase) {
-                console.error('❌ Supabase NU ESTE INIȚIALIZAT!', supabase);
-                alert('❌ Supabase nu este inițializat! Reîncarcă pagina.');
-                return;
-            }
-            
-            console.log('✅ Supabase este OK:', supabase);
-            
-            const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
+            const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : null;
             
             try {
-                console.log('📤 Salvez în Supabase knowledge_base...');
-                const { data, error } = await supabase
-                    .from('knowledge_base')
-                    .insert({
-                        question: question,
-                        answer: answer,
+                console.log('📤 Salvez prin backend Vercel...');
+                const response = await fetch('https://api-chat-js-three.vercel.app/api/save-knowledge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question,
+                        answer,
                         category: category || null,
-                        keywords: keywords.length > 0 ? keywords : null
+                        keywords
                     })
-                    .select();
+                });
                 
-                if (error) {
-                    console.error('❌ Eroare Supabase:', error);
-                    throw error;
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Backend error');
                 }
+                
+                const data = await response.json();
                 
                 console.log('✅ SALVAT CU SUCCES!', data);
                 alert('✅ Cunoștință salvată cu succes în Creier AI!');
