@@ -1019,24 +1019,38 @@
             sendButton.textContent = '⏳ Așteaptă...';
             
             try {
+                console.log('📤 Trimit mesaj la backend:', message);
+                
                 const response = await fetch('https://api-chat-js-three.vercel.app/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        messages: [
-                            ...chatHistory,
-                            { role: 'user', content: message }
-                        ]
+                        message: message,
+                        sessionId: 'web-' + Date.now()
                     })
                 });
                 
+                console.log('📥 Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('❌ Backend error:', errorData);
+                    throw new Error(errorData.error || 'Backend error: ' + response.status);
+                }
+                
                 const data = await response.json();
+                console.log('✅ Data primită:', data);
                 
                 removeLoadingMessage(loadingId);
                 
-                const aiMessage = data.choices[0].message.content;
+                // Verifică dacă avem răspuns valid
+                if (!data.success || !data.response) {
+                    throw new Error('Răspuns invalid de la server');
+                }
+                
+                const aiMessage = data.response;
                 addMessageToChat(aiMessage, 'assistant');
                 
                 chatHistory.push({ role: 'user', content: message });
@@ -1047,10 +1061,10 @@
                 }
                 
             } catch (error) {
-                console.error('AI Chat Error:', error);
+                console.error('💥 AI Chat Error:', error);
                 removeLoadingMessage(loadingId);
                 addMessageToChat(
-                    '❌ Oops! Am întâmpinat o problemă. Încearcă din nou.',
+                    `❌ Oops! Am întâmpinat o problemă: ${error.message}\n\nÎncearcă din nou sau contactează echipa la 0728 242 214.`,
                     'assistant',
                     true
                 );
