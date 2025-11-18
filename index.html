@@ -1521,7 +1521,7 @@
             
             try {
                 // Call Vercel Backend (OpenAI)
-                const response = await fetch('https://superparty-backend.vercel.app/api/chat', {
+                const response = await fetch('https://api-chat-js-three.vercel.app/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1805,7 +1805,7 @@
                 
                 // Call Vercel Vision API
                 try {
-                    const response = await fetch('https://superparty-backend.vercel.app/api/vision', {
+                    const response = await fetch('https://api-chat-js-three.vercel.app/api/vision', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
