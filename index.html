@@ -715,20 +715,79 @@
                 <p style="opacity: 0.9;">Gestionează cunoștințele AI-ului pentru răspunsuri personalizate</p>
             </div>
             
-            <div class="card">
-                <h3 style="color: #1f2937; margin-bottom: 20px;">📚 Bază de Cunoștințe</h3>
-                <p style="color: #6b7280; margin-bottom: 20px;">Adaugă informații pe care AI-ul să le folosească în conversații</p>
-                
-                <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                    <textarea id="knowledgeInput" placeholder="Adaugă informații noi aici..." style="width: 100%; min-height: 150px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical;"></textarea>
-                    <button onclick="saveKnowledge()" style="margin-top: 10px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                        💾 Salvează Cunoștințe
+            <!-- Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="showCreierTab('knowledge')" id="tabKnowledge" style="flex: 1; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    📚 Knowledge Base
+                </button>
+                <button onclick="showCreierTab('unanswered')" id="tabUnanswered" style="flex: 1; padding: 15px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    ❓ Întrebări Noi <span id="unansweredCount" style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 5px;">0</span>
+                </button>
+            </div>
+            
+            <!-- Tab: Knowledge Base -->
+            <div class="card" id="creierTabKnowledge">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">📚 Bază de Cunoștințe</h3>
+                    <button onclick="loadKnowledgeBase()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
                     </button>
                 </div>
                 
-                <h4 style="color: #1f2937; margin-bottom: 15px;">Cunoștințe Salvate:</h4>
-                <div id="knowledgeList" style="display: flex; flex-direction: column; gap: 10px;">
-                    <p style="color: #6b7280;">Nicio cunoștință salvată încă...</p>
+                <p style="color: #6b7280; margin-bottom: 20px;">Lista completă cu cunoștințele AI-ului</p>
+                
+                <!-- Add New Knowledge Form -->
+                <div style="background: #f0fdf4; border: 2px solid #10b981; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #1f2937; margin-bottom: 15px;">➕ Adaugă Cunoștință Nouă</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input 
+                            type="text" 
+                            id="newKbQuestion" 
+                            placeholder="Întrebarea (ex: Cât costă o petrecere?)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <textarea 
+                            id="newKbAnswer" 
+                            placeholder="Răspunsul complet..." 
+                            style="width: 100%; min-height: 100px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical;"
+                        ></textarea>
+                        <input 
+                            type="text" 
+                            id="newKbCategory" 
+                            placeholder="Categorie (ex: Prețuri, Servicii, Contact)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <input 
+                            type="text" 
+                            id="newKbKeywords" 
+                            placeholder="Cuvinte cheie (separate prin virgulă: preț, cost, tarif)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <button onclick="addNewKnowledge()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; align-self: flex-start;">
+                            💾 Salvează în Creier
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Knowledge Base List -->
+                <div id="knowledgeBaseList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Încarcă datele pentru a vedea cunoștințele...</p>
+                </div>
+            </div>
+            
+            <!-- Tab: Unanswered Questions -->
+            <div class="card" id="creierTabUnanswered" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">❓ Întrebări Noi (Fără Răspuns)</h3>
+                    <button onclick="loadUnansweredQuestions()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
+                    </button>
+                </div>
+                
+                <p style="color: #6b7280; margin-bottom: 20px;">Întrebări pe care AI-ul nu le-a putut răspunde din Knowledge Base</p>
+                
+                <div id="unansweredQuestionsList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Încarcă datele pentru a vedea întrebările...</p>
                 </div>
             </div>
         </div>
@@ -1376,15 +1435,206 @@
         // CREIER AI - GM
         // ============================================
         
-        function saveKnowledge() {
-            const knowledge = document.getElementById('knowledgeInput').value.trim();
-            if (!knowledge) {
-                alert('❌ Introdu cunoștințe înainte de a salva!');
+        function showCreierTab(tab) {
+            // Update button styles
+            document.getElementById('tabKnowledge').style.background = tab === 'knowledge' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
+            document.getElementById('tabKnowledge').style.color = tab === 'knowledge' ? 'white' : '#6b7280';
+            document.getElementById('tabUnanswered').style.background = tab === 'unanswered' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
+            document.getElementById('tabUnanswered').style.color = tab === 'unanswered' ? 'white' : '#6b7280';
+            
+            // Show/hide tabs
+            document.getElementById('creierTabKnowledge').style.display = tab === 'knowledge' ? 'block' : 'none';
+            document.getElementById('creierTabUnanswered').style.display = tab === 'unanswered' ? 'block' : 'none';
+            
+            // Load data
+            if (tab === 'knowledge') {
+                loadKnowledgeBase();
+            } else {
+                loadUnansweredQuestions();
+            }
+        }
+        
+        async function loadKnowledgeBase() {
+            try {
+                const { data, error } = await supabase
+                    .from('knowledge_base')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('knowledgeBaseList');
+                container.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">Nu există cunoștințe salvate încă. Adaugă prima cunoștință mai sus! 📚</p>';
+                    return;
+                }
+                
+                data.forEach(kb => {
+                    const kbCard = document.createElement('div');
+                    kbCard.style.cssText = 'background: #f9fafb; border: 2px solid #e5e7eb; padding: 20px; border-radius: 10px;';
+                    kbCard.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: #1f2937; margin-bottom: 8px; font-size: 16px;">❓ ${kb.question}</div>
+                                <div style="color: #6b7280; margin-bottom: 10px; line-height: 1.6;">${kb.answer}</div>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    ${kb.category ? `<span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">📁 ${kb.category}</span>` : ''}
+                                    ${kb.keywords && kb.keywords.length > 0 ? kb.keywords.map(kw => `<span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🔑 ${kw}</span>`).join('') : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px; margin-left: 15px;">
+                                <button onclick="editKnowledge('${kb.id}')" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">✏️ Editează</button>
+                                <button onclick="deleteKnowledge('${kb.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
+                            Adăugat: ${new Date(kb.created_at).toLocaleString('ro-RO')}
+                        </div>
+                    `;
+                    container.appendChild(kbCard);
+                });
+            } catch (error) {
+                console.error('Error loading knowledge base:', error);
+                alert('❌ Eroare la încărcarea Knowledge Base!');
+            }
+        }
+        
+        async function loadUnansweredQuestions() {
+            try {
+                const { data, error } = await supabase
+                    .from('unanswered_questions')
+                    .select('*')
+                    .eq('answered', false)
+                    .order('asked_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                // Update counter
+                document.getElementById('unansweredCount').textContent = data ? data.length : 0;
+                
+                const container = document.getElementById('unansweredQuestionsList');
+                container.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există întrebări noi! Toate au fost răspunse.</p>';
+                    return;
+                }
+                
+                data.forEach(q => {
+                    const qCard = document.createElement('div');
+                    qCard.style.cssText = 'background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 10px;';
+                    qCard.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: #92400e; margin-bottom: 8px; font-size: 16px;">❓ ${q.question}</div>
+                                <div style="font-size: 13px; color: #78350f;">
+                                    ${q.user_id ? `👤 User ID: ${q.user_id}` : `👻 Utilizator anonim (${q.session_id ? q.session_id.substring(0,8) + '...' : 'N/A'})`}
+                                    <br>🕐 Întrebată: ${new Date(q.asked_at).toLocaleString('ro-RO')}
+                                </div>
+                            </div>
+                            <button onclick="addAnswerToKB('${q.id}', \`${q.question.replace(/`/g, '\\`')}\`)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; margin-left: 15px;">
+                                🧠 Adaugă în Creier
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } catch (error) {
+                console.error('Error loading unanswered questions:', error);
+                alert('❌ Eroare la încărcarea întrebărilor!');
+            }
+        }
+        
+        async function addNewKnowledge() {
+            const question = document.getElementById('newKbQuestion').value.trim();
+            const answer = document.getElementById('newKbAnswer').value.trim();
+            const category = document.getElementById('newKbCategory').value.trim();
+            const keywordsStr = document.getElementById('newKbKeywords').value.trim();
+            
+            if (!question || !answer) {
+                alert('❌ Completează cel puțin întrebarea și răspunsul!');
                 return;
             }
             
-            alert('💾 Salvare cunoștințe...\n\n(Funcționalitate în dezvoltare)');
-            document.getElementById('knowledgeInput').value = '';
+            const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
+            
+            try {
+                const { error } = await supabase
+                    .from('knowledge_base')
+                    .insert({
+                        question: question,
+                        answer: answer,
+                        category: category || null,
+                        keywords: keywords.length > 0 ? keywords : null
+                    });
+                
+                if (error) throw error;
+                
+                alert('✅ Cunoștință adăugată cu succes în Creier AI!');
+                
+                // Clear form
+                document.getElementById('newKbQuestion').value = '';
+                document.getElementById('newKbAnswer').value = '';
+                document.getElementById('newKbCategory').value = '';
+                document.getElementById('newKbKeywords').value = '';
+                
+                // Reload list
+                loadKnowledgeBase();
+            } catch (error) {
+                console.error('Error adding knowledge:', error);
+                alert('❌ Eroare la adăugarea cunoștinței!');
+            }
+        }
+        
+        function addAnswerToKB(questionId, questionText) {
+            // Pre-fill form and switch to Knowledge tab
+            document.getElementById('newKbQuestion').value = questionText;
+            document.getElementById('newKbAnswer').focus();
+            
+            // Switch to Knowledge tab
+            showCreierTab('knowledge');
+            
+            // Scroll to form
+            document.getElementById('newKbQuestion').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Mark question as answered
+            markQuestionAsAnswered(questionId);
+        }
+        
+        async function markQuestionAsAnswered(questionId) {
+            try {
+                await supabase
+                    .from('unanswered_questions')
+                    .update({ answered: true, added_to_kb: true })
+                    .eq('id', questionId);
+            } catch (error) {
+                console.error('Error marking question as answered:', error);
+            }
+        }
+        
+        function editKnowledge(kbId) {
+            alert(`✏️ Editează cunoștința: ${kbId}\n\n(Funcționalitate în dezvoltare)`);
+        }
+        
+        async function deleteKnowledge(kbId) {
+            if (!confirm('⚠️ ATENȚIE!\n\nSigur vrei să ștergi această cunoștință?\n\nAceastă acțiune NU poate fi anulată!')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('knowledge_base')
+                    .delete()
+                    .eq('id', kbId);
+                
+                if (error) throw error;
+                
+                alert('✅ Cunoștință ștearsă cu succes!');
+                loadKnowledgeBase();
+            } catch (error) {
+                console.error('Error deleting knowledge:', error);
+                alert('❌ Eroare la ștergerea cunoștinței!');
+            }
         }
         
         // ============================================
