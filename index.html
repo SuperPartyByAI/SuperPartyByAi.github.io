@@ -1433,76 +1433,48 @@
         }
         
         // ============================================
-        // CREIER AI - GM
+        // CREIER AI - GM (SIMPLU)
         // ============================================
         
-        function showCreierTab(tab) {
-            // Update button styles
-            document.getElementById('tabKnowledge').style.background = tab === 'knowledge' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
-            document.getElementById('tabKnowledge').style.color = tab === 'knowledge' ? 'white' : '#6b7280';
-            document.getElementById('tabUnanswered').style.background = tab === 'unanswered' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
-            document.getElementById('tabUnanswered').style.color = tab === 'unanswered' ? 'white' : '#6b7280';
+        async function saveSimpleKnowledge() {
+            const question = document.getElementById('simpleKbQuestion').value.trim();
+            const answer = document.getElementById('simpleKbAnswer').value.trim();
+            const category = document.getElementById('simpleKbCategory').value.trim();
+            const keywordsStr = document.getElementById('simpleKbKeywords').value.trim();
             
-            // Show/hide tabs
-            document.getElementById('creierTabKnowledge').style.display = tab === 'knowledge' ? 'block' : 'none';
-            document.getElementById('creierTabUnanswered').style.display = tab === 'unanswered' ? 'block' : 'none';
-            
-            // Load data
-            if (tab === 'knowledge') {
-                loadKnowledgeBase();
-            } else {
-                loadUnansweredQuestions();
+            if (!question || !answer) {
+                alert('❌ Completează întrebarea și răspunsul!');
+                return;
             }
-        }
-        
-        async function loadKnowledgeBase() {
+            
+            const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
+            
             try {
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('knowledge_base')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                    .insert({
+                        question: question,
+                        answer: answer,
+                        category: category || null,
+                        keywords: keywords.length > 0 ? keywords : null
+                    });
                 
                 if (error) throw error;
                 
-                const container = document.getElementById('knowledgeBaseList');
-                container.innerHTML = '';
+                alert('✅ Cunoștință salvată cu succes în Creier AI!');
                 
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">Nu există cunoștințe salvate încă. Adaugă prima cunoștință mai sus! 📚</p>';
-                    return;
-                }
-                
-                data.forEach(kb => {
-                    const kbCard = document.createElement('div');
-                    kbCard.style.cssText = 'background: #f9fafb; border: 2px solid #e5e7eb; padding: 20px; border-radius: 10px;';
-                    kbCard.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: #1f2937; margin-bottom: 8px; font-size: 16px;">❓ ${kb.question}</div>
-                                <div style="color: #6b7280; margin-bottom: 10px; line-height: 1.6;">${kb.answer}</div>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    ${kb.category ? `<span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">📁 ${kb.category}</span>` : ''}
-                                    ${kb.keywords && kb.keywords.length > 0 ? kb.keywords.map(kw => `<span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🔑 ${kw}</span>`).join('') : ''}
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 5px; margin-left: 15px;">
-                                <button onclick="editKnowledge('${kb.id}')" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">✏️ Editează</button>
-                                <button onclick="deleteKnowledge('${kb.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">🗑️</button>
-                            </div>
-                        </div>
-                        <div style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
-                            Adăugat: ${new Date(kb.created_at).toLocaleString('ro-RO')}
-                        </div>
-                    `;
-                    container.appendChild(kbCard);
-                });
+                // Clear form
+                document.getElementById('simpleKbQuestion').value = '';
+                document.getElementById('simpleKbAnswer').value = '';
+                document.getElementById('simpleKbCategory').value = '';
+                document.getElementById('simpleKbKeywords').value = '';
             } catch (error) {
-                console.error('Error loading knowledge base:', error);
-                alert('❌ Eroare la încărcarea Knowledge Base!');
+                console.error('Error saving knowledge:', error);
+                alert('❌ Eroare la salvare: ' + error.message);
             }
         }
         
-        async function loadUnansweredQuestions() {
+        async function loadSimpleUnanswered() {
             try {
                 if (!supabase) {
                     console.error('Supabase not initialized');
@@ -1522,128 +1494,30 @@
                     return;
                 }
                 
-                document.getElementById('unansweredCount').textContent = data ? data.length : 0;
+                document.getElementById('simpleUnansweredCount').textContent = data ? data.length : 0;
                 
-                const container = document.getElementById('unansweredQuestionsList');
+                const container = document.getElementById('simpleUnansweredList');
                 container.innerHTML = '';
                 
                 if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există întrebări noi! Toate au fost răspunse.</p>';
+                    container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px;">🎉 Nu există întrebări noi!</p>';
                     return;
                 }
                 
                 data.forEach(q => {
                     const qCard = document.createElement('div');
-                    qCard.style.cssText = 'background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 10px;';
+                    qCard.style.cssText = 'background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px;';
                     qCard.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: #92400e; margin-bottom: 8px; font-size: 16px;">❓ ${q.question}</div>
-                                <div style="font-size: 13px; color: #78350f;">
-                                    ${q.user_id ? `👤 User ID: ${q.user_id}` : `👻 Utilizator anonim (${q.session_id ? q.session_id.substring(0,8) + '...' : 'N/A'})`}
-                                    <br>🕐 Întrebată: ${new Date(q.created_at).toLocaleString('ro-RO')}
-                                </div>
-                            </div>
-                            <button onclick="addAnswerToKB('${q.id}', \`${q.question.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; margin-left: 15px;">
-                                🧠 Adaugă în Creier
-                            </button>
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 5px;">❓ ${q.question}</div>
+                        <div style="font-size: 12px; color: #78350f;">
+                            🕐 ${new Date(q.created_at).toLocaleString('ro-RO')}
                         </div>
                     `;
                     container.appendChild(qCard);
                 });
             } catch (error) {
-                console.error('Exception in loadUnansweredQuestions:', error);
+                console.error('Error loading questions:', error);
                 alert('❌ Eroare: ' + error.message);
-            }
-        }
-        
-        async function addNewKnowledge() {
-            const question = document.getElementById('newKbQuestion').value.trim();
-            const answer = document.getElementById('newKbAnswer').value.trim();
-            const category = document.getElementById('newKbCategory').value.trim();
-            const keywordsStr = document.getElementById('newKbKeywords').value.trim();
-            
-            if (!question || !answer) {
-                alert('❌ Completează cel puțin întrebarea și răspunsul!');
-                return;
-            }
-            
-            const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
-            
-            try {
-                const { error } = await supabase
-                    .from('knowledge_base')
-                    .insert({
-                        question: question,
-                        answer: answer,
-                        category: category || null,
-                        keywords: keywords.length > 0 ? keywords : null
-                    });
-                
-                if (error) throw error;
-                
-                alert('✅ Cunoștință adăugată cu succes în Creier AI!');
-                
-                // Clear form
-                document.getElementById('newKbQuestion').value = '';
-                document.getElementById('newKbAnswer').value = '';
-                document.getElementById('newKbCategory').value = '';
-                document.getElementById('newKbKeywords').value = '';
-                
-                // Reload list
-                loadKnowledgeBase();
-            } catch (error) {
-                console.error('Error adding knowledge:', error);
-                alert('❌ Eroare la adăugarea cunoștinței!');
-            }
-        }
-        
-        function addAnswerToKB(questionId, questionText) {
-            // Pre-fill form and switch to Knowledge tab
-            document.getElementById('newKbQuestion').value = questionText;
-            document.getElementById('newKbAnswer').focus();
-            
-            // Switch to Knowledge tab
-            showCreierTab('knowledge');
-            
-            // Scroll to form
-            document.getElementById('newKbQuestion').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Mark question as answered
-            markQuestionAsAnswered(questionId);
-        }
-        
-        async function markQuestionAsAnswered(questionId) {
-            try {
-                await supabase
-                    .from('unanswered_questions')
-                    .update({ answered: true, added_to_kb: true })
-                    .eq('id', questionId);
-            } catch (error) {
-                console.error('Error marking question as answered:', error);
-            }
-        }
-        
-        function editKnowledge(kbId) {
-            alert(`✏️ Editează cunoștința: ${kbId}\n\n(Funcționalitate în dezvoltare)`);
-        }
-        
-        async function deleteKnowledge(kbId) {
-            if (!confirm('⚠️ ATENȚIE!\n\nSigur vrei să ștergi această cunoștință?\n\nAceastă acțiune NU poate fi anulată!')) return;
-            
-            try {
-                const { error } = await supabase
-                    .from('knowledge_base')
-                    .delete()
-                    .eq('id', kbId);
-                
-                if (error) throw error;
-                
-                alert('✅ Cunoștință ștearsă cu succes!');
-                loadKnowledgeBase();
-            } catch (error) {
-                console.error('Error deleting knowledge:', error);
-                alert('❌ Eroare la ștergerea cunoștinței!');
             }
         }
         
