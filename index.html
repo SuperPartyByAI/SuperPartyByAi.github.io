@@ -762,7 +762,7 @@
                     </div>
                     
                     <button 
-                        onclick="saveSimpleKnowledge()" 
+                        onclick="window.saveSimpleKnowledge()" 
                         style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 16px; align-self: flex-start;"
                     >
                         💾 Salvează în Creier AI
@@ -778,7 +778,7 @@
                         <span id="simpleUnansweredCount" style="background: #ef4444; color: white; padding: 3px 10px; border-radius: 10px; font-size: 14px; margin-left: 10px;">0</span>
                     </h3>
                     <button 
-                        onclick="loadSimpleUnanswered()" 
+                        onclick="window.loadSimpleUnanswered()" 
                         style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;"
                     >
                         🔄 Reîmprospătează
@@ -1436,31 +1436,50 @@
         // CREIER AI - GM (SIMPLU)
         // ============================================
         
-        async function saveSimpleKnowledge() {
-            const question = document.getElementById('simpleKbQuestion').value.trim();
-            const answer = document.getElementById('simpleKbAnswer').value.trim();
-            const category = document.getElementById('simpleKbCategory').value.trim();
-            const keywordsStr = document.getElementById('simpleKbKeywords').value.trim();
+        window.saveSimpleKnowledge = async function() {
+            console.log('🚀 FUNCȚIA saveSimpleKnowledge A FOST APELATĂ!');
+            
+            const question = document.getElementById('simpleKbQuestion')?.value?.trim();
+            const answer = document.getElementById('simpleKbAnswer')?.value?.trim();
+            const category = document.getElementById('simpleKbCategory')?.value?.trim();
+            const keywordsStr = document.getElementById('simpleKbKeywords')?.value?.trim();
+            
+            console.log('📝 Valori din formular:', { question, answer, category, keywordsStr });
             
             if (!question || !answer) {
+                console.log('⚠️ Lipsesc date!');
                 alert('❌ Completează întrebarea și răspunsul!');
                 return;
             }
             
+            if (!supabase) {
+                console.error('❌ Supabase NU ESTE INIȚIALIZAT!', supabase);
+                alert('❌ Supabase nu este inițializat! Reîncarcă pagina.');
+                return;
+            }
+            
+            console.log('✅ Supabase este OK:', supabase);
+            
             const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
             
             try {
-                const { error } = await supabase
+                console.log('📤 Salvez în Supabase knowledge_base...');
+                const { data, error } = await supabase
                     .from('knowledge_base')
                     .insert({
                         question: question,
                         answer: answer,
                         category: category || null,
                         keywords: keywords.length > 0 ? keywords : null
-                    });
+                    })
+                    .select();
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Eroare Supabase:', error);
+                    throw error;
+                }
                 
+                console.log('✅ SALVAT CU SUCCES!', data);
                 alert('✅ Cunoștință salvată cu succes în Creier AI!');
                 
                 // Clear form
@@ -1469,19 +1488,24 @@
                 document.getElementById('simpleKbCategory').value = '';
                 document.getElementById('simpleKbKeywords').value = '';
             } catch (error) {
-                console.error('Error saving knowledge:', error);
+                console.error('💥 EROARE COMPLETĂ:', error);
                 alert('❌ Eroare la salvare: ' + error.message);
             }
-        }
+        };
         
-        async function loadSimpleUnanswered() {
+        window.loadSimpleUnanswered = async function() {
+            console.log('🚀 FUNCȚIA loadSimpleUnanswered A FOST APELATĂ!');
+            
+            if (!supabase) {
+                console.error('❌ Supabase NU ESTE INIȚIALIZAT!', supabase);
+                alert('❌ Supabase nu este inițializat! Reîncarcă pagina.');
+                return;
+            }
+            
+            console.log('✅ Supabase este OK:', supabase);
+            
             try {
-                if (!supabase) {
-                    console.error('Supabase not initialized');
-                    alert('❌ Supabase nu este inițializat!');
-                    return;
-                }
-
+                console.log('📥 Încarc întrebări din unanswered_questions...');
                 const { data, error } = await supabase
                     .from('unanswered_questions')
                     .select('*')
@@ -1489,21 +1513,24 @@
                     .order('created_at', { ascending: false });
                 
                 if (error) {
-                    console.error('Error loading questions:', error);
+                    console.error('❌ Eroare Supabase:', error);
                     alert('❌ Eroare la încărcarea întrebărilor: ' + error.message);
                     return;
                 }
                 
+                console.log('✅ ÎNTREBĂRI PRIMITE:', data);
                 document.getElementById('simpleUnansweredCount').textContent = data ? data.length : 0;
                 
                 const container = document.getElementById('simpleUnansweredList');
                 container.innerHTML = '';
                 
                 if (!data || data.length === 0) {
+                    console.log('ℹ️ Nu există întrebări');
                     container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px;">🎉 Nu există întrebări noi!</p>';
                     return;
                 }
                 
+                console.log('📋 Afișez', data.length, 'întrebări');
                 data.forEach(q => {
                     const qCard = document.createElement('div');
                     qCard.style.cssText = 'background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px;';
@@ -1515,11 +1542,15 @@
                     `;
                     container.appendChild(qCard);
                 });
+                
+                alert('✅ Încărcat ' + data.length + ' întrebări!');
             } catch (error) {
-                console.error('Error loading questions:', error);
+                console.error('💥 EROARE COMPLETĂ:', error);
                 alert('❌ Eroare: ' + error.message);
             }
-        }
+        };
+        
+        console.log('✅ Funcții Creier AI încărcate! window.saveSimpleKnowledge și window.loadSimpleUnanswered sunt disponibile.');
         
         // ============================================
         
