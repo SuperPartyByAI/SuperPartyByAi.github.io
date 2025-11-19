@@ -959,26 +959,6 @@
                         <p style="margin: 8px 0 0 0; color: #6b7280; line-height: 1.5;">Cu ce te pot ajuta astăzi?</p>
                     </div>
                 </div>
-                <!-- Quick action button -->
-                <div style="display: flex; justify-content: center; margin-bottom: 15px;">
-                    <button onclick="document.getElementById('mainChatImageUpload').click()" style="
-                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                        color: white;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 12px;
-                        font-weight: 700;
-                        font-size: 16px;
-                        cursor: pointer;
-                        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-                        transition: all 0.3s;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                    ">
-                        📸 Notează Petrecere Nouă
-                    </button>
-                </div>
             </div>
             
             <!-- Input Area -->
@@ -1182,7 +1162,12 @@
             // Initial booking request
             if (lowerMessage.includes('notez') || lowerMessage.includes('petrecere') || lowerMessage.includes('rezerv')) {
                 if (!mainChatHasUploadedProof) {
-                    addMessageToChat('📸 Pentru a nota petrecerea, încarcă conversația WhatsApp cu clientul.<br><br>Apasă pe butonul 📎 pentru a încărca poza.', 'assistant');
+                    addMessageToChat('📸 Pentru a nota petrecerea, încarcă conversația WhatsApp cu clientul.', 'assistant');
+                    
+                    // Add booking button
+                    setTimeout(() => {
+                        addBookingButton();
+                    }, 300);
                     return;
                 } else {
                     processMainPartyImage();
@@ -1204,6 +1189,37 @@
             
             // Default response
             addMessageToChat('Cu ce te pot ajuta?', 'assistant');
+        }
+
+        function addBookingButton() {
+            // Check if button already exists
+            if (document.getElementById('bookingButton')) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            const buttonDiv = document.createElement('div');
+            buttonDiv.id = 'bookingButton';
+            buttonDiv.style.cssText = 'display: flex; justify-content: center; margin-bottom: 15px; animation: fadeIn 0.3s ease;';
+            buttonDiv.innerHTML = `
+                <button onclick="document.getElementById('mainChatImageUpload').click()" style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+                    📸 Notează Petrecere Nouă
+                </button>
+            `;
+            chatMessages.appendChild(buttonDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function processMainPartyImage() {
@@ -1282,7 +1298,7 @@
                 
                 setTimeout(() => {
                     addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
-                        `Scrie durata și costul (ex: "2 ore, 500 lei")`, 'assistant');
+                        `Exemplu: "2 ore 500 lei" sau "2h 500" sau "durata 2 cost 500"`, 'assistant');
                 }, 500);
             } else {
                 displayMainFinalSummary();
@@ -1292,12 +1308,40 @@
         function handleMainRoleDetailsInput(input) {
             const role = mainCurrentPartyData.roles[mainCurrentRoleIndex];
             
-            const durationMatch = input.match(/(\d+)\s*(ora|ore|h)/i);
-            const costMatch = input.match(/(\d+)\s*(lei|ron)/i);
+            // More flexible parsing - extract ANY numbers
+            const numbers = input.match(/\d+/g);
             
-            if (durationMatch && costMatch) {
-                role.duration = parseInt(durationMatch[1]);
-                role.cost = parseInt(costMatch[1]);
+            // Try to identify duration and cost from context
+            let duration = null;
+            let cost = null;
+            
+            if (numbers && numbers.length >= 2) {
+                // First number is likely duration (usually smaller)
+                // Second number is likely cost (usually larger)
+                const num1 = parseInt(numbers[0]);
+                const num2 = parseInt(numbers[1]);
+                
+                // Smart detection: duration is usually < 10, cost is usually > 50
+                if (num1 <= 10 && num2 >= 50) {
+                    duration = num1;
+                    cost = num2;
+                } else if (num2 <= 10 && num1 >= 50) {
+                    duration = num2;
+                    cost = num1;
+                } else {
+                    // Default: first = duration, second = cost
+                    duration = num1;
+                    cost = num2;
+                }
+            } else if (numbers && numbers.length === 1) {
+                // Only one number - ask for clarification
+                addMessageToChat('❌ Am găsit doar un număr. Te rog specifică atât durata (ore) cât și costul (lei).', 'assistant');
+                return;
+            }
+            
+            if (duration && cost) {
+                role.duration = duration;
+                role.cost = cost;
                 
                 addMessageToChat(`✅ <strong>ROL #${mainCurrentRoleIndex + 1} salvat!</strong><br><br>` +
                     `${role.type}: ${role.duration} ore, ${role.cost} lei`, 'assistant');
@@ -1311,7 +1355,7 @@
                     
                     setTimeout(() => {
                         addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
-                            `Scrie durata și costul (ex: "3 ore, 300 lei")`, 'assistant');
+                            `Exemplu: "3 ore 300 lei" sau "3h 300" sau "durata 3 cost 300"`, 'assistant');
                     }, 500);
                 } else {
                     mainAwaitingRoleDetails = false;
@@ -1320,7 +1364,7 @@
                     }, 500);
                 }
             } else {
-                addMessageToChat('❌ Nu am înțeles formatul. Te rog scrie așa: "2 ore, 500 lei"', 'assistant');
+                addMessageToChat('❌ Nu am putut identifica durata și costul. Exemplu valid: "2 ore 500 lei" sau "2h 500"', 'assistant');
             }
         }
 
