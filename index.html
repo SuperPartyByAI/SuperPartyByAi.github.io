@@ -1290,16 +1290,73 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function processMainPartyImage() {
-            // Generate party ID
+        async function processMainPartyImage() {
+            try {
+                showMainTyping();
+                
+                // Call Apps Script V2 to process image with logic from Sheets
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'PROCESS_PARTY_IMAGE',
+                        imageData: mainChatCurrentImageData,
+                        userId: currentUser ? currentUser.username : 'anonymous'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                hideMainTyping();
+                
+                if (result.success) {
+                    // Apps Script returned processed data with logic applied from Sheets
+                    mainCurrentPartyData = result.data;
+                    
+                    addMessageToChat(`✅ <strong>Procesare completă!</strong><br>` +
+                        `Am aplicat ${result.rulesApplied} reguli din Sheets.<br><br>` +
+                        `Petrecerea a fost procesată folosind logica din "Corecții Claude"! 🧠`, 'assistant');
+                    
+                    setTimeout(() => {
+                        displayMainPartyExtraction();
+                    }, 500);
+                } else {
+                    // Error from Apps Script
+                    addMessageToChat(`❌ <strong>Eroare la procesare:</strong><br>${result.error}<br><br>` +
+                        `Cad back pe procesare locală...`, 'assistant');
+                    
+                    // Fallback to local mock processing
+                    processMainPartyImageFallback();
+                }
+                
+            } catch (error) {
+                hideMainTyping();
+                console.error('Error calling Apps Script V2:', error);
+                
+                addMessageToChat(`⚠️ <strong>Nu pot conecta la Apps Script V2</strong><br>` +
+                    `Folosesc procesare locală temporară.<br><br>` +
+                    `Verifică SHEETS_BACKEND_URL în cod!`, 'assistant');
+                
+                // Fallback to local mock processing
+                processMainPartyImageFallback();
+            }
+        }
+        
+        function processMainPartyImageFallback() {
+            // Fallback mock processing when Apps Script is not available
             const now = new Date();
-            const partyId = `P-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const partyId = `P-${day}${month}${year}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
             
-            // Extracted data - EACH CHARACTER = SEPARATE ROLE
+            // Mock data - Elsa and Ana already separated (manual logic)
             mainCurrentPartyData = {
                 id: partyId,
                 client: 'Maria Popescu',
-                date: '20/11/2024',
+                date: `${day}/${month}/${year}`,
                 time: '16:00',
                 address: 'București, Sector 3, Str. Florilor 10',
                 inBucharest: true,
@@ -2873,19 +2930,72 @@
             addAdminMessage('Cu ce te pot ajuta?', 'ai');
         }
 
-        function processPartyImage() {
-            // Simulate AI image processing and extraction
-            // In real implementation, this would call Claude API with vision
-            
-            // Generate party ID
+        async function processPartyImage() {
+            try {
+                showAdminTyping();
+                
+                // Call Apps Script V2 to process image with logic from Sheets
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'PROCESS_PARTY_IMAGE',
+                        imageData: currentImageData,
+                        userId: currentUser ? currentUser.username : 'admin'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                hideAdminTyping();
+                
+                if (result.success) {
+                    // Apps Script returned processed data with logic applied from Sheets
+                    currentPartyData = result.data;
+                    
+                    addAdminMessage(`✅ <strong>Procesare completă cu Apps Script V2!</strong><br>` +
+                        `Am aplicat ${result.rulesApplied} reguli din "Corecții Claude".<br><br>` +
+                        `🧠 Logica citită din Google Sheets!`, 'ai');
+                    
+                    setTimeout(() => {
+                        displayPartyExtraction();
+                    }, 500);
+                } else {
+                    // Error from Apps Script
+                    addAdminMessage(`❌ <strong>Eroare Apps Script:</strong><br>${result.error}<br><br>` +
+                        `Folosesc procesare locală fallback...`, 'ai');
+                    
+                    // Fallback to local mock
+                    processPartyImageFallback();
+                }
+                
+            } catch (error) {
+                hideAdminTyping();
+                console.error('Error calling Apps Script V2:', error);
+                
+                addAdminMessage(`⚠️ <strong>Nu pot conecta la Apps Script V2</strong><br>` +
+                    `Verifică SHEETS_BACKEND_URL: ${SHEETS_BACKEND_URL}<br><br>` +
+                    `Folosesc procesare locală temporară.`, 'ai');
+                
+                // Fallback to local mock
+                processPartyImageFallback();
+            }
+        }
+        
+        function processPartyImageFallback() {
+            // Fallback mock processing
             const now = new Date();
-            const partyId = `P-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const partyId = `P-${day}${month}${year}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
             
-            // Extracted data (example)
             currentPartyData = {
                 id: partyId,
                 client: 'Maria Popescu',
-                date: '20/11/2024',
+                date: `${day}/${month}/${year}`,
                 time: '16:00',
                 address: 'București, Sector 3, Str. Florilor 10',
                 inBucharest: true,
@@ -2920,7 +3030,6 @@
                 missingInfo: []
             };
             
-            // Display extracted data
             displayPartyExtraction();
         }
 
