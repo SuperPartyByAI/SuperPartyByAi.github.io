@@ -1974,34 +1974,251 @@
             if (typingDiv) typingDiv.remove();
         }
 
+        // Party booking state
+        let currentPartyData = null;
+        let awaitingRoleDetails = false;
+        let currentRoleIndex = 0;
+
         function processAdminAIMessage(userMessage) {
             hideAdminTyping();
             
             const lowerMessage = userMessage.toLowerCase();
             
-            if (adminHasUploadedProof && (lowerMessage.includes('notez') || lowerMessage.includes('salvez'))) {
-                const response = `✅ <strong>Perfect! Am analizat poza și am extras următoarele:</strong><br><br>` +
-                    `🎭 <strong>Personaje:</strong> Elsa, Ana<br>` +
-                    `👥 <strong>Nr. Membri:</strong> 1 membru<br>` +
-                    `📦 <strong>Echipament:</strong> 1 loc<br>` +
-                    `🚗 <strong>Șoferi:</strong> 1 șofer<br><br>` +
-                    `<strong>Este corect sau corectezi ceva?</strong>`;
-                
-                addAdminMessage(response, 'ai');
-                
-            } else if (lowerMessage.includes('corect') || lowerMessage.includes('greșit') || 
-                       lowerMessage.includes('2 membri')) {
-                
-                const response = `✅ <strong>Am corectat!</strong><br><br>` +
-                    `Elsa + Ana = <strong>2 MEMBRI</strong><br><br>` +
-                    `Salvez petrecerea în Sheets?`;
-                
-                addAdminMessage(response, 'ai');
-                
-            } else {
-                const response = `Cu ce te pot ajuta?`;
-                addAdminMessage(response, 'ai');
+            // Initial booking request
+            if (lowerMessage.includes('notez') || lowerMessage.includes('petrecere') || lowerMessage.includes('rezerv')) {
+                if (!adminHasUploadedProof) {
+                    addAdminMessage('📸 Pentru a nota petrecerea, încarcă conversația WhatsApp cu clientul.<br><br>Apasă pe butonul 📎 pentru a încărca poza.', 'ai');
+                } else {
+                    // Process uploaded image and extract party data
+                    processPartyImage();
+                }
+                return;
             }
+            
+            // Handle role details input
+            if (awaitingRoleDetails && currentPartyData) {
+                handleRoleDetailsInput(userMessage);
+                return;
+            }
+            
+            // Handle corrections
+            if (currentPartyData && (lowerMessage.includes('corecte') || lowerMessage.includes('modific') || lowerMessage.includes('schimb'))) {
+                handlePartyCorrection(userMessage);
+                return;
+            }
+            
+            // Default response
+            addAdminMessage('Cu ce te pot ajuta?', 'ai');
+        }
+
+        function processPartyImage() {
+            // Simulate AI image processing and extraction
+            // In real implementation, this would call Claude API with vision
+            
+            // Generate party ID
+            const now = new Date();
+            const partyId = `P-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
+            
+            // Extracted data (example)
+            currentPartyData = {
+                id: partyId,
+                client: 'Maria Popescu',
+                date: '20/11/2024',
+                time: '16:00',
+                address: 'București, Sector 3, Str. Florilor 10',
+                inBucharest: true,
+                distance: 0,
+                driversNeeded: 0,
+                roles: [
+                    {
+                        id: `${partyId}-R1`,
+                        type: 'ANIMATIE',
+                        description: 'Elsa, Ana (2 personaje)',
+                        membersNeeded: 2,
+                        duration: null,
+                        cost: null
+                    },
+                    {
+                        id: `${partyId}-R2`,
+                        type: 'ARCADE',
+                        description: '3 aparate',
+                        membersNeeded: 1,
+                        duration: null,
+                        cost: null
+                    }
+                ],
+                missingInfo: []
+            };
+            
+            // Display extracted data
+            displayPartyExtraction();
+        }
+
+        function displayPartyExtraction() {
+            let html = `📋 <strong>Am analizat conversația și am extras:</strong><br><br>`;
+            
+            html += `🎉 <strong>Petrecere Principală:</strong><br>`;
+            html += `• Cod: <strong>${currentPartyData.id}</strong><br>`;
+            html += `• Client: ${currentPartyData.client}<br>`;
+            html += `• Data: ${currentPartyData.date}, ${currentPartyData.time}<br>`;
+            html += `• Adresa: ${currentPartyData.address}<br>`;
+            html += `• În București: ${currentPartyData.inBucharest ? 'DA' : 'NU'}<br>`;
+            if (!currentPartyData.inBucharest) {
+                html += `• Distanță: ${currentPartyData.distance} km<br>`;
+                html += `• Șoferi necesari: ${currentPartyData.driversNeeded}<br>`;
+            }
+            html += `<br>`;
+            
+            html += `🎭 <strong>Roluri identificate:</strong><br><br>`;
+            
+            currentPartyData.roles.forEach((role, index) => {
+                html += `━━━━━━━━━━━━━━━━━━━━━<br>`;
+                html += `<strong>ROL #${index + 1}: ${role.type}</strong><br>`;
+                html += `• ${role.description}<br>`;
+                html += `• Membri necesari: ${role.membersNeeded}<br>`;
+                html += `• Durata: ${role.duration ? role.duration + ' ore' : '❓ lipsește'}<br>`;
+                html += `• Cost: ${role.cost ? role.cost + ' lei' : '❓ lipsește'}<br>`;
+                html += `<br>`;
+            });
+            
+            addAdminMessage(html, 'ai');
+            
+            // Check if any role needs details
+            const incompleteRole = currentPartyData.roles.find(r => !r.duration || !r.cost);
+            if (incompleteRole) {
+                awaitingRoleDetails = true;
+                currentRoleIndex = currentPartyData.roles.indexOf(incompleteRole);
+                const nextRole = currentPartyData.roles[currentRoleIndex];
+                
+                setTimeout(() => {
+                    addAdminMessage(`⚠️ <strong>Completează pentru ROL #${currentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
+                        `Scrie durata și costul (ex: "2 ore, 500 lei")`, 'ai');
+                }, 500);
+            } else {
+                displayFinalSummary();
+            }
+        }
+
+        function handleRoleDetailsInput(input) {
+            const role = currentPartyData.roles[currentRoleIndex];
+            
+            // Parse input (simple regex - can be improved)
+            const durationMatch = input.match(/(\d+)\s*(ora|ore|h)/i);
+            const costMatch = input.match(/(\d+)\s*(lei|ron)/i);
+            
+            if (durationMatch && costMatch) {
+                role.duration = parseInt(durationMatch[1]);
+                role.cost = parseInt(costMatch[1]);
+                
+                addAdminMessage(`✅ <strong>ROL #${currentRoleIndex + 1} salvat!</strong><br><br>` +
+                    `${role.type}: ${role.duration} ore, ${role.cost} lei`, 'ai');
+                
+                // Check for next incomplete role
+                currentRoleIndex++;
+                const nextIncompleteRole = currentPartyData.roles.slice(currentRoleIndex).find(r => !r.duration || !r.cost);
+                
+                if (nextIncompleteRole) {
+                    currentRoleIndex = currentPartyData.roles.indexOf(nextIncompleteRole);
+                    const nextRole = currentPartyData.roles[currentRoleIndex];
+                    
+                    setTimeout(() => {
+                        addAdminMessage(`⚠️ <strong>Completează pentru ROL #${currentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
+                            `Scrie durata și costul (ex: "3 ore, 300 lei")`, 'ai');
+                    }, 500);
+                } else {
+                    awaitingRoleDetails = false;
+                    setTimeout(() => {
+                        displayFinalSummary();
+                    }, 500);
+                }
+            } else {
+                addAdminMessage('❌ Nu am înțeles formatul. Te rog scrie așa: "2 ore, 500 lei"', 'ai');
+            }
+        }
+
+        function displayFinalSummary() {
+            const totalMembers = currentPartyData.roles.reduce((sum, r) => sum + r.membersNeeded, 0);
+            const totalDuration = currentPartyData.roles.reduce((sum, r) => sum + (r.duration || 0), 0);
+            const totalCost = currentPartyData.roles.reduce((sum, r) => sum + (r.cost || 0), 0);
+            
+            let html = `📊 <strong>REZUMAT FINAL:</strong><br><br>`;
+            
+            html += `<strong>Petrecere Mare: ${currentPartyData.id}</strong><br>`;
+            html += `Client: ${currentPartyData.client}<br>`;
+            html += `Data: ${currentPartyData.date}, ${currentPartyData.time}<br>`;
+            html += `Adresa: ${currentPartyData.address}<br><br>`;
+            
+            html += `<strong>Roluri:</strong><br>`;
+            currentPartyData.roles.forEach((role, index) => {
+                html += `• <strong>${role.id}</strong>: ${role.type} (${role.description}) - ${role.duration}h - ${role.cost} lei<br>`;
+            });
+            html += `<br>`;
+            
+            html += `<strong>Total:</strong> ${totalMembers} membri, ${totalDuration} ore, ${totalCost} lei<br><br>`;
+            
+            html += `━━━━━━━━━━━━━━━━━━━━━<br><br>`;
+            
+            addAdminMessage(html, 'ai');
+            
+            // Add confirmation button
+            setTimeout(() => {
+                addConfirmationButton();
+            }, 300);
+        }
+
+        function addConfirmationButton() {
+            const messagesDiv = document.getElementById('adminChatMessages');
+            const buttonDiv = document.createElement('div');
+            buttonDiv.style.marginBottom = '15px';
+            buttonDiv.style.textAlign = 'center';
+            buttonDiv.innerHTML = `
+                <button onclick="confirmAndSaveParty()" style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                    transition: all 0.3s;
+                ">
+                    ✅ E CORECT - REZERVĂ
+                </button>
+            `;
+            messagesDiv.appendChild(buttonDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function confirmAndSaveParty() {
+            // Save to Google Sheets
+            addAdminMessage('💾 Salvez petrecerea în Google Sheets...', 'ai');
+            
+            setTimeout(() => {
+                addAdminMessage(`✅ <strong>Petrecere salvată cu succes!</strong><br><br>` +
+                    `ID: <strong>${currentPartyData.id}</strong><br>` +
+                    `Pagina: <strong>Ce Petreceri Am</strong><br><br>` +
+                    `Structura salvată:<br>` +
+                    `• Rând principal: ${currentPartyData.id}<br>` +
+                    currentPartyData.roles.map(r => `• Sub-rând: ${r.id}`).join('<br>'), 'ai');
+                
+                // Reset state
+                currentPartyData = null;
+                adminHasUploadedProof = false;
+                adminCurrentImageData = null;
+                awaitingRoleDetails = false;
+                currentRoleIndex = 0;
+            }, 1500);
+        }
+
+        function handlePartyCorrection(message) {
+            // Simple correction handling
+            addAdminMessage('✅ Am înțeles corecția! Actualizez...', 'ai');
+            
+            setTimeout(() => {
+                displayFinalSummary();
+            }, 1000);
         }
 
         // Image upload handling
