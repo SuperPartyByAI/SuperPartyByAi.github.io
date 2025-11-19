@@ -357,10 +357,6 @@
                 <span class="menu-icon">➕</span>
                 <span>Notează Eveniment</span>
             </div>
-            <div class="menu-item" onclick="showPage('petreceri-database')">
-                <span class="menu-icon">📅</span>
-                <span>Petreceri Database</span>
-            </div>
             <div class="menu-item" onclick="showPage('petreceri-nealocate')">
                 <span class="menu-icon">📋</span>
                 <span>Petreceri Nealocate</span>
@@ -438,6 +434,10 @@
                     <span class="menu-icon">🧠</span>
                     <span>Creier AI</span>
                 </div>
+                <div class="menu-item" onclick="showPage('admin-panel-gm')">
+                    <span class="menu-icon">🤖</span>
+                    <span>Admin Panel + AI</span>
+                </div>
             </div>
         </div>
     </div>
@@ -447,141 +447,6 @@
         <!-- Home Page -->
         <div class="page active" id="home">
             <!-- GOL - Nimic aici -->
-        </div>
-        
-        <!-- Page: Petreceri Database -->
-        <div class="page" id="petreceri-database">
-            <div class="page-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
-                <h2>📅 Petreceri Database</h2>
-                <p style="opacity: 0.9;">Salvează și gestionează toate petrecerile în cloud</p>
-            </div>
-            
-            <!-- Formular Adăugare Petrecere -->
-            <div class="card" style="margin-bottom: 25px;">
-                <h3 style="color: #1f2937; margin-bottom: 20px;">➕ Adaugă Petrecere Nouă</h3>
-                
-                <form id="formPetrecere" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <!-- Row 1 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Data Eveniment *</label>
-                        <input type="date" id="dataEveniment" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Nume Client *</label>
-                        <input type="text" id="clientNume" required placeholder="Ex: Maria Popescu" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 2 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Ora Start *</label>
-                        <input type="time" id="oraStart" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Ora End</label>
-                        <input type="time" id="oraEnd" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 3 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Telefon Client</label>
-                        <input type="tel" id="clientTelefon" placeholder="Ex: 0722123456" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Locație</label>
-                        <input type="text" id="locatie" placeholder="Ex: București, Sector 3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 4 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Tip Petrecere</label>
-                        <select id="tipPetrecere" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                            <option value="">Selectează...</option>
-                            <option value="Aniversare">Aniversare</option>
-                            <option value="Botez">Botez</option>
-                            <option value="Corporate">Corporate</option>
-                            <option value="Școală">Școală</option>
-                            <option value="Grădiniță">Grădiniță</option>
-                            <option value="Mall">Mall</option>
-                            <option value="Altele">Altele</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Număr Copii</label>
-                        <input type="number" id="numarCopii" min="1" placeholder="Ex: 15" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 5 - Full Width -->
-                    <div style="grid-column: 1 / -1;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Personaje (separate prin virgulă)</label>
-                        <input type="text" id="personaje" placeholder="Ex: Spider-Man, Elsa, Moș Crăciun" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <div style="grid-column: 1 / -1;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Traineri (coduri separate prin virgulă)</label>
-                        <input type="text" id="traineri" placeholder="Ex: A12, B5, C23" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 6 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Preț Total (LEI)</label>
-                        <input type="number" id="pretTotal" min="0" step="0.01" placeholder="Ex: 850.00" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Preț Achitat (LEI)</label>
-                        <input type="number" id="pretAchitat" min="0" step="0.01" placeholder="Ex: 400.00" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                    </div>
-                    
-                    <!-- Row 7 -->
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Status</label>
-                        <select id="status" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;">
-                            <option value="confirmat">✅ Confirmat</option>
-                            <option value="finalizat">🎉 Finalizat</option>
-                            <option value="anulat">❌ Anulat</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Row 8 - Full Width -->
-                    <div style="grid-column: 1 / -1;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Notă Client</label>
-                        <textarea id="notaClient" placeholder="Detalii despre client, preferințe..." style="width: 100%; min-height: 80px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical; font-size: 15px;"></textarea>
-                    </div>
-                    
-                    <div style="grid-column: 1 / -1;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Notă Internă (doar pentru echipă)</label>
-                        <textarea id="notaInterna" placeholder="Note interne, observații..." style="width: 100%; min-height: 80px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical; font-size: 15px;"></textarea>
-                    </div>
-                    
-                    <!-- Submit Button -->
-                    <div style="grid-column: 1 / -1; margin-top: 10px;">
-                        <button type="submit" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 16px; width: 100%;">
-                            💾 Salvează Petrecere în Cloud
-                        </button>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Lista Petrecerilor -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 style="color: #1f2937; margin: 0;">
-                        🎊 Petrecerile Mele
-                        <span id="petreceriCount" style="background: #f59e0b; color: white; padding: 3px 10px; border-radius: 10px; font-size: 14px; margin-left: 10px;">0</span>
-                    </h3>
-                    <button onclick="loadPetreceri()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                        🔄 Reîncarcă
-                    </button>
-                </div>
-                
-                <div id="listaPetreceri" style="display: flex; flex-direction: column; gap: 15px;">
-                    <p style="color: #9ca3af; text-align: center; padding: 40px;">Click pe "🔄 Reîncarcă" pentru a vedea petrecerile...</p>
-                </div>
-            </div>
         </div>
         
         <!-- Page: Notează Eveniment -->
@@ -847,87 +712,175 @@
             </div>
         </div>
         
-        <!-- Page: Creier AI (GM) - SIMPLU -->
+        <!-- Page: Creier AI (GM) -->
         <div class="page" id="creier-ai-gm">
             <div class="page-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
                 <h2>🧠 Creier AI - Knowledge Base</h2>
-                <p style="opacity: 0.9;">Adaugă cunoștințe pentru răspunsuri automate</p>
+                <p style="opacity: 0.9;">Gestionează cunoștințele AI-ului pentru răspunsuri personalizate</p>
             </div>
             
-            <!-- Formular Simplu -->
-            <div class="card" style="margin-bottom: 20px;">
-                <h3 style="color: #1f2937; margin-bottom: 20px;">➕ Adaugă Cunoștință Nouă</h3>
-                
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Întrebare:</label>
-                        <input 
-                            type="text" 
-                            id="simpleKbQuestion" 
-                            placeholder="Ex: Cât costă o petrecere?" 
-                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
-                        >
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Răspuns:</label>
-                        <textarea 
-                            id="simpleKbAnswer" 
-                            placeholder="Scrie răspunsul complet aici..." 
-                            style="width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical; font-size: 15px;"
-                        ></textarea>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div>
-                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Categorie (opțional):</label>
-                            <input 
-                                type="text" 
-                                id="simpleKbCategory" 
-                                placeholder="Ex: Prețuri, Servicii" 
-                                style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
-                            >
-                        </div>
-                        
-                        <div>
-                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 5px;">Keywords (opțional):</label>
-                            <input 
-                                type="text" 
-                                id="simpleKbKeywords" 
-                                placeholder="preț, cost, tarif" 
-                                style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
-                            >
-                        </div>
-                    </div>
-                    
-                    <button 
-                        onclick="window.saveSimpleKnowledge()" 
-                        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 16px; align-self: flex-start;"
-                    >
-                        💾 Salvează în Creier AI
-                    </button>
-                </div>
+            <!-- Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="showCreierTab('knowledge')" id="tabKnowledge" style="flex: 1; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    📚 Knowledge Base
+                </button>
+                <button onclick="showCreierTab('unanswered')" id="tabUnanswered" style="flex: 1; padding: 15px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    ❓ Întrebări Noi <span id="unansweredCount" style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 5px;">0</span>
+                </button>
             </div>
             
-            <!-- Întrebări Noi (Read-Only List) -->
-            <div class="card">
+            <!-- Tab: Knowledge Base -->
+            <div class="card" id="creierTabKnowledge">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 style="color: #1f2937; margin: 0;">
-                        ❓ Întrebări Noi 
-                        <span id="simpleUnansweredCount" style="background: #ef4444; color: white; padding: 3px 10px; border-radius: 10px; font-size: 14px; margin-left: 10px;">0</span>
-                    </h3>
-                    <button 
-                        onclick="window.loadSimpleUnanswered()" 
-                        style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;"
-                    >
+                    <h3 style="color: #1f2937; margin: 0;">📚 Bază de Cunoștințe</h3>
+                    <button onclick="loadKnowledgeBase()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
                         🔄 Reîmprospătează
                     </button>
                 </div>
                 
-                <p style="color: #6b7280; margin-bottom: 20px;">Întrebări pe care utilizatorii le-au pus</p>
+                <p style="color: #6b7280; margin-bottom: 20px;">Lista completă cu cunoștințele AI-ului</p>
                 
-                <div id="simpleUnansweredList" style="display: flex; flex-direction: column; gap: 10px;">
-                    <p style="color: #9ca3af; text-align: center; padding: 40px;">Click pe "🔄 Reîmprospătează" pentru a încărca întrebările...</p>
+                <!-- Add New Knowledge Form -->
+                <div style="background: #f0fdf4; border: 2px solid #10b981; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #1f2937; margin-bottom: 15px;">➕ Adaugă Cunoștință Nouă</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input 
+                            type="text" 
+                            id="newKbQuestion" 
+                            placeholder="Întrebarea (ex: Cât costă o petrecere?)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <textarea 
+                            id="newKbAnswer" 
+                            placeholder="Răspunsul complet..." 
+                            style="width: 100%; min-height: 100px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-family: inherit; resize: vertical;"
+                        ></textarea>
+                        <input 
+                            type="text" 
+                            id="newKbCategory" 
+                            placeholder="Categorie (ex: Prețuri, Servicii, Contact)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <input 
+                            type="text" 
+                            id="newKbKeywords" 
+                            placeholder="Cuvinte cheie (separate prin virgulă: preț, cost, tarif)" 
+                            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px;"
+                        >
+                        <button onclick="addNewKnowledge()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; align-self: flex-start;">
+                            💾 Salvează în Creier
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Knowledge Base List -->
+                <div id="knowledgeBaseList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Încarcă datele pentru a vedea cunoștințele...</p>
+                </div>
+            </div>
+            
+            <!-- Tab: Unanswered Questions -->
+            <div class="card" id="creierTabUnanswered" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">❓ Întrebări Noi (Fără Răspuns)</h3>
+                    <button onclick="loadUnansweredQuestions()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
+                    </button>
+                </div>
+                
+                <p style="color: #6b7280; margin-bottom: 20px;">Întrebări pe care AI-ul nu le-a putut răspunde din Knowledge Base</p>
+                
+                <div id="unansweredQuestionsList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Încarcă datele pentru a vedea întrebările...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Admin Panel (GM) -->
+        <div class="page" id="admin-panel-gm">
+            <div class="page-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                <h2>🤖 Admin Panel + Super AI</h2>
+                <p style="opacity: 0.9;">Gestionare petreceri cu AI Assistant integrat</p>
+            </div>
+
+            <!-- Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button onclick="showAdminPanelTab('intrebari')" id="adminTabIntrebari" style="flex: 1; min-width: 180px; padding: 15px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    📥 Întrebări Noi <span id="adminIntrebariCount" style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 5px;">0</span>
+                </button>
+                <button onclick="showAdminPanelTab('intrebariAI')" id="adminTabAI" style="flex: 1; min-width: 180px; padding: 15px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    🤖 Învățare AI <span id="adminAiCount" style="background: #fed7aa; color: #92400e; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 5px;">0</span>
+                </button>
+            </div>
+
+            <!-- Tab: Întrebări Noi -->
+            <div class="card" id="adminPanelTabIntrebari">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">📥 Întrebări Noi de la Clienți</h3>
+                    <button onclick="loadAdminIntrebari()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
+                    </button>
+                </div>
+                <div id="adminIntrebariDisplay">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Se încarcă...</p>
+                </div>
+            </div>
+
+            <!-- Tab: Învățare AI -->
+            <div class="card" id="adminPanelTabAI" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">🤖 Corecții AI</h3>
+                    <button onclick="loadAdminIntrebariAI()" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
+                    </button>
+                </div>
+                <div id="adminIntrebariAIDisplay">
+                    <p style="color: #6b7280; text-align: center; padding: 40px;">Se încarcă...</p>
+                </div>
+            </div>
+
+            <!-- AI CHAT WIDGET for Admin Panel -->
+            <div id="adminChatWidget" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+                <button id="adminChatButton" onclick="toggleAdminChat()" style="width: 180px; height: 60px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px;">
+                    <span style="font-size: 24px;">🤖</span>
+                    <span>Întreabă Super AI</span>
+                </button>
+                
+                <div id="adminChatWindow" style="display: none; position: fixed; bottom: 100px; right: 30px; width: 420px; height: 600px; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); flex-direction: column; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; display: flex; align-items: center; gap: 10px; margin: 0;">
+                            <span>🤖</span>
+                            <span>Super AI Assistant</span>
+                        </h3>
+                        <button onclick="toggleAdminChat()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                    
+                    <div id="adminChatMessages" style="flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc;">
+                        <div style="margin-bottom: 15px; text-align: left;">
+                            <div style="display: inline-block; max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; background: white; color: #1f2937; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                Bună Andrei! 👋 Cu ce te pot ajuta?
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 15px; background: white; border-top: 1px solid #e5e7eb;">
+                        <input type="file" id="adminImageUpload" accept="image/*" style="display: none">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button onclick="document.getElementById('adminImageUpload').click()" style="width: 48px; height: 48px; background: #f3f4f6; color: #374151; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">
+                                📎
+                            </button>
+                            <input 
+                                type="text" 
+                                id="adminChatInput" 
+                                placeholder="Scrie mesajul tău aici..."
+                                style="flex: 1; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 24px; font-size: 14px;"
+                                onkeypress="if(event.key==='Enter') sendAdminMessage()"
+                            >
+                            <button onclick="sendAdminMessage()" style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">
+                                ➤
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1086,11 +1039,6 @@
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
             }
-            
-            // Auto-load petreceri când deschizi pagina
-            if (pageId === 'petreceri-database') {
-                loadPetreceri();
-            }
         }
         
         function toggleSidebar() {
@@ -1163,38 +1111,24 @@
             sendButton.textContent = '⏳ Așteaptă...';
             
             try {
-                console.log('📤 Trimit mesaj la backend:', message);
-                
                 const response = await fetch('https://api-chat-js-three.vercel.app/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: message,
-                        sessionId: 'web-' + Date.now()
+                        messages: [
+                            ...chatHistory,
+                            { role: 'user', content: message }
+                        ]
                     })
                 });
                 
-                console.log('📥 Response status:', response.status);
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('❌ Backend error:', errorData);
-                    throw new Error(errorData.error || 'Backend error: ' + response.status);
-                }
-                
                 const data = await response.json();
-                console.log('✅ Data primită:', data);
                 
                 removeLoadingMessage(loadingId);
                 
-                // Verifică dacă avem răspuns valid
-                if (!data.success || !data.response) {
-                    throw new Error('Răspuns invalid de la server');
-                }
-                
-                const aiMessage = data.response;
+                const aiMessage = data.choices[0].message.content;
                 addMessageToChat(aiMessage, 'assistant');
                 
                 chatHistory.push({ role: 'user', content: message });
@@ -1205,10 +1139,10 @@
                 }
                 
             } catch (error) {
-                console.error('💥 AI Chat Error:', error);
+                console.error('AI Chat Error:', error);
                 removeLoadingMessage(loadingId);
                 addMessageToChat(
-                    `❌ Oops! Am întâmpinat o problemă: ${error.message}\n\nÎncearcă din nou sau contactează echipa la 0728 242 214.`,
+                    '❌ Oops! Am întâmpinat o problemă. Încearcă din nou.',
                     'assistant',
                     true
                 );
@@ -1591,364 +1525,208 @@
         }
         
         // ============================================
-        // CREIER AI - GM (SIMPLU)
+        // CREIER AI - GM
         // ============================================
         
-        window.saveSimpleKnowledge = async function() {
-            console.log('🚀 FUNCȚIA saveSimpleKnowledge A FOST APELATĂ!');
+        function showCreierTab(tab) {
+            // Update button styles
+            document.getElementById('tabKnowledge').style.background = tab === 'knowledge' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
+            document.getElementById('tabKnowledge').style.color = tab === 'knowledge' ? 'white' : '#6b7280';
+            document.getElementById('tabUnanswered').style.background = tab === 'unanswered' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f3f4f6';
+            document.getElementById('tabUnanswered').style.color = tab === 'unanswered' ? 'white' : '#6b7280';
             
-            const question = document.getElementById('simpleKbQuestion')?.value?.trim();
-            const answer = document.getElementById('simpleKbAnswer')?.value?.trim();
-            const category = document.getElementById('simpleKbCategory')?.value?.trim();
-            const keywordsStr = document.getElementById('simpleKbKeywords')?.value?.trim();
+            // Show/hide tabs
+            document.getElementById('creierTabKnowledge').style.display = tab === 'knowledge' ? 'block' : 'none';
+            document.getElementById('creierTabUnanswered').style.display = tab === 'unanswered' ? 'block' : 'none';
             
-            console.log('📝 Valori din formular:', { question, answer, category, keywordsStr });
+            // Load data
+            if (tab === 'knowledge') {
+                loadKnowledgeBase();
+            } else {
+                loadUnansweredQuestions();
+            }
+        }
+        
+        async function loadKnowledgeBase() {
+            try {
+                const { data, error } = await supabase
+                    .from('knowledge_base')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('knowledgeBaseList');
+                container.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">Nu există cunoștințe salvate încă. Adaugă prima cunoștință mai sus! 📚</p>';
+                    return;
+                }
+                
+                data.forEach(kb => {
+                    const kbCard = document.createElement('div');
+                    kbCard.style.cssText = 'background: #f9fafb; border: 2px solid #e5e7eb; padding: 20px; border-radius: 10px;';
+                    kbCard.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: #1f2937; margin-bottom: 8px; font-size: 16px;">❓ ${kb.question}</div>
+                                <div style="color: #6b7280; margin-bottom: 10px; line-height: 1.6;">${kb.answer}</div>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    ${kb.category ? `<span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">📁 ${kb.category}</span>` : ''}
+                                    ${kb.keywords && kb.keywords.length > 0 ? kb.keywords.map(kw => `<span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🔑 ${kw}</span>`).join('') : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px; margin-left: 15px;">
+                                <button onclick="editKnowledge('${kb.id}')" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">✏️ Editează</button>
+                                <button onclick="deleteKnowledge('${kb.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
+                            Adăugat: ${new Date(kb.created_at).toLocaleString('ro-RO')}
+                        </div>
+                    `;
+                    container.appendChild(kbCard);
+                });
+            } catch (error) {
+                console.error('Error loading knowledge base:', error);
+                alert('❌ Eroare la încărcarea Knowledge Base!');
+            }
+        }
+        
+        async function loadUnansweredQuestions() {
+            try {
+                const { data, error } = await supabase
+                    .from('unanswered_questions')
+                    .select('*')
+                    .eq('answered', false)
+                    .order('asked_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                // Update counter
+                document.getElementById('unansweredCount').textContent = data ? data.length : 0;
+                
+                const container = document.getElementById('unansweredQuestionsList');
+                container.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există întrebări noi! Toate au fost răspunse.</p>';
+                    return;
+                }
+                
+                data.forEach(q => {
+                    const qCard = document.createElement('div');
+                    qCard.style.cssText = 'background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 10px;';
+                    qCard.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: #92400e; margin-bottom: 8px; font-size: 16px;">❓ ${q.question}</div>
+                                <div style="font-size: 13px; color: #78350f;">
+                                    ${q.user_id ? `👤 User ID: ${q.user_id}` : `👻 Utilizator anonim (${q.session_id ? q.session_id.substring(0,8) + '...' : 'N/A'})`}
+                                    <br>🕐 Întrebată: ${new Date(q.asked_at).toLocaleString('ro-RO')}
+                                </div>
+                            </div>
+                            <button onclick="addAnswerToKB('${q.id}', \`${q.question.replace(/`/g, '\\`')}\`)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; margin-left: 15px;">
+                                🧠 Adaugă în Creier
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } catch (error) {
+                console.error('Error loading unanswered questions:', error);
+                alert('❌ Eroare la încărcarea întrebărilor!');
+            }
+        }
+        
+        async function addNewKnowledge() {
+            const question = document.getElementById('newKbQuestion').value.trim();
+            const answer = document.getElementById('newKbAnswer').value.trim();
+            const category = document.getElementById('newKbCategory').value.trim();
+            const keywordsStr = document.getElementById('newKbKeywords').value.trim();
             
             if (!question || !answer) {
-                console.log('⚠️ Lipsesc date!');
-                alert('❌ Completează întrebarea și răspunsul!');
+                alert('❌ Completează cel puțin întrebarea și răspunsul!');
                 return;
             }
-            
-            if (!supabase) {
-                console.error('❌ Supabase NU ESTE INIȚIALIZAT!', supabase);
-                alert('❌ Supabase nu este inițializat! Reîncarcă pagina.');
-                return;
-            }
-            
-            console.log('✅ Supabase este OK:', supabase);
             
             const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()).filter(k => k) : [];
             
             try {
-                console.log('📤 Salvez în Supabase knowledge_base...');
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('knowledge_base')
                     .insert({
                         question: question,
                         answer: answer,
                         category: category || null,
                         keywords: keywords.length > 0 ? keywords : null
-                    })
-                    .select();
-                
-                if (error) {
-                    console.error('❌ Eroare Supabase:', error);
-                    throw error;
-                }
-                
-                console.log('✅ SALVAT CU SUCCES!', data);
-                alert('✅ Cunoștință salvată cu succes în Creier AI!');
-                
-                // Clear form
-                document.getElementById('simpleKbQuestion').value = '';
-                document.getElementById('simpleKbAnswer').value = '';
-                document.getElementById('simpleKbCategory').value = '';
-                document.getElementById('simpleKbKeywords').value = '';
-            } catch (error) {
-                console.error('💥 EROARE COMPLETĂ:', error);
-                alert('❌ Eroare la salvare: ' + error.message);
-            }
-        };
-        
-        window.loadSimpleUnanswered = async function() {
-            console.log('🚀 loadSimpleUnanswered - ÎNCĂRCARE prin backend Vercel!');
-            
-            try {
-                console.log('📤 Fac request la backend...');
-                const response = await fetch('https://api-chat-js-three.vercel.app/api/get-questions');
-                
-                console.log('📥 Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error('Backend a returnat eroare: ' + response.status);
-                }
-                
-                const result = await response.json();
-                console.log('✅ Date primite de la backend:', result);
-                
-                // Update counter
-                const count = result.count || 0;
-                document.getElementById('simpleUnansweredCount').textContent = count;
-                
-                const container = document.getElementById('simpleUnansweredList');
-                container.innerHTML = '';
-                
-                if (!result.questions || result.questions.length === 0) {
-                    console.log('ℹ️ Nu sunt întrebări');
-                    container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px;">🎉 Nu există întrebări noi!</p>';
-                    alert('✅ Sincronizat! Nu există întrebări noi.');
-                    return;
-                }
-                
-                console.log('📋 Afișez', result.questions.length, 'întrebări');
-                result.questions.forEach(q => {
-                    const qCard = document.createElement('div');
-                    qCard.style.cssText = 'background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px;';
-                    qCard.innerHTML = `
-                        <div style="font-weight: 600; color: #92400e; margin-bottom: 5px;">❓ ${q.question}</div>
-                        <div style="font-size: 12px; color: #78350f;">
-                            🕐 ${new Date(q.created_at).toLocaleString('ro-RO')}
-                        </div>
-                    `;
-                    container.appendChild(qCard);
-                });
-                
-                alert('✅ Încărcat ' + count + ' întrebări de la utilizatori!');
-                
-            } catch (error) {
-                console.error('💥 EROARE COMPLETĂ:', error);
-                alert('❌ Eroare la încărcare: ' + error.message);
-            }
-        };
-        
-        console.log('✅ Funcții Creier AI încărcate! window.saveSimpleKnowledge și window.loadSimpleUnanswered sunt disponibile.');
-        
-        // ============================================
-        // PETRECERI DATABASE FUNCTIONS
-        // ============================================
-        
-        // Handle form submit
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('formPetrecere');
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    await savePetrecere();
-                });
-            }
-        });
-        
-        async function savePetrecere() {
-            console.log('🚀 Salvez petrecere nouă...');
-            
-            if (!supabase) {
-                alert('❌ Supabase nu este inițializat! Reîncarcă pagina.');
-                return;
-            }
-            
-            // Get user
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                alert('❌ Trebuie să fii autentificat pentru a salva petreceri!');
-                return;
-            }
-            
-            // Get form values
-            const dataEveniment = document.getElementById('dataEveniment').value;
-            const oraStart = document.getElementById('oraStart').value;
-            const oraEnd = document.getElementById('oraEnd').value || null;
-            const clientNume = document.getElementById('clientNume').value.trim();
-            const clientTelefon = document.getElementById('clientTelefon').value.trim() || null;
-            const locatie = document.getElementById('locatie').value.trim() || null;
-            const tipPetrecere = document.getElementById('tipPetrecere').value || null;
-            const numarCopii = document.getElementById('numarCopii').value ? parseInt(document.getElementById('numarCopii').value) : null;
-            const pretTotal = document.getElementById('pretTotal').value ? parseFloat(document.getElementById('pretTotal').value) : null;
-            const pretAchitat = document.getElementById('pretAchitat').value ? parseFloat(document.getElementById('pretAchitat').value) : 0;
-            const status = document.getElementById('status').value;
-            const notaClient = document.getElementById('notaClient').value.trim() || null;
-            const notaInterna = document.getElementById('notaInterna').value.trim() || null;
-            
-            // Parse arrays
-            const personajeStr = document.getElementById('personaje').value.trim();
-            const personaje = personajeStr ? personajeStr.split(',').map(p => p.trim()).filter(p => p) : null;
-            
-            const traineriStr = document.getElementById('traineri').value.trim();
-            const traineri = traineriStr ? traineriStr.split(',').map(t => t.trim().toUpperCase()).filter(t => t) : null;
-            
-            // Validate required fields
-            if (!dataEveniment || !oraStart || !clientNume) {
-                alert('❌ Completează câmpurile obligatorii: Data, Ora Start, Nume Client!');
-                return;
-            }
-            
-            try {
-                console.log('📤 Trimit la Supabase...');
-                const { data, error } = await supabase
-                    .from('petreceri')
-                    .insert({
-                        user_id: user.id,
-                        data_eveniment: dataEveniment,
-                        ora_start: oraStart,
-                        ora_end: oraEnd,
-                        client_nume: clientNume,
-                        client_telefon: clientTelefon,
-                        locatie: locatie,
-                        tip_petrecere: tipPetrecere,
-                        personaje: personaje,
-                        traineri: traineri,
-                        numar_copii: numarCopii,
-                        pret_total: pretTotal,
-                        pret_achitat: pretAchitat,
-                        status: status,
-                        nota_client: notaClient,
-                        nota_interna: notaInterna
-                    })
-                    .select();
-                
-                if (error) {
-                    console.error('❌ Eroare Supabase:', error);
-                    throw error;
-                }
-                
-                console.log('✅ SALVAT CU SUCCES!', data);
-                alert('✅ Petrecere salvată cu succes în cloud!');
-                
-                // Reset form
-                document.getElementById('formPetrecere').reset();
-                
-                // Reload list
-                await loadPetreceri();
-                
-            } catch (error) {
-                console.error('💥 EROARE:', error);
-                alert('❌ Eroare la salvare: ' + error.message);
-            }
-        }
-        
-        async function loadPetreceri() {
-            console.log('🔄 Încărcare petreceri...');
-            
-            const container = document.getElementById('listaPetreceri');
-            const counter = document.getElementById('petreceriCount');
-            
-            // Show loading
-            container.innerHTML = '<p style="color: #667eea; text-align: center; padding: 40px; font-weight: 600;">⏳ Se încarcă petrecerile...</p>';
-            
-            if (!supabase) {
-                container.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 40px;">❌ Supabase nu este inițializat! Reîncarcă pagina.</p>';
-                alert('❌ Supabase nu este inițializat!');
-                return;
-            }
-            
-            // Get user
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                container.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 40px;">❌ Trebuie să fii autentificat pentru a vedea petrecerile!</p>';
-                alert('❌ Trebuie să fii autentificat!');
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase
-                    .from('petreceri')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('data_eveniment', { ascending: false });
+                    });
                 
                 if (error) throw error;
                 
-                console.log('✅ Încărcat', data.length, 'petreceri');
+                alert('✅ Cunoștință adăugată cu succes în Creier AI!');
                 
-                // Update counter
-                counter.textContent = data.length;
+                // Clear form
+                document.getElementById('newKbQuestion').value = '';
+                document.getElementById('newKbAnswer').value = '';
+                document.getElementById('newKbCategory').value = '';
+                document.getElementById('newKbKeywords').value = '';
                 
-                container.innerHTML = '';
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px;">📭 Nu ai nicio petrecere salvată încă!</p>';
-                    return;
-                }
-                
-                // Display each party
-                data.forEach(petrecere => {
-                    const card = document.createElement('div');
-                    card.style.cssText = 'background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 5px solid #f59e0b; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);';
-                    
-                    const statusEmoji = petrecere.status === 'confirmat' ? '✅' : petrecere.status === 'finalizat' ? '🎉' : '❌';
-                    const dataFormatata = new Date(petrecere.data_eveniment).toLocaleDateString('ro-RO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    
-                    card.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                            <div>
-                                <h3 style="margin: 0 0 5px 0; color: #92400e; font-size: 20px;">${statusEmoji} ${petrecere.client_nume}</h3>
-                                <div style="color: #78350f; font-size: 14px; font-weight: 600;">📅 ${dataFormatata} • 🕐 ${petrecere.ora_start}${petrecere.ora_end ? ' - ' + petrecere.ora_end : ''}</div>
-                            </div>
-                            <button onclick="deletePetrecere('${petrecere.id}')" style="background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                                🗑️ Șterge
-                            </button>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;">
-                            ${petrecere.tip_petrecere ? `<div style="color: #78350f;"><strong>🎈 Tip:</strong> ${petrecere.tip_petrecere}</div>` : ''}
-                            ${petrecere.locatie ? `<div style="color: #78350f;"><strong>📍 Locație:</strong> ${petrecere.locatie}</div>` : ''}
-                            ${petrecere.numar_copii ? `<div style="color: #78350f;"><strong>👶 Copii:</strong> ${petrecere.numar_copii}</div>` : ''}
-                            ${petrecere.client_telefon ? `<div style="color: #78350f;"><strong>📞 Tel:</strong> ${petrecere.client_telefon}</div>` : ''}
-                        </div>
-                        
-                        ${petrecere.personaje && petrecere.personaje.length > 0 ? `
-                            <div style="margin: 10px 0;">
-                                <strong style="color: #92400e;">🎭 Personaje:</strong>
-                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
-                                    ${petrecere.personaje.map(p => `<span style="background: #fff; padding: 5px 12px; border-radius: 20px; font-size: 13px; color: #92400e; border: 1px solid #f59e0b;">${p}</span>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        ${petrecere.traineri && petrecere.traineri.length > 0 ? `
-                            <div style="margin: 10px 0;">
-                                <strong style="color: #92400e;">👥 Traineri:</strong>
-                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
-                                    ${petrecere.traineri.map(t => `<span style="background: #fff; padding: 5px 12px; border-radius: 20px; font-size: 13px; color: #92400e; border: 1px solid #f59e0b; font-weight: 700;">${t}</span>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        ${petrecere.pret_total ? `
-                            <div style="margin: 10px 0; padding: 10px; background: #fff; border-radius: 8px;">
-                                <strong style="color: #92400e;">💰 Preț Total:</strong> <span style="font-size: 18px; font-weight: 700; color: #059669;">${petrecere.pret_total} LEI</span>
-                                ${petrecere.pret_achitat > 0 ? `<span style="margin-left: 15px; color: #78350f;">✅ Achitat: ${petrecere.pret_achitat} LEI</span>` : ''}
-                                ${petrecere.pret_total - petrecere.pret_achitat > 0 ? `<span style="margin-left: 15px; color: #dc2626; font-weight: 600;">⚠️ Rest: ${(petrecere.pret_total - petrecere.pret_achitat).toFixed(2)} LEI</span>` : ''}
-                            </div>
-                        ` : ''}
-                        
-                        ${petrecere.nota_client ? `
-                            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.6); border-radius: 8px;">
-                                <strong style="color: #92400e;">📝 Notă Client:</strong>
-                                <p style="margin: 5px 0 0 0; color: #78350f;">${petrecere.nota_client}</p>
-                            </div>
-                        ` : ''}
-                        
-                        ${petrecere.nota_interna ? `
-                            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.6); border-radius: 8px; border-left: 3px solid #3b82f6;">
-                                <strong style="color: #1e40af;">🔒 Notă Internă:</strong>
-                                <p style="margin: 5px 0 0 0; color: #1e3a8a;">${petrecere.nota_interna}</p>
-                            </div>
-                        ` : ''}
-                        
-                        <div style="margin-top: 10px; font-size: 12px; color: #a16207;">
-                            ⏰ Creat: ${new Date(petrecere.created_at).toLocaleString('ro-RO')}
-                        </div>
-                    `;
-                    
-                    container.appendChild(card);
-                });
-                
+                // Reload list
+                loadKnowledgeBase();
             } catch (error) {
-                console.error('💥 EROARE:', error);
-                alert('❌ Eroare la încărcare: ' + error.message);
+                console.error('Error adding knowledge:', error);
+                alert('❌ Eroare la adăugarea cunoștinței!');
             }
         }
         
-        async function deletePetrecere(id) {
-            if (!confirm('⚠️ ATENȚIE!\n\nSigur vrei să ștergi această petrecere?\n\nAceastă acțiune NU poate fi anulată!')) {
-                return;
+        function addAnswerToKB(questionId, questionText) {
+            // Pre-fill form and switch to Knowledge tab
+            document.getElementById('newKbQuestion').value = questionText;
+            document.getElementById('newKbAnswer').focus();
+            
+            // Switch to Knowledge tab
+            showCreierTab('knowledge');
+            
+            // Scroll to form
+            document.getElementById('newKbQuestion').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Mark question as answered
+            markQuestionAsAnswered(questionId);
+        }
+        
+        async function markQuestionAsAnswered(questionId) {
+            try {
+                await supabase
+                    .from('unanswered_questions')
+                    .update({ answered: true, added_to_kb: true })
+                    .eq('id', questionId);
+            } catch (error) {
+                console.error('Error marking question as answered:', error);
             }
+        }
+        
+        function editKnowledge(kbId) {
+            alert(`✏️ Editează cunoștința: ${kbId}\n\n(Funcționalitate în dezvoltare)`);
+        }
+        
+        async function deleteKnowledge(kbId) {
+            if (!confirm('⚠️ ATENȚIE!\n\nSigur vrei să ștergi această cunoștință?\n\nAceastă acțiune NU poate fi anulată!')) return;
             
             try {
                 const { error } = await supabase
-                    .from('petreceri')
+                    .from('knowledge_base')
                     .delete()
-                    .eq('id', id);
+                    .eq('id', kbId);
                 
                 if (error) throw error;
                 
-                alert('✅ Petrecere ștearsă cu succes!');
-                await loadPetreceri();
-                
+                alert('✅ Cunoștință ștearsă cu succes!');
+                loadKnowledgeBase();
             } catch (error) {
-                console.error('💥 EROARE:', error);
-                alert('❌ Eroare la ștergere: ' + error.message);
+                console.error('Error deleting knowledge:', error);
+                alert('❌ Eroare la ștergerea cunoștinței!');
             }
         }
         
@@ -2018,6 +1796,263 @@
             if (event.target === adminModal) closeAdminPasswordModal();
             if (event.target === gmModal) closeGMPasswordModal();
         });
+
+        // ===== ADMIN PANEL FUNCTIONS =====
+        const ADMIN_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyywBpJVh0jeHcAsFrKJiS8m2R9qZKM21uuKjc26V4dD_XwfI8onr0sZdi0kY4vk/exec';
+        
+        // FORBIDDEN TOPICS
+        const FORBIDDEN_KEYWORDS = [
+            'salariu', 'salarii', 'bani', 'plata', 'platesc', 'cost', 'pret', 
+            'target', 'targeturi', 'bonus', 'bonusuri', 'compensare', 'compensatie',
+            'cat platesc', 'cat castiga', 'cat primesc', 'cat iau', 'formula',
+            'procent', 'comision', 'taxa', 'tarif', 'factura', 'incasare'
+        ];
+
+        let adminHasUploadedProof = false;
+        let adminCurrentImageData = null;
+
+        function showAdminPanelTab(tabName) {
+            // Update buttons
+            const buttons = {
+                'intrebari': document.getElementById('adminTabIntrebari'),
+                'intrebariAI': document.getElementById('adminTabAI')
+            };
+
+            Object.keys(buttons).forEach(key => {
+                if (key === tabName) {
+                    buttons[key].style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                    buttons[key].style.color = 'white';
+                } else {
+                    buttons[key].style.background = '#f3f4f6';
+                    buttons[key].style.color = '#6b7280';
+                }
+            });
+
+            // Update tabs
+            document.getElementById('adminPanelTabIntrebari').style.display = tabName === 'intrebari' ? 'block' : 'none';
+            document.getElementById('adminPanelTabAI').style.display = tabName === 'intrebariAI' ? 'block' : 'none';
+
+            // Load data
+            if (tabName === 'intrebari') {
+                loadAdminIntrebari();
+            } else if (tabName === 'intrebariAI') {
+                loadAdminIntrebariAI();
+            }
+        }
+
+        async function loadAdminIntrebari() {
+            const display = document.getElementById('adminIntrebariDisplay');
+            display.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">Se încarcă...</p>';
+            
+            // Simulate loading
+            setTimeout(() => {
+                display.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #6b7280;"><div style="font-size: 64px;">✅</div><h3>Nicio întrebare nouă!</h3></div>';
+                document.getElementById('adminIntrebariCount').textContent = '0';
+            }, 500);
+        }
+
+        async function loadAdminIntrebariAI() {
+            const display = document.getElementById('adminIntrebariAIDisplay');
+            display.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">Se încarcă...</p>';
+            
+            // Simulate loading
+            setTimeout(() => {
+                display.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #6b7280;"><div style="font-size: 64px;">🎉</div><h3>Nu există corecții!</h3></div>';
+                document.getElementById('adminAiCount').textContent = '0';
+            }, 500);
+        }
+
+        // AI Chat Widget Functions
+        function toggleAdminChat() {
+            const chatWindow = document.getElementById('adminChatWindow');
+            const chatButton = document.getElementById('adminChatButton');
+            
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.style.display = 'none';
+                chatButton.style.display = 'flex';
+            } else {
+                chatWindow.style.display = 'flex';
+                chatButton.style.display = 'none';
+                document.getElementById('adminChatInput').focus();
+            }
+        }
+
+        function isForbiddenTopic(message) {
+            const lowerMessage = message.toLowerCase();
+            return FORBIDDEN_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function requiresProof(message) {
+            const lowerMessage = message.toLowerCase();
+            const actionKeywords = ['notez', 'salvez', 'adaug', 'modific', 'petrecere', 'client'];
+            return actionKeywords.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function sendAdminMessage() {
+            const input = document.getElementById('adminChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addAdminMessage(message, 'user');
+            input.value = '';
+            
+            // Check for forbidden topics
+            if (isForbiddenTopic(message)) {
+                setTimeout(() => {
+                    addAdminMessage('Nu am acces la aceste date și nu te pot ajuta cu asta.', 'ai');
+                }, 500);
+                return;
+            }
+
+            // Check if action requires proof
+            if (requiresProof(message) && !adminHasUploadedProof) {
+                setTimeout(() => {
+                    addAdminMessage('📸 Pentru a nota/modifica/salva orice, am nevoie de dovadă vizuală.<br><br>Te rog încarcă:<br>• Poză conversație WhatsApp cu clientul<br>• Screenshot formular completat<br>• Orice dovadă vizuală relevantă', 'ai');
+                }, 500);
+                return;
+            }
+            
+            showAdminTyping();
+            setTimeout(() => {
+                processAdminAIMessage(message);
+            }, 1500);
+        }
+
+        function addAdminMessage(text, sender) {
+            const messagesDiv = document.getElementById('adminChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.style.marginBottom = '15px';
+            messageDiv.style.textAlign = sender === 'user' ? 'right' : 'left';
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.style.display = 'inline-block';
+            bubbleDiv.style.maxWidth = '75%';
+            bubbleDiv.style.padding = '12px 16px';
+            bubbleDiv.style.borderRadius = '18px';
+            bubbleDiv.style.fontSize = '14px';
+            bubbleDiv.style.lineHeight = '1.5';
+            
+            if (sender === 'user') {
+                bubbleDiv.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                bubbleDiv.style.color = 'white';
+                bubbleDiv.style.borderBottomRightRadius = '4px';
+            } else {
+                bubbleDiv.style.background = 'white';
+                bubbleDiv.style.color = '#1f2937';
+                bubbleDiv.style.borderBottomLeftRadius = '4px';
+                bubbleDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+            }
+            
+            bubbleDiv.innerHTML = text;
+            messageDiv.appendChild(bubbleDiv);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showAdminTyping() {
+            const messagesDiv = document.getElementById('adminChatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'adminTypingIndicator';
+            typingDiv.style.marginBottom = '15px';
+            typingDiv.style.textAlign = 'left';
+            typingDiv.innerHTML = `
+                <div style="display: inline-block; padding: 12px 16px; background: white; border-radius: 18px; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <div style="display: flex; gap: 4px;">
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s infinite;"></span>
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s 0.2s infinite;"></span>
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s 0.4s infinite;"></span>
+                    </div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideAdminTyping() {
+            const typingDiv = document.getElementById('adminTypingIndicator');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        function processAdminAIMessage(userMessage) {
+            hideAdminTyping();
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (adminHasUploadedProof && (lowerMessage.includes('notez') || lowerMessage.includes('salvez'))) {
+                const response = `✅ <strong>Perfect! Am analizat poza și am extras următoarele:</strong><br><br>` +
+                    `🎭 <strong>Personaje:</strong> Elsa, Ana<br>` +
+                    `👥 <strong>Nr. Membri:</strong> 1 membru<br>` +
+                    `📦 <strong>Echipament:</strong> 1 loc<br>` +
+                    `🚗 <strong>Șoferi:</strong> 1 șofer<br><br>` +
+                    `<strong>Este corect sau corectezi ceva?</strong>`;
+                
+                addAdminMessage(response, 'ai');
+                
+            } else if (lowerMessage.includes('corect') || lowerMessage.includes('greșit') || 
+                       lowerMessage.includes('2 membri')) {
+                
+                const response = `✅ <strong>Am corectat!</strong><br><br>` +
+                    `Elsa + Ana = <strong>2 MEMBRI</strong><br><br>` +
+                    `Salvez petrecerea în Sheets?`;
+                
+                addAdminMessage(response, 'ai');
+                
+            } else {
+                const response = `Cu ce te pot ajuta?`;
+                addAdminMessage(response, 'ai');
+            }
+        }
+
+        // Image upload handling
+        document.getElementById('adminImageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                adminCurrentImageData = e.target.result;
+                adminHasUploadedProof = true;
+
+                const messagesDiv = document.getElementById('adminChatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.style.marginBottom = '15px';
+                messageDiv.style.textAlign = 'right';
+                messageDiv.innerHTML = `
+                    <div style="display: inline-block; max-width: 75%; padding: 12px 16px; border-radius: 18px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-bottom-right-radius: 4px;">
+                        📸 Poză încărcată
+                        <br><img src="${adminCurrentImageData}" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 10px;">
+                    </div>
+                `;
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                setTimeout(() => {
+                    showAdminTyping();
+                    setTimeout(() => {
+                        hideAdminTyping();
+                        addAdminMessage('📋 Perfect! Am primit poza. Analizez...<br><br>Spune-mi ce vrei să fac cu aceste informații?', 'ai');
+                    }, 2000);
+                }, 500);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Add typing animation CSS
+        const typingStyle = document.createElement('style');
+        typingStyle.textContent = `
+            @keyframes typing {
+                0%, 60%, 100% {
+                    transform: translateY(0);
+                    opacity: 0.7;
+                }
+                30% {
+                    transform: translateY(-10px);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(typingStyle);
     </script>
 </body>
 </html>
