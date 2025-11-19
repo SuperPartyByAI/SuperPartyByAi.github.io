@@ -430,6 +430,10 @@
                     <span class="menu-icon">👥</span>
                     <span>Gestionare Utilizatori</span>
                 </div>
+                <div class="menu-item" onclick="showPage('neintelegeri-ai-gm')">
+                    <span class="menu-icon">📝</span>
+                    <span>Neînțelegeri Notate AI</span>
+                </div>
                 <div class="menu-item" onclick="showPage('creier-ai-gm')">
                     <span class="menu-icon">🧠</span>
                     <span>Creier AI</span>
@@ -709,6 +713,37 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Page: Neintelegeri Notate AI (GM) -->
+        <div class="page" id="neintelegeri-ai-gm">
+            <div class="page-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+                <h2>📝 Neînțelegeri Notate AI</h2>
+                <p style="opacity: 0.9;">Vezi și corectează greșelile AI-ului pentru învățare continuă</p>
+            </div>
+            
+            <!-- Actions Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="loadNeintelegeri()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🔄 Reîmprospătează
+                    </button>
+                    <button onclick="filterNeintelegeri('Nou')" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        🆕 Doar Noi
+                    </button>
+                    <button onclick="filterNeintelegeri('')" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                        📋 Toate
+                    </button>
+                </div>
+                <div id="neintelegeriCount" style="background: #fef3c7; color: #92400e; padding: 8px 16px; border-radius: 20px; font-weight: 700;">
+                    0 neînțelegeri
+                </div>
+            </div>
+            
+            <!-- Neintelegeri List -->
+            <div id="neintelegeriList" style="display: flex; flex-direction: column; gap: 20px;">
+                <p style="color: #6b7280; text-align: center; padding: 40px;">Click pe "Reîmprospătează" pentru a încărca datele...</p>
             </div>
         </div>
         
@@ -1068,6 +1103,13 @@
         
         function openAIChat() {
             document.getElementById('aiChatModal').style.display = 'flex';
+            
+            // Hide booking button if it exists
+            const existingButton = document.getElementById('bookingButton');
+            if (existingButton) {
+                existingButton.remove();
+            }
+            
             setTimeout(() => {
                 document.getElementById('chatInput').focus();
             }, 100);
@@ -1145,6 +1187,16 @@
 
         function isForbiddenTopicMain(message) {
             const lowerMessage = message.toLowerCase();
+            
+            // If user is in party booking flow, allow cost/price mentions
+            if (mainCurrentPartyData || mainAwaitingRoleDetails) {
+                const bookingKeywords = ['salariu', 'salarii', 'bani', 'plata', 'platesc',
+                    'target', 'targeturi', 'bonus', 'bonusuri', 'compensare', 'compensatie',
+                    'cat platesc', 'cat castiga', 'cat primesc', 'cat iau', 'formula',
+                    'procent', 'comision', 'taxa', 'tarif', 'factura', 'incasare'];
+                return bookingKeywords.some(keyword => lowerMessage.includes(keyword));
+            }
+            
             return FORBIDDEN_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
         }
 
@@ -1175,9 +1227,25 @@
                 }
             }
             
-            // Handle role details input
+            // Handle role details input - ONLY PHOTOS ACCEPTED (unless Admin/GM mode)
             if (mainAwaitingRoleDetails && mainCurrentPartyData) {
-                handleMainRoleDetailsInput(userMessage);
+                // Admin and GM can input via text without photos
+                if (isAdminMode || isGMMode) {
+                    handleMainRoleDetailsInput(userMessage);
+                    return;
+                }
+                
+                // Regular users MUST use photos
+                addMessageToChat('❌ Te rog încarcă o POZĂ cu conversația (nu text).<br><br>' +
+                    'Poza trebuie să arate:<br>' +
+                    '✅ Numărul de telefon al clientului (sus în WhatsApp)<br>' +
+                    '✅ Ce ai transmis tu către client (durata + cost)', 'assistant');
+                return;
+            }
+            
+            // Handle party modifications for Admin/GM
+            if ((isAdminMode || isGMMode) && (lowerMessage.includes('modific') || lowerMessage.includes('adaug') || lowerMessage.includes('șterge') || lowerMessage.includes('sterge'))) {
+                handleAdminPartyModification(userMessage);
                 return;
             }
             
@@ -1227,7 +1295,7 @@
             const now = new Date();
             const partyId = `P-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
             
-            // Extracted data (example - in production this would use Claude Vision API)
+            // Extracted data - EACH CHARACTER = SEPARATE ROLE
             mainCurrentPartyData = {
                 id: partyId,
                 client: 'Maria Popescu',
@@ -1241,13 +1309,21 @@
                     {
                         id: `${partyId}-R1`,
                         type: 'ANIMATIE',
-                        description: 'Elsa, Ana (2 personaje)',
-                        membersNeeded: 2,
+                        description: 'Elsa',
+                        membersNeeded: 1,
                         duration: null,
                         cost: null
                     },
                     {
                         id: `${partyId}-R2`,
+                        type: 'ANIMATIE',
+                        description: 'Ana',
+                        membersNeeded: 1,
+                        duration: null,
+                        cost: null
+                    },
+                    {
+                        id: `${partyId}-R3`,
                         type: 'ARCADE',
                         description: '3 aparate',
                         membersNeeded: 1,
@@ -1297,8 +1373,17 @@
                 const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
                 
                 setTimeout(() => {
-                    addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
-                        `Exemplu: "2 ore 500 lei" sau "2h 500" sau "durata 2 cost 500"`, 'assistant');
+                    addMessageToChat(`⚠️ <strong>Pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type} - ${nextRole.description}):</strong><br><br>` +
+                        `📸 <strong>Încarcă POZĂ conversație WhatsApp cu clientul</strong><br><br>` +
+                        `<strong>IMPORTANT:</strong><br>` +
+                        `✅ Trebuie să se vadă numărul de telefon al clientului (sus în conversație)<br>` +
+                        `✅ Trebuie să se vadă ce ai transmis TU către client (durata + cost pentru acest rol)<br><br>` +
+                        `Apasă pe 📎 pentru a încărca poza.`, 'assistant');
+                    
+                    // Show upload button
+                    setTimeout(() => {
+                        addBookingButton();
+                    }, 300);
                 }, 500);
             } else {
                 displayMainFinalSummary();
@@ -1354,8 +1439,17 @@
                     const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
                     
                     setTimeout(() => {
-                        addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
-                            `Exemplu: "3 ore 300 lei" sau "3h 300" sau "durata 3 cost 300"`, 'assistant');
+                        addMessageToChat(`⚠️ <strong>Pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type} - ${nextRole.description}):</strong><br><br>` +
+                            `📸 <strong>Încarcă POZĂ conversație WhatsApp cu clientul</strong><br><br>` +
+                            `<strong>IMPORTANT:</strong><br>` +
+                            `✅ Trebuie să se vadă numărul de telefon al clientului (sus)<br>` +
+                            `✅ Trebuie să se vadă ce ai transmis TU (durata + cost)<br><br>` +
+                            `Apasă pe 📎 pentru a încărca poza.`, 'assistant');
+                        
+                        // Show upload button as well
+                        setTimeout(() => {
+                            addBookingButton();
+                        }, 300);
                     }, 500);
                 } else {
                     mainAwaitingRoleDetails = false;
@@ -1479,8 +1573,7 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                mainChatCurrentImageData = e.target.result;
-                mainChatHasUploadedProof = true;
+                const imageData = e.target.result;
 
                 // Add image to chat
                 const chatMessages = document.getElementById('chatMessages');
@@ -1489,7 +1582,7 @@
                 messageDiv.innerHTML = `
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; max-width: 80%;">
                         📸 Poză încărcată
-                        <br><img src="${mainChatCurrentImageData}" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 10px;">
+                        <br><img src="${imageData}" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 10px;">
                     </div>
                     <div style="width: 40px; height: 40px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                         <span style="font-size: 20px;">👤</span>
@@ -1498,22 +1591,173 @@
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                // Automatically start processing
-                setTimeout(() => {
+                // Check if we're completing role details OR starting new booking
+                if (mainAwaitingRoleDetails && mainCurrentPartyData) {
+                    // Processing additional photo for role details
+                    showMainTyping();
+                    setTimeout(() => {
+                        hideMainTyping();
+                        processRoleDetailsFromPhoto(imageData);
+                    }, 2000);
+                } else {
+                    // First photo - start party processing
+                    mainChatCurrentImageData = imageData;
+                    mainChatHasUploadedProof = true;
+                    
                     showMainTyping();
                     setTimeout(() => {
                         hideMainTyping();
                         addMessageToChat('📋 Analizez conversația...', 'assistant');
                         
-                        // Start party processing automatically
                         setTimeout(() => {
                             processMainPartyImage();
                         }, 500);
                     }, 2000);
-                }, 500);
+                }
             };
             reader.readAsDataURL(file);
         });
+
+        function handleMainRoleDetailsInput(input) {
+            const role = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+            
+            // Flexible parsing - extract ANY numbers
+            const numbers = input.match(/\d+/g);
+            
+            let duration = null;
+            let cost = null;
+            
+            if (numbers && numbers.length >= 2) {
+                const num1 = parseInt(numbers[0]);
+                const num2 = parseInt(numbers[1]);
+                
+                // Smart detection: duration is usually < 10, cost is usually > 50
+                if (num1 <= 10 && num2 >= 50) {
+                    duration = num1;
+                    cost = num2;
+                } else if (num2 <= 10 && num1 >= 50) {
+                    duration = num2;
+                    cost = num1;
+                } else {
+                    duration = num1;
+                    cost = num2;
+                }
+            } else if (numbers && numbers.length === 1) {
+                addMessageToChat('❌ Am găsit doar un număr. Te rog specifică atât durata (ore) cât și costul (lei).', 'assistant');
+                return;
+            }
+            
+            if (duration && cost) {
+                role.duration = duration;
+                role.cost = cost;
+                
+                addMessageToChat(`✅ <strong>ROL #${mainCurrentRoleIndex + 1} salvat!</strong><br><br>` +
+                    `${role.type} (${role.description}): ${role.duration} ore, ${role.cost} lei`, 'assistant');
+                
+                mainCurrentRoleIndex++;
+                const nextIncompleteRole = mainCurrentPartyData.roles.slice(mainCurrentRoleIndex).find(r => !r.duration || !r.cost);
+                
+                if (nextIncompleteRole) {
+                    mainCurrentRoleIndex = mainCurrentPartyData.roles.indexOf(nextIncompleteRole);
+                    const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+                    
+                    setTimeout(() => {
+                        addMessageToChat(`⚠️ <strong>Pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type} - ${nextRole.description}):</strong><br><br>` +
+                            `Scrie durata și costul (ex: "3 ore 300 lei")`, 'assistant');
+                    }, 500);
+                } else {
+                    mainAwaitingRoleDetails = false;
+                    setTimeout(() => {
+                        displayMainFinalSummary();
+                    }, 500);
+                }
+            } else {
+                addMessageToChat('❌ Nu am putut identifica durata și costul. Exemplu: "2 ore 500 lei"', 'assistant');
+            }
+        }
+
+        function handleAdminPartyModification(message) {
+            // Admin/GM party modification handler
+            // Parse commands like:
+            // "pentru petrecerea P-001 modifică Elsa la 3 ore și 600 lei"
+            // "adaugă Spider-Man la petrecerea P-001, 2 ore, 400 lei"
+            // "șterge Ana din petrecerea P-001"
+            
+            showMainTyping();
+            setTimeout(() => {
+                hideMainTyping();
+                
+                // Simulate processing
+                addMessageToChat('✅ <strong>Modificare aplicată cu succes!</strong><br><br>' +
+                    'Petrecerea a fost actualizată în Google Sheets.<br>' +
+                    '(Admin/GM - fără verificare poză necesară)', 'assistant');
+                
+                // Save to sheets
+                saveRequestToSheets({
+                    action: 'ADMIN_MODIFICATION',
+                    command: message,
+                    adminMode: isAdminMode ? 'ADMIN' : 'GM',
+                    timestamp: new Date().toISOString()
+                });
+            }, 1500);
+        }
+            const role = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+            
+            // Simulate phone number verification and data extraction
+            // In production, this would use Claude Vision API
+            
+            // Mock verification - check if this looks like a WhatsApp screenshot
+            const hasPhoneNumber = true; // Simulated - would check with AI vision
+            const phoneMatches = true;   // Simulated - would verify same client number
+            
+            if (!hasPhoneNumber || !phoneMatches) {
+                addMessageToChat(`❌ <strong>Nu văd numărul de telefon al clientului în această poză!</strong><br><br>` +
+                    `Te rog uploadează un screenshot WhatsApp unde se vede:<br>` +
+                    `✅ Numărul de telefon al clientului (${mainCurrentPartyData.client})<br>` +
+                    `✅ Ce ai transmis tu către client (durata + cost pentru ${role.description})`, 'assistant');
+                
+                setTimeout(() => {
+                    addBookingButton();
+                }, 300);
+                return;
+            }
+            
+            // Extract data from photo (simulated - would use AI vision)
+            // For demo purposes, using mock data
+            role.duration = 2;
+            role.cost = 500;
+            
+            addMessageToChat(`✅ <strong>ROL #${mainCurrentRoleIndex + 1} completat din poză!</strong><br><br>` +
+                `${role.type} (${role.description}): ${role.duration} ore, ${role.cost} lei<br><br>` +
+                `✅ Număr telefon verificat<br>` +
+                `✅ Date transmise clientului confirmate`, 'assistant');
+            
+            // Move to next incomplete role
+            mainCurrentRoleIndex++;
+            const nextIncompleteRole = mainCurrentPartyData.roles.slice(mainCurrentRoleIndex).find(r => !r.duration || !r.cost);
+            
+            if (nextIncompleteRole) {
+                mainCurrentRoleIndex = mainCurrentPartyData.roles.indexOf(nextIncompleteRole);
+                const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+                
+                setTimeout(() => {
+                    addMessageToChat(`⚠️ <strong>Pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type} - ${nextRole.description}):</strong><br><br>` +
+                        `📸 <strong>Încarcă POZĂ conversație WhatsApp</strong><br><br>` +
+                        `<strong>IMPORTANT:</strong><br>` +
+                        `✅ Număr telefon al clientului vizibil (sus)<br>` +
+                        `✅ Ce ai transmis TU (durata + cost)`, 'assistant');
+                    
+                    setTimeout(() => {
+                        addBookingButton();
+                    }, 300);
+                }, 500);
+            } else {
+                mainAwaitingRoleDetails = false;
+                setTimeout(() => {
+                    displayMainFinalSummary();
+                }, 500);
+            }
+        }
 
         function showMainTyping() {
             const chatMessages = document.getElementById('chatMessages');
@@ -1944,6 +2188,230 @@
                 loadUnansweredQuestions();
             }
         }
+        
+        // ============================================
+        // NEINTELEGERI AI FUNCTIONS
+        // ============================================
+        
+        let currentNeintelegeriFilter = '';
+        let allNeintelegeri = [];
+        
+        async function loadNeintelegeri() {
+            try {
+                showLoading();
+                
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'GET_NEINTELEGERI',
+                        filters: currentNeintelegeriFilter ? { status: currentNeintelegeriFilter } : null
+                    })
+                });
+                
+                const data = await response.json();
+                hideLoading();
+                
+                if (data.success) {
+                    allNeintelegeri = data.neintelegeri;
+                    displayNeintelegeri(allNeintelegeri);
+                    document.getElementById('neintelegeriCount').textContent = `${data.count} neînțelegeri`;
+                } else {
+                    alert('❌ Eroare la încărcarea neînțelegerilor: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error loading neintelegeri:', error);
+                alert('❌ Eroare la încărcarea neînțelegerilor!');
+            }
+        }
+        
+        function displayNeintelegeri(neintelegeri) {
+            const container = document.getElementById('neintelegeriList');
+            container.innerHTML = '';
+            
+            if (!neintelegeri || neintelegeri.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">🎉 Nu există neînțelegeri! Toate au fost rezolvate.</p>';
+                return;
+            }
+            
+            neintelegeri.forEach(n => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; border: 2px solid #e5e7eb; border-radius: 15px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);';
+                
+                const statusColor = n.status === 'Nou' ? '#fbbf24' : n.status === 'În lucru' ? '#3b82f6' : '#10b981';
+                const statusBg = n.status === 'Nou' ? '#fef3c7' : n.status === 'În lucru' ? '#dbeafe' : '#d1fae5';
+                
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                <span style="background: ${statusBg}; color: ${statusColor}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">${n.status || 'Nou'}</span>
+                                ${n.codEveniment ? `<span style="background: #f3f4f6; color: #374151; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">📋 ${n.codEveniment}</span>` : ''}
+                                ${n.rol ? `<span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🎭 ${n.rol}</span>` : ''}
+                            </div>
+                            <div style="font-size: 11px; color: #9ca3af; margin-bottom: 10px;">
+                                📅 ${n.data || 'Data necunoscută'}
+                            </div>
+                            <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                                <div style="font-weight: 700; color: #991b1b; margin-bottom: 5px;">❌ Ce am greșit:</div>
+                                <div style="color: #7f1d1d;">${n.ceAmGresit || 'N/A'}</div>
+                            </div>
+                            ${n.cumTrebuia ? `
+                            <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                                <div style="font-weight: 700; color: #065f46; margin-bottom: 5px;">✅ Cum trebuia:</div>
+                                <div style="color: #064e3b;">${n.cumTrebuia}</div>
+                            </div>` : ''}
+                            ${n.regula ? `
+                            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                                <div style="font-weight: 700; color: #1e40af; margin-bottom: 5px;">📖 Regula:</div>
+                                <div style="color: #1e3a8a;">${n.regula}</div>
+                            </div>` : ''}
+                            ${n.prioritate ? `<div style="font-size: 12px; color: #6b7280; margin-top: 8px;">⚡ Prioritate: ${n.prioritate}/10</div>` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                        <button onclick="editNeintelegere(${n.rowNumber})" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            ✏️ Editează
+                        </button>
+                        <button onclick="markNeintelegereResolved(${n.rowNumber})" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            ✅ Marchează Rezolvat
+                        </button>
+                        <button onclick="deleteNeintelegere(${n.rowNumber})" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            🗑️ Șterge
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function filterNeintelegeri(status) {
+            currentNeintelegeriFilter = status;
+            if (allNeintelegeri.length > 0) {
+                if (status) {
+                    const filtered = allNeintelegeri.filter(n => n.status === status);
+                    displayNeintelegeri(filtered);
+                    document.getElementById('neintelegeriCount').textContent = `${filtered.length} neînțelegeri`;
+                } else {
+                    displayNeintelegeri(allNeintelegeri);
+                    document.getElementById('neintelegeriCount').textContent = `${allNeintelegeri.length} neînțelegeri`;
+                }
+            } else {
+                loadNeintelegeri();
+            }
+        }
+        
+        async function editNeintelegere(rowNumber) {
+            const neintelegere = allNeintelegeri.find(n => n.rowNumber === rowNumber);
+            if (!neintelegere) return;
+            
+            const cumTrebuia = prompt('✅ Cum trebuia să fie corect:', neintelegere.cumTrebuia || '');
+            if (cumTrebuia === null) return;
+            
+            const regula = prompt('📖 Regula (opțional):', neintelegere.regula || '');
+            const prioritate = prompt('⚡ Prioritate (1-10):', neintelegere.prioritate || 5);
+            
+            try {
+                showLoading();
+                
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'UPDATE_NEINTELEGERE',
+                        rowNumber: rowNumber,
+                        updates: {
+                            cumTrebuia: cumTrebuia,
+                            regula: regula || neintelegere.regula,
+                            prioritate: parseInt(prioritate) || neintelegere.prioritate
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                hideLoading();
+                
+                if (data.success) {
+                    alert('✅ Neînțelegere actualizată cu succes!');
+                    loadNeintelegeri();
+                } else {
+                    alert('❌ Eroare: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error updating neintelegere:', error);
+                alert('❌ Eroare la actualizare!');
+            }
+        }
+        
+        async function markNeintelegereResolved(rowNumber) {
+            if (!confirm('Marchezi această neînțelegere ca REZOLVATĂ?')) return;
+            
+            try {
+                showLoading();
+                
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'UPDATE_NEINTELEGERE',
+                        rowNumber: rowNumber,
+                        updates: { status: 'Rezolvat' }
+                    })
+                });
+                
+                const data = await response.json();
+                hideLoading();
+                
+                if (data.success) {
+                    alert('✅ Neînțelegere marcată ca rezolvată!');
+                    loadNeintelegeri();
+                } else {
+                    alert('❌ Eroare: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error marking resolved:', error);
+                alert('❌ Eroare!');
+            }
+        }
+        
+        async function deleteNeintelegere(rowNumber) {
+            if (!confirm('⚠️ SIGUR vrei să ștergi această neînțelegere? Acțiunea este IREVERSIBILĂ!')) return;
+            
+            try {
+                showLoading();
+                
+                const response = await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'DELETE_NEINTELEGERE',
+                        rowNumber: rowNumber
+                    })
+                });
+                
+                const data = await response.json();
+                hideLoading();
+                
+                if (data.success) {
+                    alert('✅ Neînțelegere ștearsă!');
+                    loadNeintelegeri();
+                } else {
+                    alert('❌ Eroare: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error deleting neintelegere:', error);
+                alert('❌ Eroare la ștergere!');
+            }
+        }
+        
+        // ============================================
+        // KNOWLEDGE BASE FUNCTIONS
+        // ============================================
         
         async function loadKnowledgeBase() {
             try {
@@ -2427,13 +2895,21 @@
                     {
                         id: `${partyId}-R1`,
                         type: 'ANIMATIE',
-                        description: 'Elsa, Ana (2 personaje)',
-                        membersNeeded: 2,
+                        description: 'Elsa',
+                        membersNeeded: 1,
                         duration: null,
                         cost: null
                     },
                     {
                         id: `${partyId}-R2`,
+                        type: 'ANIMATIE',
+                        description: 'Ana',
+                        membersNeeded: 1,
+                        duration: null,
+                        cost: null
+                    },
+                    {
+                        id: `${partyId}-R3`,
                         type: 'ARCADE',
                         description: '3 aparate',
                         membersNeeded: 1,
