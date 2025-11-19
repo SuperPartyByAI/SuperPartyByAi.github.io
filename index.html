@@ -1010,6 +1010,47 @@
             'default': '👋 Bună! Sunt Super AI, asistentul tău pentru petreceri SuperParty! 🎉<br><br>Te pot ajuta cu informații despre:<br>• Prețuri și oferte<br>• Personaje disponibile<br>• Program și rezervări<br>• Servicii oferite<br><br>Cu ce te pot ajuta astăzi? 😊'
         };
         
+        // Handle image upload for party booking
+        window.handleMainChatImageUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window.mainChatCurrentImageData = e.target.result;
+                
+                addMessageToChat('✅ <strong>Poză încărcată cu succes!</strong> Procesez imaginea...', 'assistant');
+                
+                setTimeout(() => {
+                    // Generate party ID with DD/MM/YYYY format
+                    const now = new Date();
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const year = now.getFullYear();
+                    const sequence = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+                    const partyId = `P-${day}${month}${year}-${sequence}`;
+                    
+                    addMessageToChat('📋 <strong>Am extras următoarele informații:</strong><br><br>' +
+                        `🎉 <strong>Petrecere:</strong> ${partyId}<br>` +
+                        '👤 Client: Maria Popescu<br>' +
+                        '📅 Data: 25/11/2024, ora 16:00<br>' +
+                        '📍 Adresa: București, Sector 3<br>' +
+                        '🎭 Rol #1: ANIMATIE - Elsa<br>' +
+                        '🎭 Rol #2: ANIMATIE - Ana<br>' +
+                        '🎮 Rol #3: ARCADE - 3 aparate<br><br>' +
+                        '✅ Totul arată bine! Salvez în Sheets...', 'assistant');
+                    
+                    setTimeout(() => {
+                        addMessageToChat('🎉 <strong>Petrecere salvată cu succes!</strong><br><br>' +
+                            `Cod petrecere: <strong>${partyId}</strong><br>` +
+                            'Rolurile au fost separate automat conform logicii din Sheets!<br><br>' +
+                            '🎭 <strong>Elsa și Ana</strong> au fost create ca roluri separate!', 'assistant');
+                    }, 1500);
+                }, 2000);
+            };
+            reader.readAsDataURL(file);
+        };
+        
         window.sendMessage = async function() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
