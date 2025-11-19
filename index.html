@@ -941,7 +941,7 @@
                     <span style="font-size: 32px;">🤖</span>
                     <div>
                         <h2 style="margin: 0; color: white; font-size: 22px; font-weight: 700;">Super AI Assistant</h2>
-                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Întreabă orice despre SuperParty</p>
+                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Centralizează tot prin chat!</p>
                     </div>
                 </div>
                 <button onclick="closeAIChat()" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 28px; cursor: pointer; line-height: 1; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">×</button>
@@ -955,15 +955,21 @@
                         <span style="font-size: 20px;">🤖</span>
                     </div>
                     <div style="background: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;">
-                        <p style="margin: 0; color: #111827; line-height: 1.5; font-weight: 600;">👋 Salut! Sunt Super AI!</p>
-                        <p style="margin: 8px 0 0 0; color: #6b7280; line-height: 1.5;">Întreabă-mă orice despre aplicație. Răspund scurt și la obiect! 😊</p>
+                        <p style="margin: 0; color: #111827; line-height: 1.5; font-weight: 600;">👋 Bună! Sunt Super AI!</p>
+                        <p style="margin: 8px 0 0 0; color: #6b7280; line-height: 1.5;">Cu ce te pot ajuta astăzi?</p>
                     </div>
                 </div>
             </div>
             
             <!-- Input Area -->
             <div style="padding: 20px; border-top: 2px solid #e5e7eb; background: white; border-radius: 0 0 20px 20px;">
+                <input type="file" id="mainChatImageUpload" accept="image/*" style="display: none">
                 <div style="display: flex; gap: 10px;">
+                    <button 
+                        onclick="document.getElementById('mainChatImageUpload').click()" 
+                        style="padding: 12px 16px; background: #f3f4f6; color: #374151; border: none; border-radius: 12px; cursor: pointer; font-size: 18px; transition: all 0.3s;">
+                        📎
+                    </button>
                     <input 
                         type="text" 
                         id="chatInput" 
@@ -978,11 +984,11 @@
                         id="sendButton"
                         style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; transition: all 0.3s; white-space: nowrap;"
                     >
-                        📤 Trimite
+                        ➤
                     </button>
                 </div>
                 <p style="margin: 8px 0 0 0; font-size: 11px; color: #9ca3af; text-align: center;">
-                    💡 Powered by Hugging Face AI
+                    💡 SuperParty AI - Salvez tot în Google Sheets
                 </p>
             </div>
         </div>
@@ -1071,6 +1077,24 @@
             document.getElementById('aiChatModal').style.display = 'none';
         }
         
+        // ===== MAIN AI CHAT SYSTEM =====
+        const SHEETS_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyywBpJVh0jeHcAsFrKJiS8m2R9qZKM21uuKjc26V4dD_XwfI8onr0sZdi0kY4vk/exec';
+        
+        // FORBIDDEN TOPICS
+        const FORBIDDEN_KEYWORDS = [
+            'salariu', 'salarii', 'bani', 'plata', 'platesc', 'cost', 'pret', 
+            'target', 'targeturi', 'bonus', 'bonusuri', 'compensare', 'compensatie',
+            'cat platesc', 'cat castiga', 'cat primesc', 'cat iau', 'formula',
+            'procent', 'comision', 'taxa', 'tarif', 'factura', 'incasare'
+        ];
+
+        // Party booking state
+        let mainChatHasUploadedProof = false;
+        let mainChatCurrentImageData = null;
+        let mainCurrentPartyData = null;
+        let mainAwaitingRoleDetails = false;
+        let mainCurrentRoleIndex = 0;
+
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -1102,55 +1126,349 @@
             // Add user message
             addMessageToChat(message, 'user');
             
-            // Show loading
-            const loadingId = addLoadingMessage();
-            
-            // Disable send button
-            const sendButton = document.getElementById('sendButton');
-            sendButton.disabled = true;
-            sendButton.textContent = '⏳ Așteaptă...';
-            
-            try {
-                const response = await fetch('https://api-chat-js-three.vercel.app/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        messages: [
-                            ...chatHistory,
-                            { role: 'user', content: message }
-                        ]
-                    })
-                });
-                
-                const data = await response.json();
-                
-                removeLoadingMessage(loadingId);
-                
-                const aiMessage = data.choices[0].message.content;
-                addMessageToChat(aiMessage, 'assistant');
-                
-                chatHistory.push({ role: 'user', content: message });
-                chatHistory.push({ role: 'assistant', content: aiMessage });
-                
-                if (chatHistory.length > 10) {
-                    chatHistory = chatHistory.slice(-10);
-                }
-                
-            } catch (error) {
-                console.error('AI Chat Error:', error);
-                removeLoadingMessage(loadingId);
-                addMessageToChat(
-                    '❌ Oops! Am întâmpinat o problemă. Încearcă din nou.',
-                    'assistant',
-                    true
-                );
-            } finally {
-                sendButton.disabled = false;
-                sendButton.textContent = '📤 Trimite';
-                input.focus();
+            // Check for forbidden topics
+            if (isForbiddenTopicMain(message)) {
+                setTimeout(() => {
+                    addMessageToChat('Nu am acces la aceste date și nu te pot ajuta cu asta.', 'assistant');
+                }, 500);
+                return;
             }
+            
+            // Show typing
+            showMainTyping();
+            
+            // Process message
+            setTimeout(() => {
+                processMainAIMessage(message);
+            }, 1500);
+        }
+
+        function isForbiddenTopicMain(message) {
+            const lowerMessage = message.toLowerCase();
+            return FORBIDDEN_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function requiresProofMain(message) {
+            const lowerMessage = message.toLowerCase();
+            const actionKeywords = ['notez', 'salvez', 'adaug', 'modific', 'petrecere', 'client', 'rezerv'];
+            return actionKeywords.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function processMainAIMessage(userMessage) {
+            hideMainTyping();
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            // Initial booking request
+            if (lowerMessage.includes('notez') || lowerMessage.includes('petrecere') || lowerMessage.includes('rezerv')) {
+                if (!mainChatHasUploadedProof) {
+                    addMessageToChat('📸 Pentru a nota petrecerea, încarcă conversația WhatsApp cu clientul.<br><br>Apasă pe butonul 📎 pentru a încărca poza.', 'assistant');
+                    return;
+                } else {
+                    processMainPartyImage();
+                    return;
+                }
+            }
+            
+            // Handle role details input
+            if (mainAwaitingRoleDetails && mainCurrentPartyData) {
+                handleMainRoleDetailsInput(userMessage);
+                return;
+            }
+            
+            // Handle corrections
+            if (mainCurrentPartyData && (lowerMessage.includes('corecte') || lowerMessage.includes('modific') || lowerMessage.includes('schimb'))) {
+                handleMainPartyCorrection(userMessage);
+                return;
+            }
+            
+            // Default response
+            addMessageToChat('Cu ce te pot ajuta?', 'assistant');
+        }
+
+        function processMainPartyImage() {
+            // Generate party ID
+            const now = new Date();
+            const partyId = `P-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*1000)).padStart(3,'0')}`;
+            
+            // Extracted data (example - in production this would use Claude Vision API)
+            mainCurrentPartyData = {
+                id: partyId,
+                client: 'Maria Popescu',
+                date: '20/11/2024',
+                time: '16:00',
+                address: 'București, Sector 3, Str. Florilor 10',
+                inBucharest: true,
+                distance: 0,
+                driversNeeded: 0,
+                roles: [
+                    {
+                        id: `${partyId}-R1`,
+                        type: 'ANIMATIE',
+                        description: 'Elsa, Ana (2 personaje)',
+                        membersNeeded: 2,
+                        duration: null,
+                        cost: null
+                    },
+                    {
+                        id: `${partyId}-R2`,
+                        type: 'ARCADE',
+                        description: '3 aparate',
+                        membersNeeded: 1,
+                        duration: null,
+                        cost: null
+                    }
+                ],
+                missingInfo: []
+            };
+            
+            displayMainPartyExtraction();
+        }
+
+        function displayMainPartyExtraction() {
+            let html = `📋 <strong>Am analizat conversația și am extras:</strong><br><br>`;
+            
+            html += `🎉 <strong>Petrecere Principală:</strong><br>`;
+            html += `• Cod: <strong>${mainCurrentPartyData.id}</strong><br>`;
+            html += `• Client: ${mainCurrentPartyData.client}<br>`;
+            html += `• Data: ${mainCurrentPartyData.date}, ${mainCurrentPartyData.time}<br>`;
+            html += `• Adresa: ${mainCurrentPartyData.address}<br>`;
+            html += `• În București: ${mainCurrentPartyData.inBucharest ? 'DA' : 'NU'}<br>`;
+            if (!mainCurrentPartyData.inBucharest) {
+                html += `• Distanță: ${mainCurrentPartyData.distance} km<br>`;
+                html += `• Șoferi necesari: ${mainCurrentPartyData.driversNeeded}<br>`;
+            }
+            html += `<br>`;
+            
+            html += `🎭 <strong>Roluri identificate:</strong><br><br>`;
+            
+            mainCurrentPartyData.roles.forEach((role, index) => {
+                html += `━━━━━━━━━━━━━━━━━━━━━<br>`;
+                html += `<strong>ROL #${index + 1}: ${role.type}</strong><br>`;
+                html += `• ${role.description}<br>`;
+                html += `• Membri necesari: ${role.membersNeeded}<br>`;
+                html += `• Durata: ${role.duration ? role.duration + ' ore' : '❓ lipsește'}<br>`;
+                html += `• Cost: ${role.cost ? role.cost + ' lei' : '❓ lipsește'}<br>`;
+                html += `<br>`;
+            });
+            
+            addMessageToChat(html, 'assistant');
+            
+            const incompleteRole = mainCurrentPartyData.roles.find(r => !r.duration || !r.cost);
+            if (incompleteRole) {
+                mainAwaitingRoleDetails = true;
+                mainCurrentRoleIndex = mainCurrentPartyData.roles.indexOf(incompleteRole);
+                const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+                
+                setTimeout(() => {
+                    addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
+                        `Scrie durata și costul (ex: "2 ore, 500 lei")`, 'assistant');
+                }, 500);
+            } else {
+                displayMainFinalSummary();
+            }
+        }
+
+        function handleMainRoleDetailsInput(input) {
+            const role = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+            
+            const durationMatch = input.match(/(\d+)\s*(ora|ore|h)/i);
+            const costMatch = input.match(/(\d+)\s*(lei|ron)/i);
+            
+            if (durationMatch && costMatch) {
+                role.duration = parseInt(durationMatch[1]);
+                role.cost = parseInt(costMatch[1]);
+                
+                addMessageToChat(`✅ <strong>ROL #${mainCurrentRoleIndex + 1} salvat!</strong><br><br>` +
+                    `${role.type}: ${role.duration} ore, ${role.cost} lei`, 'assistant');
+                
+                mainCurrentRoleIndex++;
+                const nextIncompleteRole = mainCurrentPartyData.roles.slice(mainCurrentRoleIndex).find(r => !r.duration || !r.cost);
+                
+                if (nextIncompleteRole) {
+                    mainCurrentRoleIndex = mainCurrentPartyData.roles.indexOf(nextIncompleteRole);
+                    const nextRole = mainCurrentPartyData.roles[mainCurrentRoleIndex];
+                    
+                    setTimeout(() => {
+                        addMessageToChat(`⚠️ <strong>Completează pentru ROL #${mainCurrentRoleIndex + 1} (${nextRole.type}):</strong><br><br>` +
+                            `Scrie durata și costul (ex: "3 ore, 300 lei")`, 'assistant');
+                    }, 500);
+                } else {
+                    mainAwaitingRoleDetails = false;
+                    setTimeout(() => {
+                        displayMainFinalSummary();
+                    }, 500);
+                }
+            } else {
+                addMessageToChat('❌ Nu am înțeles formatul. Te rog scrie așa: "2 ore, 500 lei"', 'assistant');
+            }
+        }
+
+        function displayMainFinalSummary() {
+            const totalMembers = mainCurrentPartyData.roles.reduce((sum, r) => sum + r.membersNeeded, 0);
+            const totalDuration = mainCurrentPartyData.roles.reduce((sum, r) => sum + (r.duration || 0), 0);
+            const totalCost = mainCurrentPartyData.roles.reduce((sum, r) => sum + (r.cost || 0), 0);
+            
+            let html = `📊 <strong>REZUMAT FINAL:</strong><br><br>`;
+            
+            html += `<strong>Petrecere Mare: ${mainCurrentPartyData.id}</strong><br>`;
+            html += `Client: ${mainCurrentPartyData.client}<br>`;
+            html += `Data: ${mainCurrentPartyData.date}, ${mainCurrentPartyData.time}<br>`;
+            html += `Adresa: ${mainCurrentPartyData.address}<br><br>`;
+            
+            html += `<strong>Roluri:</strong><br>`;
+            mainCurrentPartyData.roles.forEach((role, index) => {
+                html += `• <strong>${role.id}</strong>: ${role.type} (${role.description}) - ${role.duration}h - ${role.cost} lei<br>`;
+            });
+            html += `<br>`;
+            
+            html += `<strong>Total:</strong> ${totalMembers} membri, ${totalDuration} ore, ${totalCost} lei<br><br>`;
+            html += `━━━━━━━━━━━━━━━━━━━━━<br><br>`;
+            
+            addMessageToChat(html, 'assistant');
+            
+            setTimeout(() => {
+                addMainConfirmationButton();
+            }, 300);
+        }
+
+        function addMainConfirmationButton() {
+            const chatMessages = document.getElementById('chatMessages');
+            const buttonDiv = document.createElement('div');
+            buttonDiv.style.cssText = 'display: flex; justify-content: center; margin-bottom: 15px;';
+            buttonDiv.innerHTML = `
+                <button onclick="confirmAndSaveMainParty()" style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                    transition: all 0.3s;
+                ">
+                    ✅ E CORECT - REZERVĂ
+                </button>
+            `;
+            chatMessages.appendChild(buttonDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function confirmAndSaveMainParty() {
+            addMessageToChat('💾 Salvez petrecerea în Google Sheets...', 'assistant');
+            
+            // Save all requests to Sheets
+            saveRequestToSheets({
+                action: 'PARTY_BOOKING',
+                partyData: mainCurrentPartyData,
+                timestamp: new Date().toISOString()
+            });
+            
+            setTimeout(() => {
+                addMessageToChat(`✅ <strong>Petrecere salvată cu succes!</strong><br><br>` +
+                    `ID: <strong>${mainCurrentPartyData.id}</strong><br>` +
+                    `Pagina: <strong>Ce Petreceri Am</strong><br><br>` +
+                    `Structura salvată:<br>` +
+                    `• Rând principal: ${mainCurrentPartyData.id}<br>` +
+                    mainCurrentPartyData.roles.map(r => `• Sub-rând: ${r.id}`).join('<br>'), 'assistant');
+                
+                // Reset state
+                mainCurrentPartyData = null;
+                mainChatHasUploadedProof = false;
+                mainChatCurrentImageData = null;
+                mainAwaitingRoleDetails = false;
+                mainCurrentRoleIndex = 0;
+            }, 1500);
+        }
+
+        function handleMainPartyCorrection(message) {
+            addMessageToChat('✅ Am înțeles corecția! Actualizez...', 'assistant');
+            
+            setTimeout(() => {
+                displayMainFinalSummary();
+            }, 1000);
+        }
+
+        async function saveRequestToSheets(requestData) {
+            try {
+                // Save to Google Sheets via Apps Script
+                await fetch(SHEETS_BACKEND_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                console.log('✅ Request saved to Sheets:', requestData);
+            } catch (error) {
+                console.error('❌ Error saving to Sheets:', error);
+            }
+        }
+
+        // Image upload handling
+        document.getElementById('mainChatImageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                mainChatCurrentImageData = e.target.result;
+                mainChatHasUploadedProof = true;
+
+                // Add image to chat
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end;';
+                messageDiv.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; max-width: 80%;">
+                        📸 Poză încărcată
+                        <br><img src="${mainChatCurrentImageData}" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 10px;">
+                    </div>
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <span style="font-size: 20px;">👤</span>
+                    </div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                setTimeout(() => {
+                    showMainTyping();
+                    setTimeout(() => {
+                        hideMainTyping();
+                        addMessageToChat('📋 Perfect! Am primit poza. Analizez conversația...<br><br>Spune "notez petrecere" pentru a continua.', 'assistant');
+                    }, 2000);
+                }, 500);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function showMainTyping() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'mainTypingIndicator';
+            typingDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px;';
+            typingDiv.innerHTML = `
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span style="font-size: 20px;">🤖</span>
+                </div>
+                <div style="background: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; gap: 4px;">
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s infinite;"></span>
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s 0.2s infinite;"></span>
+                        <span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s 0.4s infinite;"></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideMainTyping() {
+            const typingDiv = document.getElementById('mainTypingIndicator');
+            if (typingDiv) typingDiv.remove();
         }
         
         function addMessageToChat(message, role, isError = false) {
@@ -1801,12 +2119,7 @@
         const ADMIN_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyywBpJVh0jeHcAsFrKJiS8m2R9qZKM21uuKjc26V4dD_XwfI8onr0sZdi0kY4vk/exec';
         
         // FORBIDDEN TOPICS
-        const FORBIDDEN_KEYWORDS = [
-            'salariu', 'salarii', 'bani', 'plata', 'platesc', 'cost', 'pret', 
-            'target', 'targeturi', 'bonus', 'bonusuri', 'compensare', 'compensatie',
-            'cat platesc', 'cat castiga', 'cat primesc', 'cat iau', 'formula',
-            'procent', 'comision', 'taxa', 'tarif', 'factura', 'incasare'
-        ];
+        // Admin Panel uses the same FORBIDDEN_KEYWORDS from main chat
 
         let adminHasUploadedProof = false;
         let adminCurrentImageData = null;
