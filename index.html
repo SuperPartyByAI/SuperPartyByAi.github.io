@@ -964,19 +964,20 @@
         });
         
         // ============================================
-        // AI CHAT FUNCTIONS
+        // AI CHAT FUNCTIONS - GLOBAL SCOPE
         // ============================================
         
-        function openAIChat() {
+        // Define globally FIRST to ensure onclick works
+        window.openAIChat = function() {
             document.getElementById('aiChatModal').style.display = 'flex';
             setTimeout(() => {
                 document.getElementById('chatInput').focus();
             }, 100);
-        }
+        };
         
-        function closeAIChat() {
+        window.closeAIChat = function() {
             document.getElementById('aiChatModal').style.display = 'none';
-        }
+        };
         
         async function sendMessage() {
             const input = document.getElementById('chatInput');
