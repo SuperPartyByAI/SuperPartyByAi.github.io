@@ -980,7 +980,13 @@
         };
         
         // Apps Script V2 Backend URL
-        const SHEETS_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyzqUwpi_UHH9RQazXI5sXNHVDx78G1NZoRDieB5pPfS_U-ag9gyxqaPMbpumPQYPyj/exec';
+        // MOCK RESPONSES FOR TESTING - No backend needed!
+        const MOCK_RESPONSES = {
+            'cat costa': '💰 Prețurile pentru petrecerile SuperParty încep de la 500 lei și variază în funcție de numărul de personaje, arcade și distanța. Contactează-ne pentru o ofertă personalizată!',
+            'ce personaje': '🎭 Avem peste 50 de personaje disponibile: Elsa, Ana, Spider-Man, Iron Man, Batman, Minions și multe altele! Ce personaj dorești pentru petrecerea ta?',
+            'program': '📅 Programul nostru este flexibil! Suntem disponibili de luni până duminică, între orele 10:00 - 22:00. Când vrei să organizezi petrecerea?',
+            'default': '👋 Bună! Sunt Super AI, asistentul tău pentru petreceri! Te pot ajuta cu informații despre prețuri, personaje disponibile, program și rezervări. Cu ce te pot ajuta?'
+        };
         
         async function sendMessage() {
             const input = document.getElementById('chatInput');
@@ -1021,63 +1027,33 @@
             sendButton.disabled = true;
             sendButton.textContent = '⏳ Așteaptă...';
             
-            try {
-                // Call Apps Script V2 instead of old API
-                const response = await fetch(SHEETS_BACKEND_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'GET_KNOWLEDGE',
-                        query: message
-                    })
-                });
-                
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error(`Apps Script returned status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
+            // MOCK RESPONSE - simulate delay
+            setTimeout(() => {
                 removeLoadingMessage(loadingId);
                 
-                // Check if we got knowledge base results
-                if (data.success && data.knowledge && data.knowledge.length > 0) {
-                    // Found answer in knowledge base
-                    const answer = data.knowledge[0].raspuns;
-                    addMessageToChat(`🧠 ${answer}`, 'assistant');
-                    
-                    chatHistory.push({ role: 'user', content: message });
-                    chatHistory.push({ role: 'assistant', content: answer });
-                } else {
-                    // No answer found in knowledge base
-                    addMessageToChat('❓ <strong>Nu am găsit un răspuns specific pentru întrebarea ta.</strong><br><br>' +
-                        'Încearcă să reformulezi întrebarea sau contactează echipa SuperParty pentru mai multe detalii!', 'assistant');
-                    
-                    // Save unanswered question for GM to review
-                    await fetch(SHEETS_BACKEND_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'SAVE_QUESTION',
-                            questionData: {
-                                intrebare: message,
-                                user: 'Chat User'
-                            }
-                        })
-                    });
+                // Find matching response
+                let response = MOCK_RESPONSES['default'];
+                
+                for (const [keyword, mockResponse] of Object.entries(MOCK_RESPONSES)) {
+                    if (lowerMessage.includes(keyword)) {
+                        response = mockResponse;
+                        break;
+                    }
                 }
+                
+                addMessageToChat(response, 'assistant');
+                
+                chatHistory.push({ role: 'user', content: message });
+                chatHistory.push({ role: 'assistant', content: response });
                 
                 if (chatHistory.length > 10) {
                     chatHistory = chatHistory.slice(-10);
                 }
                 
-            } catch (error) {
-                console.error('AI Chat Error:', error);
-                removeLoadingMessage(loadingId);
-                addMessageToChat('❌ <strong>Oops! Am întâmpinat o problemă.</strong><br><br>' +
+                sendButton.disabled = false;
+                sendButton.textContent = '➤ Trimite';
+            }, 800); // Simulate 800ms delay
+        } +
                     'Conexiunea cu sistemul AI nu este disponibilă momentan. Te rog încearcă din nou mai târziu!<br><br>' +
                     'Verifică că Apps Script V2 este corect configurat.', 'assistant');
             } finally {
