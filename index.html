@@ -1035,6 +1035,37 @@
                 return;
             }
             
+            // Detect party booking request
+            if (lowerMessage.includes('notez') || lowerMessage.includes('notare') || 
+                lowerMessage.includes('adaug petrecere') || lowerMessage.includes('vreau sa notez')) {
+                input.value = '';
+                addMessageToChat(message, 'user');
+                
+                setTimeout(() => {
+                    addMessageToChat('📝 <strong>Perfect! Hai să notăm petrecerea!</strong><br><br>' +
+                        'Pentru a începe, am nevoie de o poză cu conversația WhatsApp cu clientul.<br><br>' +
+                        '👇 Click pe butonul de mai jos pentru a încărca poza:', 'assistant');
+                    
+                    // Show upload button in chat
+                    const chatMessages = document.getElementById('chatMessages');
+                    const buttonDiv = document.createElement('div');
+                    buttonDiv.style.cssText = 'text-align: center; margin: 20px 0;';
+                    buttonDiv.innerHTML = `
+                        <button onclick="document.getElementById('mainChatImageUpload').click()" 
+                                style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+                                       color: white; border: none; padding: 15px 30px; border-radius: 12px; 
+                                       font-weight: 600; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);">
+                            📸 Încarcă Poză WhatsApp
+                        </button>
+                        <input type="file" id="mainChatImageUpload" accept="image/*" style="display: none;" 
+                               onchange="handleMainChatImageUpload(event)">
+                    `;
+                    chatMessages.appendChild(buttonDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 800);
+                return;
+            }
+            
             // Clear input for normal messages
             input.value = '';
             
