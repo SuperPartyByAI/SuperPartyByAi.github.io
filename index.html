@@ -1988,11 +1988,12 @@
             if (lowerMessage.includes('notez') || lowerMessage.includes('petrecere') || lowerMessage.includes('rezerv')) {
                 if (!adminHasUploadedProof) {
                     addAdminMessage('📸 Pentru a nota petrecerea, încarcă conversația WhatsApp cu clientul.<br><br>Apasă pe butonul 📎 pentru a încărca poza.', 'ai');
+                    return;
                 } else {
                     // Process uploaded image and extract party data
                     processPartyImage();
+                    return;
                 }
-                return;
             }
             
             // Handle role details input
