@@ -959,6 +959,26 @@
                         <p style="margin: 8px 0 0 0; color: #6b7280; line-height: 1.5;">Cu ce te pot ajuta astăzi?</p>
                     </div>
                 </div>
+                <!-- Quick action button -->
+                <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                    <button onclick="document.getElementById('mainChatImageUpload').click()" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 15px 30px;
+                        border-radius: 12px;
+                        font-weight: 700;
+                        font-size: 16px;
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                        transition: all 0.3s;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    ">
+                        📸 Notează Petrecere Nouă
+                    </button>
+                </div>
             </div>
             
             <!-- Input Area -->
@@ -1434,11 +1454,17 @@
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
+                // Automatically start processing
                 setTimeout(() => {
                     showMainTyping();
                     setTimeout(() => {
                         hideMainTyping();
-                        addMessageToChat('📋 Perfect! Am primit poza. Analizez conversația...<br><br>Spune "notez petrecere" pentru a continua.', 'assistant');
+                        addMessageToChat('📋 Analizez conversația...', 'assistant');
+                        
+                        // Start party processing automatically
+                        setTimeout(() => {
+                            processMainPartyImage();
+                        }, 500);
                     }, 2000);
                 }, 500);
             };
@@ -1478,26 +1504,36 @@
             
             if (role === 'user') {
                 messageDiv.style.justifyContent = 'flex-end';
-                messageDiv.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; max-width: 80%; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
-                        <p style="margin: 0; line-height: 1.5; white-space: pre-wrap;">${escapeHtml(message)}</p>
-                    </div>
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <span style="font-size: 20px;">👤</span>
-                    </div>
-                `;
+                const userBubble = document.createElement('div');
+                userBubble.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; max-width: 80%; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);';
+                const textP = document.createElement('p');
+                textP.style.cssText = 'margin: 0; line-height: 1.5; white-space: pre-wrap;';
+                textP.textContent = message;
+                userBubble.appendChild(textP);
+                
+                const avatar = document.createElement('div');
+                avatar.style.cssText = 'width: 40px; height: 40px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; flex-shrink: 0;';
+                avatar.innerHTML = '<span style="font-size: 20px;">👤</span>';
+                
+                messageDiv.appendChild(userBubble);
+                messageDiv.appendChild(avatar);
             } else {
+                const avatar = document.createElement('div');
+                avatar.style.cssText = 'width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;';
+                avatar.innerHTML = '<span style="font-size: 20px;">🤖</span>';
+                
                 const bgColor = isError ? '#fee2e2' : 'white';
                 const textColor = isError ? '#dc2626' : '#111827';
                 
-                messageDiv.innerHTML = `
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <span style="font-size: 20px;">🤖</span>
-                    </div>
-                    <div style="background: ${bgColor}; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;">
-                        <p style="margin: 0; color: ${textColor}; line-height: 1.5; white-space: pre-wrap;">${escapeHtml(message)}</p>
-                    </div>
-                `;
+                const aiBubble = document.createElement('div');
+                aiBubble.style.cssText = `background: ${bgColor}; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;`;
+                const textP = document.createElement('p');
+                textP.style.cssText = `margin: 0; color: ${textColor}; line-height: 1.5;`;
+                textP.innerHTML = message; // Use innerHTML to render HTML tags
+                aiBubble.appendChild(textP);
+                
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(aiBubble);
             }
             
             chatMessages.appendChild(messageDiv);
