@@ -543,7 +543,7 @@ function showPage(pageId, menuElement) {
     if (page) {
         page.classList.add('active');
     } else {
-        console.error('Page not found:', pageId);
+        console.warn('Page not found:', pageId);
         return;
     }
     
