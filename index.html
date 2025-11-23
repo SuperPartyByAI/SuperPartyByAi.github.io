@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperParty 🎉 - Dashboard Connected to CREIER AI</title>
+    <title>SuperParty 🎉 - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -142,6 +142,7 @@
             font-size: 14px;
             font-weight: 600;
             transition: all 0.3s;
+            margin: 2px;
         }
         .btn-success { background: #10b981; color: white; }
         .btn-danger { background: #ef4444; color: white; }
@@ -176,71 +177,71 @@
         </div>
         
         <div class="sidebar-menu">
-            <div class="menu-item active" onclick="showPage('home')">
+            <div class="menu-item active" onclick="showPage('home', this)">
                 <span>🏠</span><span>Acasă</span>
             </div>
-            <div class="menu-item" onclick="showPage('noteaza-eveniment')">
+            <div class="menu-item" onclick="showPage('noteaza-eveniment', this)">
                 <span>➕</span><span>Notează Eveniment</span>
             </div>
-            <div class="menu-item" onclick="showPage('petreceri-nealocate')">
+            <div class="menu-item" onclick="showPage('petreceri-nealocate', this)">
                 <span>📋</span><span>Petreceri Nealocate</span>
             </div>
-            <div class="menu-item" onclick="showPage('ce-petreceri-am')">
+            <div class="menu-item" onclick="showPage('ce-petreceri-am', this)">
                 <span>🎊</span><span>Ce Petreceri Am</span>
             </div>
-            <div class="menu-item" onclick="showPage('total-petreceri')">
+            <div class="menu-item" onclick="showPage('total-petreceri', this)">
                 <span>📈</span><span>Total Petreceri</span>
             </div>
-            <div class="menu-item" onclick="showPage('soferi')">
+            <div class="menu-item" onclick="showPage('soferi', this)">
                 <span>🚗</span><span>Evenimente cu Șoferi</span>
             </div>
-            <div class="menu-item" onclick="showPage('echipa')">
+            <div class="menu-item" onclick="showPage('echipa', this)">
                 <span>👥</span><span>Echipa</span>
             </div>
-            <div class="menu-item" onclick="showPage('inventar')">
+            <div class="menu-item" onclick="showPage('inventar', this)">
                 <span>📦</span><span>Inventar</span>
             </div>
-            <div class="menu-item" onclick="showPage('piniata')">
+            <div class="menu-item" onclick="showPage('piniata', this)">
                 <span>🎯</span><span>Piniata</span>
             </div>
             
             <div id="adminMenuSection" style="display: none;">
                 <div class="menu-section-header">📂 🔒 Mod Admin</div>
-                <div class="menu-item" onclick="showPage('bifează-evenimente')">
+                <div class="menu-item" onclick="showPage('bifează-evenimente', this)">
                     <span>✅</span><span>Bifează Evenimente</span>
                 </div>
-                <div class="menu-item" onclick="showPage('vezi-statistici')">
+                <div class="menu-item" onclick="showPage('vezi-statistici', this)">
                     <span>📊</span><span>Vezi Statistici</span>
                 </div>
-                <div class="menu-item" onclick="showPage('total-statistici')">
+                <div class="menu-item" onclick="showPage('total-statistici', this)">
                     <span>📈</span><span>Total Statistici</span>
                 </div>
-                <div class="menu-item" onclick="showPage('target-traineri')">
+                <div class="menu-item" onclick="showPage('target-traineri', this)">
                     <span>💰</span><span>Target Traineri</span>
                 </div>
-                <div class="menu-item" onclick="showPage('target-animatie')">
+                <div class="menu-item" onclick="showPage('target-animatie', this)">
                     <span>🎭</span><span>Target Animație</span>
                 </div>
-                <div class="menu-item" onclick="showPage('target-vanzari')">
+                <div class="menu-item" onclick="showPage('target-vanzari', this)">
                     <span>💵</span><span>Target Vânzări</span>
                 </div>
-                <div class="menu-item" onclick="showPage('genereaza-coduri')">
+                <div class="menu-item" onclick="showPage('genereaza-coduri', this)">
                     <span>📝</span><span>Generează Coduri</span>
                 </div>
-                <div class="menu-item" onclick="showPage('gestionare-utilizatori-admin'); loadUsersAdmin();">
+                <div class="menu-item" onclick="showPage('gestionare-utilizatori-admin', this)">
                     <span>👥</span><span>Gestionare Utilizatori</span>
                 </div>
             </div>
             
             <div id="gmMenuSection" style="display: none;">
                 <div class="menu-section-header">📂 🎮 Mod GM</div>
-                <div class="menu-item" onclick="showPage('gestionare-utilizatori-gm'); loadUsersGM();">
+                <div class="menu-item" onclick="showPage('gestionare-utilizatori-gm', this)">
                     <span>👥</span><span>Gestionare Utilizatori Full</span>
                 </div>
-                <div class="menu-item" onclick="showPage('utilizatori-nelogati'); loadUnloggedUsers();">
+                <div class="menu-item" onclick="showPage('utilizatori-nelogati', this)">
                     <span>📊</span><span>Utilizatori Nelogați</span>
                 </div>
-                <div class="menu-item" onclick="showPage('creier-ai-gm')">
+                <div class="menu-item" onclick="showPage('creier-ai-gm', this)">
                     <span>🧠</span><span>Creier AI</span>
                 </div>
             </div>
@@ -248,8 +249,119 @@
     </div>
     
     <div class="main-content">
-        <div class="page active" id="home">
-            <!-- GOL - Login doar prin AI Chat -->
+        <div class="page active" id="home"></div>
+        
+        <div class="page" id="noteaza-eveniment">
+            <div class="page-header">
+                <h2>➕ Notează Eveniment</h2>
+                <p>Adaugă un eveniment nou</p>
+            </div>
+            <div class="card">Formular aici...</div>
+        </div>
+        
+        <div class="page" id="petreceri-nealocate">
+            <div class="page-header">
+                <h2>📋 Petreceri Nealocate</h2>
+            </div>
+            <div class="card">Lista petreceri...</div>
+        </div>
+        
+        <div class="page" id="ce-petreceri-am">
+            <div class="page-header">
+                <h2>🎊 Ce Petreceri Am</h2>
+            </div>
+            <div class="card">Petrecerile mele...</div>
+        </div>
+        
+        <div class="page" id="total-petreceri">
+            <div class="page-header">
+                <h2>📈 Total Petreceri</h2>
+            </div>
+            <div class="card">Statistici totale...</div>
+        </div>
+        
+        <div class="page" id="soferi">
+            <div class="page-header">
+                <h2>🚗 Evenimente cu Șoferi</h2>
+            </div>
+            <div class="card">Evenimente transport...</div>
+        </div>
+        
+        <div class="page" id="echipa">
+            <div class="page-header">
+                <h2>👥 Echipa</h2>
+            </div>
+            <div class="card">Membrii echipei...</div>
+        </div>
+        
+        <div class="page" id="inventar">
+            <div class="page-header">
+                <h2>📦 Inventar</h2>
+            </div>
+            <div class="card">Inventar disponibil...</div>
+        </div>
+        
+        <div class="page" id="piniata">
+            <div class="page-header">
+                <h2>🎯 Piniata</h2>
+            </div>
+            <div class="card">Servicii piniata...</div>
+        </div>
+        
+        <div class="page" id="bifează-evenimente">
+            <div class="page-header">
+                <h2>✅ Bifează Evenimente</h2>
+            </div>
+            <div class="card">Marchează evenimente...</div>
+        </div>
+        
+        <div class="page" id="vezi-statistici">
+            <div class="page-header">
+                <h2>📊 Vezi Statistici</h2>
+            </div>
+            <div class="card">Statistici generale...</div>
+        </div>
+        
+        <div class="page" id="total-statistici">
+            <div class="page-header">
+                <h2>📈 Total Statistici</h2>
+            </div>
+            <div class="card">Toate statisticile...</div>
+        </div>
+        
+        <div class="page" id="target-traineri">
+            <div class="page-header">
+                <h2>💰 Target Traineri</h2>
+            </div>
+            <div class="card">Calcule traineri...</div>
+        </div>
+        
+        <div class="page" id="target-animatie">
+            <div class="page-header">
+                <h2>🎭 Target Animație</h2>
+            </div>
+            <div class="card">Calcule animație...</div>
+        </div>
+        
+        <div class="page" id="target-vanzari">
+            <div class="page-header">
+                <h2>💵 Target Vânzări</h2>
+            </div>
+            <div class="card">Target vânzări...</div>
+        </div>
+        
+        <div class="page" id="genereaza-coduri">
+            <div class="page-header">
+                <h2>📝 Generează Coduri</h2>
+            </div>
+            <div class="card">Generare coduri acces...</div>
+        </div>
+        
+        <div class="page" id="creier-ai-gm">
+            <div class="page-header">
+                <h2>🧠 Creier AI</h2>
+            </div>
+            <div class="card">Knowledge Base...</div>
         </div>
         
         <div class="page" id="inregistreaza-te">
@@ -411,18 +523,41 @@ let chatFilterFrom = null;
 let chatFilterTo = null;
 
 async function callCreierAPI(action, params = {}) {
-    const url = new URL(CREIER_AI_API);
-    url.searchParams.append('action', action);
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-    const response = await fetch(url.toString());
-    return await response.json();
+    try {
+        const url = new URL(CREIER_AI_API);
+        url.searchParams.append('action', action);
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        const response = await fetch(url.toString());
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, error: error.toString() };
+    }
 }
 
-function showPage(pageId) {
+function showPage(pageId, menuElement) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    if (event) event.currentTarget.classList.add('active');
+    
+    const page = document.getElementById(pageId);
+    if (page) {
+        page.classList.add('active');
+    } else {
+        console.error('Page not found:', pageId);
+        return;
+    }
+    
+    if (menuElement) {
+        menuElement.classList.add('active');
+    }
+    
+    if (pageId === 'gestionare-utilizatori-admin') {
+        loadUsersAdmin();
+    } else if (pageId === 'gestionare-utilizatori-gm') {
+        loadUsersGM();
+    } else if (pageId === 'utilizatori-nelogati') {
+        loadUnloggedUsers();
+    }
 }
 
 function openAIChat() {
@@ -441,7 +576,6 @@ function sendMessage() {
     
     const lower = message.toLowerCase();
     
-    // COMANDA: open mod andrei admin
     if (lower === 'open mod andrei admin') {
         input.value = '';
         closeAIChat();
@@ -455,7 +589,6 @@ function sendMessage() {
         return;
     }
     
-    // COMANDA: open mod andrei gm
     if (lower === 'open mod andrei gm') {
         input.value = '';
         closeAIChat();
@@ -469,14 +602,12 @@ function sendMessage() {
         return;
     }
     
-    // COMANDA: Intra in mod logare
     if (lower === 'intra in mod logare') {
         input.value = '';
         closeAIChat();
         
-        // Show login form on home page
         const homePage = document.getElementById('home');
-        showPage('home');
+        showPage('home', null);
         
         homePage.innerHTML = `
             <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
@@ -499,7 +630,7 @@ function sendMessage() {
                         <button type="submit" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
                             🚀 Intră în cont
                         </button>
-                        <button type="button" onclick="showPage('inregistreaza-te')" style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
+                        <button type="button" onclick="showPage('inregistreaza-te', null)" style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
                             ✨ Înregistrează-te
                         </button>
                     </form>
@@ -560,7 +691,7 @@ async function handleLogin(event) {
         
         setTimeout(() => {
             document.getElementById('home').innerHTML = '';
-            showPage('home');
+            showPage('home', null);
         }, 2000);
     } else {
         errorDiv.style.display = 'block';
@@ -609,6 +740,8 @@ async function saveConversation(email, userMessage, aiResponse) {
 
 async function loadUsersAdmin() {
     const tbody = document.getElementById('adminUsersTable');
+    if (!tbody) return;
+    
     tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Se încarcă...</td></tr>';
     
     const result = await callCreierAPI('getAllUsers');
@@ -636,6 +769,8 @@ async function loadUsersAdmin() {
 
 async function loadUsersGM() {
     const tbody = document.getElementById('gmUsersTable');
+    if (!tbody) return;
+    
     tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Se încarcă...</td></tr>';
     
     const result = await callCreierAPI('getAllUsers');
@@ -668,6 +803,8 @@ async function loadUsersGM() {
 
 async function loadUnloggedUsers() {
     const tbody = document.getElementById('unloggedUsersTable');
+    if (!tbody) return;
+    
     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Se încarcă...</td></tr>';
     
     const result = await callCreierAPI('getUnloggedUsers');
