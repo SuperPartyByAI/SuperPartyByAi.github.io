@@ -4,22 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SuperParty 🎉 - Dashboard Connected to CREIER AI</title>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
         }
-        
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: white;
@@ -31,30 +24,32 @@
             z-index: 100;
             overflow-y: auto;
         }
-        
         .sidebar-header {
             padding: 35px 20px 30px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            position: relative;
-            overflow: hidden;
             text-align: center;
         }
-        
         .sidebar-header h1 {
             font-size: 28px;
             margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
             font-weight: 800;
         }
-        
+        .ai-badge {
+            background: rgba(255,255,255,0.25);
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
         .sidebar-menu {
             flex: 1;
             padding: 20px 0;
             overflow-y: auto;
         }
-        
         .menu-item {
             padding: 15px 25px;
             color: #4b5563;
@@ -65,43 +60,40 @@
             gap: 12px;
             font-size: 16px;
             font-weight: 500;
+            border-left: 3px solid transparent;
         }
-        
         .menu-item:hover {
             background: #f3f4f6;
             color: #667eea;
+            border-left-color: #667eea;
         }
-        
         .menu-item.active {
             background: #ede9fe;
             color: #667eea;
+            border-left-color: #667eea;
         }
-        
         .menu-section-header {
             padding: 20px 25px 10px 25px;
             color: #9ca3af;
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 1px;
             border-top: 1px solid #e5e7eb;
             margin-top: 10px;
         }
-        
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 40px;
             overflow-y: auto;
         }
-        
-        .page {
-            display: none;
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .page.active {
-            display: block;
-        }
-        
         .page-header {
             background: white;
             border-radius: 20px;
@@ -109,13 +101,11 @@
             margin-bottom: 30px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        
         .page-header h2 {
             font-size: 32px;
             color: #1f2937;
             margin-bottom: 10px;
         }
-        
         .card {
             background: white;
             border-radius: 20px;
@@ -123,12 +113,58 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
+        .ai-chat-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 18px 28px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f3f4f6; font-weight: 600; }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -136,409 +172,606 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h1>🎉 SuperParty</h1>
-            <p style="font-size: 14px; opacity: 0.9;">Connected to 🧠 CREIER AI</p>
+            <div class="ai-badge">🤖 BY AI ✨</div>
         </div>
         
         <div class="sidebar-menu">
             <div class="menu-item active" onclick="showPage('home')">
-                <span>🏠</span>
-                <span>Acasă</span>
+                <span>🏠</span><span>Acasă</span>
+            </div>
+            <div class="menu-item" onclick="showPage('noteaza-eveniment')">
+                <span>➕</span><span>Notează Eveniment</span>
+            </div>
+            <div class="menu-item" onclick="showPage('petreceri-nealocate')">
+                <span>📋</span><span>Petreceri Nealocate</span>
+            </div>
+            <div class="menu-item" onclick="showPage('ce-petreceri-am')">
+                <span>🎊</span><span>Ce Petreceri Am</span>
+            </div>
+            <div class="menu-item" onclick="showPage('total-petreceri')">
+                <span>📈</span><span>Total Petreceri</span>
+            </div>
+            <div class="menu-item" onclick="showPage('soferi')">
+                <span>🚗</span><span>Evenimente cu Șoferi</span>
+            </div>
+            <div class="menu-item" onclick="showPage('echipa')">
+                <span>👥</span><span>Echipa</span>
+            </div>
+            <div class="menu-item" onclick="showPage('inventar')">
+                <span>📦</span><span>Inventar</span>
+            </div>
+            <div class="menu-item" onclick="showPage('piniata')">
+                <span>🎯</span><span>Piniata</span>
             </div>
             
             <div id="adminMenuSection" style="display: none;">
-                <div class="menu-section-header">🔒 Mod Admin</div>
-                <div class="menu-item" onclick="showPage('gestionare-utilizatori'); loadUsersAdminTable();">
-                    <span>👥</span>
-                    <span>Gestionare Utilizatori</span>
+                <div class="menu-section-header">📂 🔒 Mod Admin</div>
+                <div class="menu-item" onclick="showPage('bifează-evenimente')">
+                    <span>✅</span><span>Bifează Evenimente</span>
+                </div>
+                <div class="menu-item" onclick="showPage('vezi-statistici')">
+                    <span>📊</span><span>Vezi Statistici</span>
+                </div>
+                <div class="menu-item" onclick="showPage('total-statistici')">
+                    <span>📈</span><span>Total Statistici</span>
+                </div>
+                <div class="menu-item" onclick="showPage('target-traineri')">
+                    <span>💰</span><span>Target Traineri</span>
+                </div>
+                <div class="menu-item" onclick="showPage('target-animatie')">
+                    <span>🎭</span><span>Target Animație</span>
+                </div>
+                <div class="menu-item" onclick="showPage('target-vanzari')">
+                    <span>💵</span><span>Target Vânzări</span>
+                </div>
+                <div class="menu-item" onclick="showPage('genereaza-coduri')">
+                    <span>📝</span><span>Generează Coduri</span>
+                </div>
+                <div class="menu-item" onclick="showPage('gestionare-utilizatori-admin'); loadUsersAdmin();">
+                    <span>👥</span><span>Gestionare Utilizatori</span>
                 </div>
             </div>
             
             <div id="gmMenuSection" style="display: none;">
-                <div class="menu-section-header">🎮 Mod GM</div>
-                <div class="menu-item" onclick="showPage('gestionare-utilizatori'); loadUsersAdminTable();">
-                    <span>👥</span>
-                    <span>Gestionare Utilizatori Full</span>
+                <div class="menu-section-header">📂 🎮 Mod GM</div>
+                <div class="menu-item" onclick="showPage('gestionare-utilizatori-gm'); loadUsersGM();">
+                    <span>👥</span><span>Gestionare Utilizatori Full</span>
                 </div>
-            </div>
-            
-            <div class="menu-section-header">⚙️ Sistem</div>
-            <div class="menu-item" onclick="logoutUser()">
-                <span>🚪</span>
-                <span>Logout</span>
+                <div class="menu-item" onclick="showPage('utilizatori-nelogati'); loadUnloggedUsers();">
+                    <span>📊</span><span>Utilizatori Nelogați</span>
+                </div>
+                <div class="menu-item" onclick="showPage('creier-ai-gm')">
+                    <span>🧠</span><span>Creier AI</span>
+                </div>
             </div>
         </div>
     </div>
     
     <div class="main-content">
         <div class="page active" id="home">
-            <div class="page-header">
-                <h2>🎉 Bine ai venit!</h2>
-                <p>Dashboard SuperParty conectat la CREIER AI</p>
-            </div>
-            <div class="card">
-                <h3>🧠 Status Conexiune</h3>
-                <p id="connectionStatus">Se verifică...</p>
+            <!-- GOL - Login doar prin AI Chat -->
+        </div>
+        
+        <div class="page" id="inregistreaza-te">
+            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">✨</div>
+                        <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">Înregistrează-te</h2>
+                        <p style="color: #6b7280; font-size: 15px; margin: 0;">Creează un cont nou</p>
+                    </div>
+                    
+                    <form id="registerForm" onsubmit="handleRegister(event)" style="display: flex; flex-direction: column; gap: 25px;">
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">👤 Nume complet</label>
+                            <input type="text" id="registerName" required placeholder="Ion Popescu" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">📧 Email</label>
+                            <input type="email" id="registerEmail" required placeholder="exemplu@email.com" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">🔒 Parolă</label>
+                            <input type="password" id="registerPassword" required placeholder="Minim 6 caractere" minlength="6" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">🔒 Confirmă parola</label>
+                            <input type="password" id="registerPasswordConfirm" required placeholder="Repetă parola" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <button type="submit" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
+                            ✨ Creează cont
+                        </button>
+                    </form>
+                    
+                    <div id="registerError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border: 2px solid #fecaca; border-radius: 12px; color: #dc2626; text-align: center;">❌ Eroare!</div>
+                    <div id="registerSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border: 2px solid #a7f3d0; border-radius: 12px; color: #059669; text-align: center;">✅ Succes!</div>
+                </div>
             </div>
         </div>
         
-        <div class="page" id="gestionare-utilizatori">
+        <div class="page" id="gestionare-utilizatori-admin">
             <div class="page-header">
-                <h2>👥 Gestionare Utilizatori</h2>
-                <p>Aprobă, blochează sau gestionează utilizatorii</p>
+                <h2>👥 Gestionare Utilizatori (Admin)</h2>
+                <p>Aprobă sau blochează utilizatori</p>
             </div>
             <div class="card">
-                <table style="width: 100%; border-collapse: collapse;">
+                <table>
                     <thead>
-                        <tr style="background: #f3f4f6;">
-                            <th style="padding: 12px; text-align: left;">Nume</th>
-                            <th style="padding: 12px; text-align: left;">Email</th>
-                            <th style="padding: 12px; text-align: left;">Cod</th>
-                            <th style="padding: 12px; text-align: left;">Status</th>
-                            <th style="padding: 12px; text-align: left;">Acțiuni</th>
+                        <tr>
+                            <th>Nume</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Acțiuni</th>
                         </tr>
                     </thead>
-                    <tbody id="adminUsersTableBody">
+                    <tbody id="adminUsersTable">
+                        <tr><td colspan="4" style="text-align: center;">Se încarcă...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="page" id="gestionare-utilizatori-gm">
+            <div class="page-header">
+                <h2>👥 Gestionare Utilizatori (GM)</h2>
+                <p>Control total</p>
+            </div>
+            <div class="card">
+                <div style="margin-bottom: 20px;">
+                    <label>📅 De la:</label>
+                    <input type="date" id="chatFilterFrom" style="padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 0 10px;">
+                    <label>până la:</label>
+                    <input type="date" id="chatFilterTo" style="padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 0 10px;">
+                    <button onclick="applyChatFilter()" class="btn btn-primary">🔍</button>
+                    <button onclick="clearChatFilter()" class="btn btn-danger">❌</button>
+                </div>
+                <table>
+                    <thead>
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 20px;">Se încarcă...</td>
+                            <th>Nume</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Status</th>
+                            <th>Chat</th>
+                            <th>Acțiuni</th>
                         </tr>
+                    </thead>
+                    <tbody id="gmUsersTable">
+                        <tr><td colspan="6" style="text-align: center;">Se încarcă...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="page" id="utilizatori-nelogati">
+            <div class="page-header">
+                <h2>📊 Utilizatori Nelogați</h2>
+                <p>Conversații fără cont</p>
+            </div>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Nr. Conv.</th>
+                            <th>Prima</th>
+                            <th>Ultima</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unloggedUsersTable">
+                        <tr><td colspan="5" style="text-align: center;">Se încarcă...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    
+    <div id="aiChatModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; height: 80vh; display: flex; flex-direction: column;">
+            <div style="padding: 20px; border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px 20px 0 0; margin: -30px -30px 0 -30px;">
+                <h2 style="color: white; margin: 0;">🤖 Super AI</h2>
+                <button onclick="closeAIChat()" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 28px; cursor: pointer; width: 40px; height: 40px; border-radius: 10px;">×</button>
+            </div>
+            <div id="chatMessages" style="flex: 1; padding: 20px; overflow-y: auto; background: #f9fafb;">
+                <div style="background: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 600;">👋 Salut!</p>
+                    <p style="margin: 8px 0 0 0; color: #6b7280;">Întreabă-mă orice! 😊</p>
+                </div>
+            </div>
+            <div style="padding: 20px; border-top: 2px solid #e5e7eb;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Scrie mesajul..." style="flex: 1; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px;" onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">📤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="chatHistoryModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">💬 Istoric Conversații</h2>
+                <button onclick="closeChatHistory()" class="btn btn-danger">Închide</button>
+            </div>
+            <div id="chatHistoryContent"></div>
+        </div>
+    </div>
+
+    <button class="ai-chat-button" onclick="openAIChat()">
+        <span style="font-size: 24px;">🤖</span>
+        <span>Întreabă Super AI</span>
+    </button>
 
     <script>
-// ═══════════════════════════════════════════════════════════════════════════════
-// 🔗 SUPERPARTY API - CONNECTION TO CREIER AI BACKEND
-// ═══════════════════════════════════════════════════════════════════════════════
-
 const CREIER_AI_API = 'https://script.google.com/macros/s/AKfycbzWqLyXucHwTSl7cGSWBwono34yFoZSnItIPz8hyT8Zd1Fqn7L_LN1h5DZE-MEs0WTI/exec';
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// HELPER FUNCTION - CALL API
-// ═══════════════════════════════════════════════════════════════════════════════
+const ADMIN_PASSWORD = 'Adminandrei209512!';
+const GM_PASSWORD = 'Gmandrei209512!';
+let chatFilterFrom = null;
+let chatFilterTo = null;
 
 async function callCreierAPI(action, params = {}) {
-  try {
     const url = new URL(CREIER_AI_API);
     url.searchParams.append('action', action);
-    
-    // Add all params to query string
-    Object.keys(params).forEach(key => {
-      url.searchParams.append(key, params[key]);
-    });
-    
-    console.log('📡 Calling CREIER AI:', action, params);
-    
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     const response = await fetch(url.toString());
-    const data = await response.json();
-    
-    console.log('✅ Response from CREIER AI:', data);
-    
-    return data;
-  } catch (error) {
-    console.error('❌ API Error:', error);
-    return {
-      success: false,
-      error: error.toString()
-    };
-  }
+    return await response.json();
 }
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// AUTHENTICATION FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Register new user
- */
-async function registerUser(name, email, password) {
-  const result = await callCreierAPI('register', {
-    name: name,
-    email: email,
-    password: password
-  });
-  
-  return result;
-}
-
-/**
- * Login user
- */
-async function loginUser(email, password) {
-  const result = await callCreierAPI('login', {
-    email: email,
-    password: password
-  });
-  
-  if (result.success) {
-    // Save user in sessionStorage
-    sessionStorage.setItem('superparty_user', JSON.stringify(result.user));
-    
-    // Show admin/GM menus if applicable
-    if (result.user.isAdmin) {
-      document.getElementById('adminMenuSection').style.display = 'block';
-    }
-    
-    if (result.user.isGM) {
-      document.getElementById('gmMenuSection').style.display = 'block';
-    }
-  }
-  
-  return result;
-}
-
-/**
- * Logout user
- */
-function logoutUser() {
-  sessionStorage.removeItem('superparty_user');
-  
-  // Hide admin/GM menus
-  document.getElementById('adminMenuSection').style.display = 'none';
-  document.getElementById('gmMenuSection').style.display = 'none';
-  
-  // Redirect to home
-  showPage('home');
-  
-  alert('👋 Te-ai delogat cu succes!');
-}
-
-/**
- * Get current logged in user
- */
-function getCurrentUser() {
-  const userJson = sessionStorage.getItem('superparty_user');
-  return userJson ? JSON.parse(userJson) : null;
-}
-
-/**
- * Check if user is logged in
- */
-function isUserLoggedIn() {
-  return getCurrentUser() !== null;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ADMIN FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Get all users (admin only)
- */
-async function getAllUsers() {
-  const result = await callCreierAPI('getAllUsers');
-  return result.users || [];
-}
-
-/**
- * Approve user (admin only)
- */
-async function approveUser(email) {
-  const result = await callCreierAPI('approveUser', { email: email });
-  return result;
-}
-
-/**
- * Block user (admin only)
- */
-async function blockUser(email) {
-  const result = await callCreierAPI('blockUser', { email: email });
-  return result;
-}
-
-/**
- * Unblock user (admin only)
- */
-async function unblockUser(email) {
-  const result = await callCreierAPI('unblockUser', { email: email });
-  return result;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// UI FUNCTIONS - LOAD USERS TABLE
-// ═══════════════════════════════════════════════════════════════════════════════
-
-async function loadUsersAdminTable() {
-  const tableBody = document.getElementById('adminUsersTableBody');
-  if (!tableBody) {
-    console.warn('⚠️ Table body not found');
-    return;
-  }
-  
-  tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Se încarcă...</td></tr>';
-  
-  const users = await getAllUsers();
-  
-  if (users.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #6b7280;">Nu există utilizatori înregistrați</td></tr>';
-    return;
-  }
-  
-  tableBody.innerHTML = '';
-  
-  users.forEach(user => {
-    const row = document.createElement('tr');
-    
-    let statusBadge = '';
-    let actionsHtml = '';
-    
-    if (user.approved && !user.blocked) {
-      statusBadge = '<span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">✅ Activ</span>';
-      actionsHtml = `<button onclick="blockUserAction('${user.email}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;">🔒 Blochează</button>`;
-    } else if (user.blocked) {
-      statusBadge = '<span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">🔒 Blocat</span>';
-      actionsHtml = `<button onclick="unblockUserAction('${user.email}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;">✅ Deblochează</button>`;
-    } else {
-      statusBadge = '<span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">⏳ În așteptare</span>';
-      actionsHtml = `<button onclick="approveUserAction('${user.email}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;">✅ Aprobă</button>`;
-    }
-    
-    row.innerHTML = `
-      <td style="padding: 12px;">${user.name}</td>
-      <td style="padding: 12px;">${user.email}</td>
-      <td style="padding: 12px;">${user.cod || '-'}</td>
-      <td style="padding: 12px;">${statusBadge}</td>
-      <td style="padding: 12px;">${actionsHtml}</td>
-    `;
-    
-    tableBody.appendChild(row);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// UI ACTIONS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-async function approveUserAction(email) {
-  if (!confirm('Sigur vrei să aprobi acest utilizator?')) return;
-  
-  const result = await approveUser(email);
-  
-  if (result.success) {
-    alert('✅ ' + result.message);
-    loadUsersAdminTable();
-  } else {
-    alert('❌ Eroare: ' + result.error);
-  }
-}
-
-async function blockUserAction(email) {
-  if (!confirm('Sigur vrei să blochezi acest utilizator?')) return;
-  
-  const result = await blockUser(email);
-  
-  if (result.success) {
-    alert('🔒 ' + result.message);
-    loadUsersAdminTable();
-  } else {
-    alert('❌ Eroare: ' + result.error);
-  }
-}
-
-async function unblockUserAction(email) {
-  if (!confirm('Sigur vrei să deblochezi acest utilizator?')) return;
-  
-  const result = await unblockUser(email);
-  
-  if (result.success) {
-    alert('✅ ' + result.message);
-    loadUsersAdminTable();
-  } else {
-    alert('❌ Eroare: ' + result.error);
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// INIT - CHECK LOGIN ON PAGE LOAD
-// ═══════════════════════════════════════════════════════════════════════════════
-
-document.addEventListener('DOMContentLoaded', () => {
-  const user = getCurrentUser();
-  
-  if (user) {
-    console.log('✅ User logged in:', user.nume);
-    
-    // Show admin/GM menus if applicable
-    if (user.isAdmin) {
-      document.getElementById('adminMenuSection').style.display = 'block';
-    }
-    
-    if (user.isGM) {
-      document.getElementById('gmMenuSection').style.display = 'block';
-    }
-  } else {
-    console.log('ℹ️ No user logged in');
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// EXPORT TO WINDOW (MAKE GLOBALLY AVAILABLE)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-window.SuperPartyAPI = {
-  // Auth
-  registerUser,
-  loginUser,
-  logoutUser,
-  getCurrentUser,
-  isUserLoggedIn,
-  
-  // Admin
-  getAllUsers,
-  approveUser,
-  blockUser,
-  unblockUser,
-  
-  // UI
-  loadUsersAdminTable,
-  approveUserAction,
-  blockUserAction,
-  unblockUserAction
-};
-
-console.log('✅ SuperParty API loaded - Connected to CREIER AI!');
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// PAGE NAVIGATION
-// ═══════════════════════════════════════════════════════════════════════════════
 
 function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if (event) event.currentTarget.classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// CHECK CONNECTION ON LOAD
-// ═══════════════════════════════════════════════════════════════════════════════
+function openAIChat() {
+    document.getElementById('aiChatModal').style.display = 'flex';
+    document.getElementById('chatInput').focus();
+}
 
-window.addEventListener('DOMContentLoaded', async () => {
-    const statusEl = document.getElementById('connectionStatus');
+function closeAIChat() {
+    document.getElementById('aiChatModal').style.display = 'none';
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
     
-    try {
-        const result = await callCreierAPI('login', {
-            email: 'test',
-            password: 'test'
-        });
-        
-        statusEl.innerHTML = '✅ <strong>Conectat la CREIER AI!</strong><br>' +
-                           '<small>Backend: ' + CREIER_AI_API + '</small>';
-        statusEl.style.color = '#10b981';
-    } catch (error) {
-        statusEl.innerHTML = '❌ <strong>Eroare conexiune CREIER AI</strong><br>' +
-                           '<small>' + error.toString() + '</small>';
-        statusEl.style.color = '#ef4444';
+    const lower = message.toLowerCase();
+    
+    // COMANDA: open mod andrei admin
+    if (lower === 'open mod andrei admin') {
+        input.value = '';
+        closeAIChat();
+        const pwd = prompt('🔒 Introdu parola pentru Mod Admin:');
+        if (pwd === ADMIN_PASSWORD) {
+            document.getElementById('adminMenuSection').style.display = 'block';
+            alert('✅ Mod Admin activat!');
+        } else {
+            alert('❌ Parolă greșită!');
+        }
+        return;
     }
-});
+    
+    // COMANDA: open mod andrei gm
+    if (lower === 'open mod andrei gm') {
+        input.value = '';
+        closeAIChat();
+        const pwd = prompt('🔒 Introdu parola pentru Mod GM:');
+        if (pwd === GM_PASSWORD) {
+            document.getElementById('gmMenuSection').style.display = 'block';
+            alert('✅ Mod GM activat!');
+        } else {
+            alert('❌ Parolă greșită!');
+        }
+        return;
+    }
+    
+    // COMANDA: Intra in mod logare
+    if (lower === 'intra in mod logare') {
+        input.value = '';
+        closeAIChat();
+        
+        // Show login form on home page
+        const homePage = document.getElementById('home');
+        showPage('home');
+        
+        homePage.innerHTML = `
+            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: white; border-radius: 24px; padding: 50px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); max-width: 450px; width: 100%;">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">🎉</div>
+                        <h2 style="font-size: 32px; color: #1f2937; margin: 0 0 10px 0; font-weight: 800;">SuperParty</h2>
+                        <p style="color: #6b7280; font-size: 15px; margin: 0;">Intră în contul tău</p>
+                    </div>
+                    
+                    <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 25px;">
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">📧 Email</label>
+                            <input type="email" id="loginEmail" required placeholder="exemplu@email.com" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 10px;">🔒 Parolă</label>
+                            <input type="password" id="loginPassword" required placeholder="Introdu parola" style="width: 100%; padding: 15px 18px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;">
+                        </div>
+                        <button type="submit" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
+                            🚀 Intră în cont
+                        </button>
+                        <button type="button" onclick="showPage('inregistreaza-te')" style="width: 100%; padding: 16px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;">
+                            ✨ Înregistrează-te
+                        </button>
+                    </form>
+                    
+                    <div id="loginError" style="display: none; margin-top: 20px; padding: 15px; background: #fee2e2; border-radius: 12px; color: #dc2626; text-align: center;">❌ Eroare!</div>
+                    <div id="loginSuccess" style="display: none; margin-top: 20px; padding: 15px; background: #d1fae5; border-radius: 12px; color: #059669; text-align: center;">✅ Succes!</div>
+                </div>
+            </div>
+        `;
+        
+        return;
+    }
+    
+    input.value = '';
+    addMessageToChat(message, 'user');
+    
+    saveConversation('user@example.com', message, 'Response placeholder');
+    
+    setTimeout(() => {
+        const response = '👋 Salut! Sunt Super AI! 🎉';
+        addMessageToChat(response, 'assistant');
+    }, 800);
+}
 
+function addMessageToChat(message, role) {
+    const chat = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px;';
+    
+    if (role === 'user') {
+        div.style.justifyContent = 'flex-end';
+        div.innerHTML = `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 12px; max-width: 80%;"><p style="margin: 0;">${message}</p></div>`;
+    } else {
+        div.innerHTML = `<div style="background: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 80%;"><p style="margin: 0; color: #111827;">${message}</p></div>`;
+    }
+    
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const result = await callCreierAPI('login', { email, password });
+    
+    const errorDiv = document.getElementById('loginError');
+    const successDiv = document.getElementById('loginSuccess');
+    
+    if (result.success) {
+        successDiv.style.display = 'block';
+        successDiv.textContent = '✅ Logat cu succes!';
+        errorDiv.style.display = 'none';
+        
+        if (result.user.isAdmin) document.getElementById('adminMenuSection').style.display = 'block';
+        if (result.user.isGM) document.getElementById('gmMenuSection').style.display = 'block';
+        
+        setTimeout(() => {
+            document.getElementById('home').innerHTML = '';
+            showPage('home');
+        }, 2000);
+    } else {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = '❌ ' + (result.error || 'Email sau parolă greșită!');
+        successDiv.style.display = 'none';
+    }
+}
+
+async function handleRegister(event) {
+    event.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirm = document.getElementById('registerPasswordConfirm').value;
+    
+    if (password !== confirm) {
+        document.getElementById('registerError').style.display = 'block';
+        document.getElementById('registerError').textContent = '❌ Parolele nu coincid!';
+        return;
+    }
+    
+    const result = await callCreierAPI('register', { name, email, password });
+    
+    const errorDiv = document.getElementById('registerError');
+    const successDiv = document.getElementById('registerSuccess');
+    
+    if (result.success) {
+        successDiv.style.display = 'block';
+        successDiv.textContent = '✅ Cont creat! Așteaptă aprobare de la admin.';
+        errorDiv.style.display = 'none';
+    } else {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = '❌ ' + (result.error || 'Eroare la înregistrare!');
+        successDiv.style.display = 'none';
+    }
+}
+
+async function saveConversation(email, userMessage, aiResponse) {
+    await callCreierAPI('saveConversation', {
+        email: email,
+        userMessage: userMessage,
+        aiResponse: aiResponse,
+        timestamp: new Date().toISOString()
+    });
+}
+
+async function loadUsersAdmin() {
+    const tbody = document.getElementById('adminUsersTable');
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Se încarcă...</td></tr>';
+    
+    const result = await callCreierAPI('getAllUsers');
+    const users = result.users || [];
+    
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6b7280;">Nu există utilizatori</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        const status = user.approved && !user.blocked ? '✅ Activ' : user.blocked ? '🔒 Blocat' : '⏳ Așteptare';
+        const action = user.approved && !user.blocked 
+            ? `<button onclick="blockUser('${user.email}')" class="btn btn-danger">🔒</button>`
+            : user.blocked 
+            ? `<button onclick="unblockUser('${user.email}')" class="btn btn-success">✅</button>`
+            : `<button onclick="approveUser('${user.email}')" class="btn btn-success">✅</button>`;
+        
+        row.innerHTML = `<td>${user.name}</td><td>${user.email}</td><td>${status}</td><td>${action}</td>`;
+        tbody.appendChild(row);
+    });
+}
+
+async function loadUsersGM() {
+    const tbody = document.getElementById('gmUsersTable');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Se încarcă...</td></tr>';
+    
+    const result = await callCreierAPI('getAllUsers');
+    const users = result.users || [];
+    
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280;">Nu există</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        const status = user.approved && !user.blocked ? '✅' : user.blocked ? '🔒' : '⏳';
+        
+        row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.rol || 'User'}</td>
+            <td>${status}</td>
+            <td><button onclick="openChatHistory('${user.email}')" class="btn btn-primary">💬</button></td>
+            <td>
+                <button onclick="approveUser('${user.email}')" class="btn btn-success">✅</button>
+                <button onclick="blockUser('${user.email}')" class="btn btn-danger">🔒</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function loadUnloggedUsers() {
+    const tbody = document.getElementById('unloggedUsersTable');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Se încarcă...</td></tr>';
+    
+    const result = await callCreierAPI('getUnloggedUsers');
+    const users = result.users || [];
+    
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">Nu există</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.sessionId}</td>
+            <td>${user.conversationCount}</td>
+            <td>${new Date(user.firstSeen).toLocaleDateString('ro-RO')}</td>
+            <td>${new Date(user.lastSeen).toLocaleDateString('ro-RO')}</td>
+            <td><button onclick="openChatHistory('${user.sessionId}')" class="btn btn-primary">💬</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function openChatHistory(identifier) {
+    const modal = document.getElementById('chatHistoryModal');
+    const content = document.getElementById('chatHistoryContent');
+    
+    content.innerHTML = '<p style="text-align: center;">Se încarcă...</p>';
+    modal.style.display = 'flex';
+    
+    const result = await callCreierAPI('getConversations', {
+        identifier: identifier,
+        from: chatFilterFrom,
+        to: chatFilterTo
+    });
+    
+    const conversations = result.conversations || [];
+    
+    if (conversations.length === 0) {
+        content.innerHTML = '<p style="text-align: center; color: #6b7280;">Nu există conversații.</p>';
+        return;
+    }
+    
+    content.innerHTML = '';
+    conversations.forEach(conv => {
+        const div = document.createElement('div');
+        div.style.cssText = 'margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 12px;';
+        div.innerHTML = `
+            <p style="font-size: 12px; color: #6b7280; margin-bottom: 10px;">${new Date(conv.timestamp).toLocaleString('ro-RO')}</p>
+            <div style="background: #667eea; color: white; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                <strong>User:</strong> ${conv.userMessage}
+            </div>
+            <div style="background: white; padding: 10px; border-radius: 8px;">
+                <strong>AI:</strong> ${conv.aiResponse}
+            </div>
+        `;
+        content.appendChild(div);
+    });
+}
+
+function closeChatHistory() {
+    document.getElementById('chatHistoryModal').style.display = 'none';
+}
+
+function applyChatFilter() {
+    chatFilterFrom = document.getElementById('chatFilterFrom').value;
+    chatFilterTo = document.getElementById('chatFilterTo').value;
+    alert(`✅ Filtru: ${chatFilterFrom} → ${chatFilterTo}`);
+}
+
+function clearChatFilter() {
+    chatFilterFrom = null;
+    chatFilterTo = null;
+    document.getElementById('chatFilterFrom').value = '';
+    document.getElementById('chatFilterTo').value = '';
+    alert('❌ Filtru resetat');
+}
+
+async function approveUser(email) {
+    if (!confirm('Aprobi?')) return;
+    const result = await callCreierAPI('approveUser', { email });
+    alert(result.success ? '✅ Aprobat!' : '❌ Eroare');
+    loadUsersAdmin();
+    loadUsersGM();
+}
+
+async function blockUser(email) {
+    if (!confirm('Blochezi?')) return;
+    const result = await callCreierAPI('blockUser', { email });
+    alert(result.success ? '🔒 Blocat!' : '❌ Eroare');
+    loadUsersAdmin();
+    loadUsersGM();
+}
+
+async function unblockUser(email) {
+    if (!confirm('Deblochezi?')) return;
+    const result = await callCreierAPI('unblockUser', { email });
+    alert(result.success ? '✅ Deblocat!' : '❌ Eroare');
+    loadUsersAdmin();
+    loadUsersGM();
+}
+
+console.log('✅ SuperParty connected to CREIER AI!');
     </script>
 </body>
 </html>
