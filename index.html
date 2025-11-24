@@ -696,13 +696,10 @@
 
     async function verificaCunostinta(id, actiune) {
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "verificaCunostinta", id: id, actiune: actiune })
-        });
+        const url = BACKEND_URL + "?action=verificaCunostinta&id=" + encodeURIComponent(id) + "&actiune=" + encodeURIComponent(actiune);
+        await fetch(url);
         showDeVerificat();
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     // ===== REGULI FUNDAMENTALE =====
@@ -748,13 +745,11 @@
       if (!regula) return alert("Scrie o regulă!");
       
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "adaugaRegula", regula: regula })
-        });
+        const url = BACKEND_URL + "?action=adaugaRegula&regula=" + encodeURIComponent(regula);
+        await fetch(url);
+        document.getElementById("regulaNoua").value = "";
         showReguliFundamentale();
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     async function editeazaRegula(id, regulaVeche) {
@@ -762,26 +757,20 @@
       if (!regulaNoua || regulaNoua === regulaVeche) return;
       
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "editeazaRegula", id: id, regula: regulaNoua })
-        });
+        const url = BACKEND_URL + "?action=editeazaRegula&id=" + encodeURIComponent(id) + "&regula=" + encodeURIComponent(regulaNoua);
+        await fetch(url);
         showReguliFundamentale();
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     async function stergeRegula(id) {
       if (!confirm("Sigur ștergi această regulă?")) return;
       
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "stergeRegula", id: id })
-        });
+        const url = BACKEND_URL + "?action=stergeRegula&id=" + encodeURIComponent(id);
+        await fetch(url);
         showReguliFundamentale();
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     // ===== CONVERSAȚII =====
@@ -827,13 +816,10 @@
 
     async function marcheazaOK(id) {
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "marcheazaOK", id: id })
-        });
+        const url = BACKEND_URL + "?action=marcheazaOK&id=" + encodeURIComponent(id);
+        await fetch(url);
         showConversatii();
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     async function corecteazaConversatie(id, mesajOriginal) {
@@ -841,14 +827,11 @@
       if (!corectie) return;
       
       try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "corecteazaConversatie", id: id, corectie: corectie })
-        });
+        const url = BACKEND_URL + "?action=corecteazaConversatie&id=" + encodeURIComponent(id) + "&corectie=" + encodeURIComponent(corectie);
+        await fetch(url);
         showConversatii();
         alert("✅ AI-ul a învățat din corecție!");
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
 
     // ===== MODE UI =====
