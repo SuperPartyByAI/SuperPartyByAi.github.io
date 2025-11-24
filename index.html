@@ -1,211 +1,155 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SuperParty</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <style id="dynamicStyles">
+  <style>
     :root {
       --primary: #3b82f6;
       --primary-dark: #2563eb;
       --bg: #f8fafc;
       --card: #ffffff;
-      --border: #e2e8f0;
       --text: #1e293b;
       --text-soft: #64748b;
-      --text-muted: #94a3b8;
-      --success: #22c55e;
+      --border: #e2e8f0;
       --radius: 12px;
-      --shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
 
-    .app { display: flex; min-height: 100vh; }
-
     /* SIDEBAR */
     .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
       width: 260px;
+      height: 100vh;
       background: var(--card);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      position: fixed;
-      height: 100vh;
       z-index: 100;
       transition: transform 0.3s;
     }
 
     .sidebar-header {
-      padding: 18px;
+      padding: 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .logo {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 16px;
+    .logo-icon { font-size: 28px; }
+    .logo-text { font-weight: 700; font-size: 18px; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px 0;
     }
 
-    .logo-text { font-size: 17px; font-weight: 700; }
-    .logo-sub { font-size: 11px; color: var(--text-muted); }
-
-    .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
-
-    .nav-section { margin-bottom: 16px; }
+    .nav-section { margin-bottom: 20px; }
+    
     .nav-section-title {
-      font-size: 10px;
+      padding: 8px 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-soft);
       text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 6px 12px;
       letter-spacing: 0.5px;
     }
 
     .nav-item {
+      padding: 12px 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 11px 14px;
-      border-radius: var(--radius);
+      gap: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      color: var(--text-soft);
-      font-size: 14px;
+      transition: all 0.15s;
+      color: var(--text);
     }
 
-    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item:hover { background: var(--bg); }
     .nav-item.active { background: var(--primary); color: white; }
-    .nav-item .icon { font-size: 17px; }
-
-    .sidebar-footer {
-      padding: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    .mode-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: var(--radius);
-      font-size: 12px;
-    }
-
-    .mode-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-muted);
-    }
-
-    .mode-dot.active { background: var(--success); }
+    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
 
     /* MAIN */
-    .main {
-      flex: 1;
-      margin-left: 260px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .main { margin-left: 260px; min-height: 100vh; }
 
     .header {
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
+      padding: 15px 25px;
       display: flex;
       align-items: center;
-      gap: 15px;
+      justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 50;
     }
 
-    .menu-btn {
+    .menu-toggle {
       display: none;
       background: none;
       border: none;
-      font-size: 22px;
+      font-size: 24px;
       cursor: pointer;
-      color: var(--text);
+      padding: 5px;
     }
 
-    .page-title { font-size: 17px; font-weight: 600; flex: 1; }
+    .page-title { font-size: 20px; font-weight: 600; }
 
-    .content { flex: 1; padding: 20px; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* CARDS */
-    .welcome-card {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: var(--radius);
-      padding: 25px;
-      color: white;
-      margin-bottom: 20px;
-    }
-
-    .welcome-card h2 { font-size: 22px; margin-bottom: 6px; }
-    .welcome-card p { opacity: 0.9; font-size: 13px; }
+    .content { padding: 25px; max-width: 1200px; }
 
     .card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-
-    /* TABLES */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    .data-table th {
-      text-align: left;
-      padding: 10px 12px;
-      background: var(--bg);
+    .card-title {
       font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
 
-    .data-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
+    .welcome-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 25px;
     }
 
-    .data-table tr:hover { background: var(--bg); }
+    .welcome-card h2 { margin-bottom: 8px; }
+    .welcome-card p { opacity: 0.9; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-soft);
+    }
 
     .btn {
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
     }
 
     .btn-primary {
@@ -215,72 +159,97 @@
 
     .btn-primary:hover { background: var(--primary-dark); }
 
+    /* TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table th, .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table th {
+      font-weight: 600;
+      background: var(--bg);
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .content { padding: 15px; }
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+    .overlay.active { display: block; }
+
     /* CHAT */
     .chat-toggle {
       position: fixed;
-      bottom: 18px;
-      right: 18px;
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
+      background: var(--primary);
       color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.4);
       z-index: 200;
       transition: transform 0.2s;
     }
 
-    .chat-toggle:hover { transform: scale(1.05); }
+    .chat-toggle:hover { transform: scale(1.1); }
 
     .chat-window {
       position: fixed;
-      bottom: 85px;
-      right: 18px;
-      width: 360px;
-      height: 480px;
+      bottom: 100px;
+      right: 25px;
+      width: 380px;
+      height: 500px;
       background: var(--card);
-      border-radius: 14px;
+      border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
-      z-index: 199;
+      z-index: 200;
       overflow: hidden;
-      transition: opacity 0.2s, transform 0.2s;
     }
 
-    .chat-window.hidden {
-      opacity: 0;
-      transform: translateY(20px) scale(0.95);
-      pointer-events: none;
-    }
+    .chat-window.hidden { display: none; }
 
     .chat-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 15px 20px;
+      background: var(--primary);
       color: white;
-      padding: 14px 18px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
     }
 
-    .chat-header h3 { font-size: 14px; font-weight: 600; }
-    .chat-mode-label {
-      font-size: 10px;
-      background: rgba(255,255,255,0.2);
-      padding: 3px 8px;
-      border-radius: 8px;
-    }
+    .chat-header h3 { font-size: 16px; }
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 14px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -288,9 +257,9 @@
 
     .chat-msg {
       max-width: 85%;
-      padding: 10px 13px;
+      padding: 10px 14px;
       border-radius: 12px;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.4;
     }
 
@@ -308,7 +277,7 @@
     }
 
     .chat-input-area {
-      padding: 12px;
+      padding: 15px;
       border-top: 1px solid var(--border);
       display: flex;
       gap: 10px;
@@ -316,106 +285,114 @@
 
     .chat-input {
       flex: 1;
+      padding: 12px;
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 10px 16px;
-      font-size: 13px;
+      border-radius: 8px;
+      font-size: 14px;
       outline: none;
     }
 
     .chat-input:focus { border-color: var(--primary); }
 
     .chat-send {
-      width: 40px;
-      height: 40px;
+      padding: 12px 20px;
       background: var(--primary);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
       color: white;
-      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
     }
 
-    .overlay {
+    @media (max-width: 768px) {
+      .chat-window {
+        width: calc(100% - 20px);
+        height: 60vh;
+        right: 10px;
+        bottom: 90px;
+      }
+    }
+
+    /* SCAN POPUP */
+    .scan-popup {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 99;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      z-index: 300;
+      width: 90%;
+      max-width: 400px;
     }
 
-    .overlay.active { display: block; }
+    .scan-popup.active { display: block; }
 
-    .loading {
+    .scan-popup h3 { margin-bottom: 15px; }
+
+    .scan-popup .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px 20px;
       text-align: center;
-      padding: 40px;
-      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
-    }
+    .upload-area:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); }
+    .upload-area .icon { font-size: 40px; margin-bottom: 10px; }
+    .upload-area p { color: var(--text-soft); font-size: 14px; }
 
-    /* MOBILE */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .menu-btn { display: block; }
-      .header { padding: 12px 15px; }
-      .content { padding: 15px; }
-      .chat-window {
-        right: 10px;
-        left: 10px;
-        width: auto;
-        bottom: 80px;
-        height: calc(100vh - 150px);
-        max-height: 480px;
-      }
-      .chat-toggle { bottom: 15px; right: 15px; width: 52px; height: 52px; }
-    }
+    .loading { text-align: center; padding: 40px; color: var(--text-soft); }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo" id="logoIcon">SP</div>
-        <div>
-          <div class="logo-text" id="logoText">SuperParty</div>
-          <div class="logo-sub">Management</div>
-        </div>
-      </div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon" id="logoIcon">🎉</span>
+      <span class="logo-text" id="logoText">SuperParty</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+  </aside>
 
-      <nav class="sidebar-nav" id="sidebarNav">
-        <div class="loading">Se încarcă...</div>
-      </nav>
+  <div class="overlay" id="overlay"></div>
 
-      <div class="sidebar-footer">
-        <div class="mode-status">
-          <span class="mode-dot" id="modeDot"></span>
-          <span>Mod: <strong id="modeLabel">Standard</strong></span>
-        </div>
-      </div>
-    </aside>
-
-    <div class="overlay" id="overlay"></div>
-
-    <main class="main">
-      <header class="header">
-        <button class="menu-btn" id="menuBtn">☰</button>
-        <h1 class="page-title" id="pageTitle">Se încarcă...</h1>
-      </header>
-
-      <div class="content" id="content">
-        <div class="loading">Se încarcă aplicația...</div>
-      </div>
-    </main>
-  </div>
+  <main class="main">
+    <header class="header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <h1 class="page-title" id="pageTitle">Acasă</h1>
+      <div></div>
+    </header>
+    <div class="content" id="content">
+      <div class="loading">Se încarcă...</div>
+    </div>
+  </main>
 
   <button class="chat-toggle" id="chatToggle">💬</button>
+
+  <div class="scan-popup" id="scanPopup">
+    <button class="close-btn" onclick="closeScanPopup()">✕</button>
+    <h3 id="scanPopupTitle">📷 Scanează document</h3>
+    <div class="upload-area" id="uploadArea">
+      <div class="icon">📤</div>
+      <p>Click sau trage fișierul</p>
+      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;">
+    </div>
+    <div id="scanStatus" style="display:none;text-align:center;padding:20px;"></div>
+  </div>
 
   <div class="chat-window hidden" id="chatWindow">
     <div class="chat-header">
@@ -423,12 +400,11 @@
         <span>🤖</span>
         <h3>SuperParty AI</h3>
       </div>
-      <span class="chat-mode-label" id="chatModeLabel">Standard</span>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chatInput" placeholder="Scrie un mesaj...">
-      <button class="chat-send" id="chatSend">➤</button>
+      <button class="chat-send" id="chatSend">Trimite</button>
     </div>
   </div>
 
@@ -440,14 +416,16 @@
 
     // ===== STATE =====
     let currentMode = "standard";
+    let editMode = false;
     let currentPage = null;
-    let appData = { pagini: [], tabele: [], stiluri: {} };
+    let appData = { pagini: [], tabele: [], elemente: [], scanari: [], stiluri: {} };
+    let currentScanType = null;
 
     // ===== ELEMENTS =====
     const sidebar = document.getElementById("sidebar");
-    const sidebarNav = document.getElementById("sidebarNav");
     const overlay = document.getElementById("overlay");
-    const menuBtn = document.getElementById("menuBtn");
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebarNav = document.getElementById("sidebarNav");
     const pageTitle = document.getElementById("pageTitle");
     const content = document.getElementById("content");
     const chatToggle = document.getElementById("chatToggle");
@@ -455,48 +433,62 @@
     const chatMessages = document.getElementById("chatMessages");
     const chatInput = document.getElementById("chatInput");
     const chatSend = document.getElementById("chatSend");
+    const scanPopup = document.getElementById("scanPopup");
+    const uploadArea = document.getElementById("uploadArea");
+    const fileInput = document.getElementById("fileInput");
+    const scanStatus = document.getElementById("scanStatus");
+
+    // ===== EVENTS =====
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+      closeScanPopup();
+    });
+
+    chatToggle.addEventListener("click", () => chatWindow.classList.toggle("hidden"));
+    chatSend.addEventListener("click", handleChatSend);
+    chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleChatSend(); });
 
     // ===== LOAD APP =====
     async function loadApp() {
       try {
         const response = await fetch(BACKEND_URL + "?action=loadApp");
-        const result = await response.json();
-        
-        if (result.ok && result.data) {
-          appData = result.data;
+        const data = await response.json();
+        if (data.ok) {
+          appData = data.data;
           applyStyles();
           renderNav();
           
-          // Prima pagină vizibilă
-          const firstPage = appData.pagini.find(p => p.vizibil);
-          if (firstPage) {
-            navigateTo(firstPage);
-          } else {
-            content.innerHTML = '<div class="empty-state">Nicio pagină.<br>Folosește chat-ul GM pentru a adăuga.</div>';
-            pageTitle.textContent = "SuperParty";
-          }
+          // Navighează la prima pagină vizibilă
+          const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+          if (firstPage) navigateTo(firstPage);
         }
       } catch (e) {
-        console.error("Load error:", e);
-        content.innerHTML = '<div class="empty-state">Eroare la încărcare.<br>Verifică conexiunea.</div>';
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
       }
     }
 
     // ===== APPLY STYLES =====
     function applyStyles() {
       const s = appData.stiluri;
-      
-      if (s.primary && s.primary.color) {
+      if (s.primary?.color) {
         document.documentElement.style.setProperty('--primary', s.primary.color);
-        // Darker version
-        const darker = shadeColor(s.primary.color, -20);
-        document.documentElement.style.setProperty('--primary-dark', darker);
+        document.documentElement.style.setProperty('--primary-dark', shadeColor(s.primary.color, -20));
       }
-      
-      if (s.app && s.app.title) {
+      if (s.sidebar?.background) document.documentElement.style.setProperty('--card', s.sidebar.background);
+      if (s.text?.color) document.documentElement.style.setProperty('--text', s.text.color);
+      if (s.background?.color) document.documentElement.style.setProperty('--bg', s.background.color);
+      if (s.app?.font) document.body.style.fontFamily = s.app.font + ', sans-serif';
+      if (s.app?.title) {
         document.getElementById("logoText").textContent = s.app.title;
         document.title = s.app.title;
       }
+      if (s.app?.logo) document.getElementById("logoIcon").textContent = s.app.logo;
     }
 
     function shadeColor(color, percent) {
@@ -505,269 +497,214 @@
       const R = (num >> 16) + amt;
       const G = (num >> 8 & 0x00FF) + amt;
       const B = (num & 0x0000FF) + amt;
-      return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+      return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
     }
 
     // ===== RENDER NAV =====
     function renderNav() {
-      // Filtrează paginile în funcție de mod
-      const visiblePages = appData.pagini.filter(p => {
-        if (!p.vizibil) return false;
-        
-        // Paginile "normal" se văd în toate modurile
-        // Paginile "admin" se văd doar în admin și gm
-        // Paginile "gm" se văd doar în gm
-        if (p.mod === "normal" || p.mod === "all") return true;
-        if (p.mod === "admin" && (currentMode === "admin" || currentMode === "gm")) return true;
-        if (p.mod === "gm" && currentMode === "gm") return true;
-        
-        return false;
-      });
-
       let html = '';
       
-      // Secțiune Normal
-      const normalPages = visiblePages.filter(p => p.mod === "normal" || p.mod === "all");
+      // Normal pages
+      const normalPages = appData.pagini.filter(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
       if (normalPages.length > 0) {
         html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
         normalPages.forEach(p => {
-          html += `<div class="nav-item" data-page-id="${p.id}">
-            <span class="icon">${p.icon || '📄'}</span>
-            <span>${p.nume}</span>
-          </div>`;
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
         });
         html += '</div>';
       }
 
-      // Secțiune Admin (vizibilă în admin și gm)
+      // Admin pages
       if (currentMode === "admin" || currentMode === "gm") {
-        const adminPages = visiblePages.filter(p => p.mod === "admin");
+        const adminPages = appData.pagini.filter(p => p.vizibil && p.mod === "admin");
         html += '<div class="nav-section"><div class="nav-section-title">Admin</div>';
-        if (adminPages.length > 0) {
-          adminPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}">
-              <span class="icon">${p.icon || '📄'}</span>
-              <span>${p.nume}</span>
-            </div>`;
-          });
-        }
-        html += `<div class="nav-item" data-page-id="admin-panel">
-          <span class="icon">🔐</span>
-          <span>Admin Panel</span>
-        </div></div>`;
+        adminPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+        });
+        html += '</div>';
       }
 
-      // Secțiune GM (vizibilă doar în gm)
+      // GM pages
       if (currentMode === "gm") {
-        const gmPages = visiblePages.filter(p => p.mod === "gm");
+        const gmPages = appData.pagini.filter(p => p.vizibil && p.mod === "gm");
         html += '<div class="nav-section"><div class="nav-section-title">GM</div>';
-        if (gmPages.length > 0) {
-          gmPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}">
-              <span class="icon">${p.icon || '📄'}</span>
-              <span>${p.nume}</span>
-            </div>`;
-          });
-        }
-        html += `<div class="nav-item" data-page-id="gm-panel">
-          <span class="icon">⚙️</span>
-          <span>GM Panel</span>
-        </div></div>`;
-      }
-
-      if (html === '') {
-        html = '<div class="nav-section"><div class="nav-section-title">Meniu</div><div class="empty-state">Nicio pagină</div></div>';
+        gmPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+        });
+        html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon">🧠</span><span>Creier AI</span></div>`;
+        html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon">✅</span><span>De verificat</span></div>`;
+        html += '</div>';
       }
 
       sidebarNav.innerHTML = html;
 
-      // Event listeners
+      // Events
       document.querySelectorAll(".nav-item").forEach(item => {
         item.addEventListener("click", () => {
           const pageId = item.dataset.pageId;
           
-          if (pageId === "gm-panel") {
-            showGMPanel();
-          } else if (pageId === "admin-panel") {
-            showAdminPanel();
-          } else {
+          if (pageId === "creier-ai") showCreierAI();
+          else if (pageId === "de-verificat") showDeVerificat();
+          else {
             const page = appData.pagini.find(p => String(p.id) === pageId);
             if (page) navigateTo(page);
           }
           
           document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
           item.classList.add("active");
-          
           sidebar.classList.remove("open");
           overlay.classList.remove("active");
         });
       });
-
-      // Activează prima pagină
-      const firstNav = sidebarNav.querySelector(".nav-item");
-      if (firstNav) firstNav.classList.add("active");
     }
 
-    // ===== NAVIGATE TO PAGE =====
+    // ===== NAVIGATE =====
     function navigateTo(page) {
       currentPage = page;
       pageTitle.textContent = page.nume;
       
-      // Găsește tabelele pentru această pagină
-      const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil);
+      const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
+      const pageElements = (appData.elemente || []).filter(e => e.paginaId === page.id);
       
-      let html = `<div class="welcome-card">
-        <h2>${page.icon || ''} ${page.nume}</h2>
-        <p>Pagină dinamică SuperParty</p>
-      </div>`;
+      let html = `<div class="welcome-card"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
       
-      if (pageTables.length === 0) {
-        html += `<div class="card">
-          <div class="empty-state">
-            Niciun tabel pe această pagină.<br>
-            Din GM: <code>adaugă tabel NumeTabel cu Col1, Col2</code>
-          </div>
-        </div>`;
+      if (pageElements.length > 0) {
+        html += '<div class="card"><div class="card-title">Acțiuni</div><div>';
+        pageElements.forEach(el => { html += renderElement(el); });
+        html += '</div></div>';
+      }
+      
+      if (pageTables.length === 0 && pageElements.length === 0) {
+        html += '<div class="card"><div class="empty-state">Pagină goală</div></div>';
       } else {
         pageTables.forEach(table => {
-          html += `<div class="card">
-            <div class="card-title">${table.numeTabel}</div>
-            <div id="table-${table.numeTabel}">
-              <div class="loading">Se încarcă...</div>
-            </div>
-          </div>`;
+          html += `<div class="card"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="loading">Se încarcă...</div></div></div>`;
         });
       }
       
       content.innerHTML = html;
-      
-      // Load table data
-      pageTables.forEach(table => {
-        loadTableData(table);
-      });
+      pageTables.forEach(table => loadTableData(table));
     }
 
-    // ===== LOAD TABLE DATA =====
-    async function loadTableData(table) {
-      try {
-        const response = await fetch(BACKEND_URL + "?action=loadTable&table=" + encodeURIComponent(table.numeTabel));
-        const result = await response.json();
-        
-        const container = document.getElementById("table-" + table.numeTabel);
-        if (!container) return;
-        
-        if (result.ok && result.data) {
-          const { columns, rows } = result.data;
-          
-          if (rows.length === 0) {
-            container.innerHTML = '<div class="empty-state">Tabel gol</div>';
-            return;
-          }
-          
-          let html = '<table class="data-table"><thead><tr>';
-          columns.forEach(col => {
-            html += `<th>${col}</th>`;
-          });
-          html += '</tr></thead><tbody>';
-          
-          rows.forEach(row => {
-            html += '<tr>';
-            columns.forEach(col => {
-              html += `<td>${row[col] || ''}</td>`;
-            });
-            html += '</tr>';
-          });
-          
-          html += '</tbody></table>';
-          container.innerHTML = html;
-        }
-      } catch (e) {
-        console.error("Table load error:", e);
+    function renderElement(el) {
+      switch(el.tip) {
+        case 'buton': return `<button class="btn btn-primary" style="margin:5px;">${el.nume}</button>`;
+        case 'dropdown':
+          const opts = el.optiuni ? el.optiuni.split(',').map(o => `<option>${o.trim()}</option>`).join('') : '';
+          return `<div style="margin:10px 0;"><label style="display:block;margin-bottom:5px;">${el.nume}</label><select class="chat-input" style="width:200px;">${opts}</select></div>`;
+        case 'checkbox': return `<label style="display:flex;align-items:center;gap:8px;margin:10px 0;cursor:pointer;"><input type="checkbox"><span>${el.nume}</span></label>`;
+        default: return `<div style="margin:10px 0;"><label style="display:block;margin-bottom:5px;">${el.nume}</label><input type="text" class="chat-input" style="width:100%;"></div>`;
       }
     }
 
-    // ===== GM PANEL =====
-    function showGMPanel() {
-      pageTitle.textContent = "GM Panel";
-      content.innerHTML = `
-        <div class="welcome-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-          <h2>⚙️ GM Panel</h2>
-          <p>Construiește aplicația pentru toate modurile: normal, admin, gm</p>
-        </div>
-        <div class="card">
-          <div class="card-title">Comenzi rapide</div>
-          <div style="font-size:13px;color:var(--text-soft);line-height:1.9;">
-            <b>Pagini (specifică unde):</b><br>
-            • <code>adaugă pagină Clienți 👥 în normal</code><br>
-            • <code>adaugă pagină Setări ⚙️ în admin</code><br>
-            • <code>adaugă pagină Debug 🔧 în gm</code><br>
-            • <code>șterge pagină NumePagină</code><br><br>
-            <b>Tabele:</b><br>
-            • <code>adaugă tabel Clienți cu Nume, Telefon, Email</code><br>
-            • <code>adaugă coloană Adresă în Clienți</code><br><br>
-            <b>Stiluri:</b><br>
-            • <code>culoare primară rosu</code><br>
-            • <code>titlu SuperParty Nou</code><br><br>
-            <b>Altele:</b><br>
-            • <code>structura</code> - vezi ce ai<br>
-            • <code>ajutor</code> - toate comenzile
-          </div>
-        </div>
-      `;
+    async function loadTableData(table) {
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadTable&table=" + table.numeTabel);
+        const data = await response.json();
+        const container = document.getElementById("table-" + table.numeTabel);
+        
+        if (data.ok && data.data.rows.length > 0) {
+          let html = '<table class="data-table"><thead><tr>';
+          data.data.headers.forEach(h => { html += `<th>${h}</th>`; });
+          html += '</tr></thead><tbody>';
+          data.data.rows.forEach(row => {
+            html += '<tr>';
+            row.forEach(cell => { html += `<td>${cell || ''}</td>`; });
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        } else {
+          container.innerHTML = '<div class="empty-state">Nicio înregistrare</div>';
+        }
+      } catch (e) {
+        document.getElementById("table-" + table.numeTabel).innerHTML = '<div class="empty-state">Eroare</div>';
+      }
     }
 
-    // ===== ADMIN PANEL =====
-    function showAdminPanel() {
-      pageTitle.textContent = "Admin Panel";
-      content.innerHTML = `
-        <div class="welcome-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-          <h2>🔐 Admin Panel</h2>
-          <p>Management și setări avansate</p>
-        </div>
-        <div class="card">
-          <div class="empty-state">Admin panel în dezvoltare</div>
-        </div>
-      `;
+    // ===== GM PAGES =====
+    async function showCreierAI() {
+      pageTitle.textContent = "Creier AI";
+      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
+        const data = await response.json();
+        
+        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);"><h2>🧠 Creier AI</h2><p>Tot ce știe AI-ul</p></div>';
+        
+        if (data.ok && data.data.length > 0) {
+          // Group by category
+          const grouped = {};
+          data.data.forEach(c => {
+            const cat = c.categorie || 'general';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(c);
+          });
+          
+          for (const cat in grouped) {
+            html += `<div class="card"><div class="card-title">${cat.toUpperCase()}</div>`;
+            grouped[cat].forEach(c => {
+              html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`;
+            });
+            html += '</div>';
+          }
+        } else {
+          html += '<div class="card"><div class="empty-state">AI-ul nu știe nimic încă.<br><br>Învață-l din chat: <code>învață: [informație]</code></div></div>';
+        }
+        
+        content.innerHTML = html;
+      } catch (e) {
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+      }
     }
 
-    // ===== MOBILE MENU =====
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.add("open");
-      overlay.classList.add("active");
-    });
+    async function showDeVerificat() {
+      pageTitle.textContent = "De verificat";
+      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
+        const data = await response.json();
+        
+        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><h2>✅ De verificat</h2><p>Cunoștințe de la utilizatori</p></div>';
+        
+        if (data.ok && data.data.length > 0) {
+          data.data.forEach(item => {
+            html += `<div class="card">
+              <div style="margin-bottom:10px;"><strong>Sursa:</strong> ${item.sursa}</div>
+              <div style="margin-bottom:15px;">${item.informatie}</div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" onclick="verificaCunostinta('${item.id}', 'aproba')">✅ Aprobă</button>
+                <button class="btn" style="background:#ef4444;color:white;" onclick="verificaCunostinta('${item.id}', 'respinge')">❌ Respinge</button>
+              </div>
+            </div>`;
+          });
+        } else {
+          html += '<div class="card"><div class="empty-state">Nimic de verificat! 🎉</div></div>';
+        }
+        
+        content.innerHTML = html;
+      } catch (e) {
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+      }
+    }
 
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("open");
-      overlay.classList.remove("active");
-    });
+    async function verificaCunostinta(id, actiune) {
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "verificaCunostinta", id: id, actiune: actiune })
+        });
+        showDeVerificat();
+      } catch (e) {}
+    }
 
     // ===== MODE UI =====
-    function updateModeUI() {
-      document.getElementById("modeLabel").textContent = 
-        currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
-      document.getElementById("chatModeLabel").textContent = 
-        document.getElementById("modeLabel").textContent;
-      document.getElementById("modeDot").classList.toggle("active", currentMode !== "standard");
-      
-      renderNav();
-    }
+    function updateModeUI() { renderNav(); }
 
-    // ===== CHAT =====
-    chatToggle.addEventListener("click", () => {
-      chatWindow.classList.toggle("hidden");
-      if (!chatWindow.classList.contains("hidden")) chatInput.focus();
-    });
-
-    function pushMessage(role, text) {
-      const div = document.createElement("div");
-      div.className = "chat-msg " + role;
-      div.innerHTML = text;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
+    // ===== MODE COMMANDS =====
     function handleModeCommands(text) {
       const lower = text.toLowerCase().trim();
 
@@ -775,8 +712,9 @@
         const pass = prompt("🔐 Parola Admin:");
         if (pass === ADMIN_PASSWORD) {
           currentMode = "admin";
+          editMode = false;
           updateModeUI();
-          pushMessage("ai", "✅ Mod <b>Admin</b> activat!");
+          pushMessage("ai", "✅ Mod <b>Admin</b> activat!<br><br>Poți face acțiuni directe (fără dovezi).<br><br>Pentru a edita structura: <code>deschide mod editare</code>");
         } else {
           pushMessage("ai", "❌ Parolă greșită!");
         }
@@ -787,22 +725,55 @@
         const pass = prompt("🔐 Parola GM:");
         if (pass === GM_PASSWORD) {
           currentMode = "gm";
+          editMode = false;
           updateModeUI();
-          pushMessage("ai", "✅ Mod <b>GM</b> activat!<br><br>Scrie <code>ajutor</code> pentru comenzi.");
+          pushMessage("ai", "✅ Mod <b>GM</b> activat!<br><br>Vezi în sidebar: Creier AI și De verificat.<br><br>Pentru a edita: <code>deschide mod editare</code>");
         } else {
           pushMessage("ai", "❌ Parolă greșită!");
         }
         return true;
       }
 
-      if (lower === "exit" || lower === "iesi" || lower.includes("iesi din mod")) {
+      if (lower === "deschide mod editare" || lower === "editare") {
+        if (currentMode === "admin" || currentMode === "gm") {
+          editMode = true;
+          pushMessage("ai", "✏️ <b>Mod editare activ!</b><br><br>" +
+            "<b>Învață:</b> <code>învață: Elsa costă 800 lei</code><br>" +
+            "<b>Pagini:</b> <code>adaugă pagină X în normal/admin/gm</code><br>" +
+            "<b>Tabele:</b> <code>adaugă tabel X cu Col1, Col2</code><br>" +
+            "<b>Scanări:</b> <code>adaugă scanare X cu Nume, Tel, Data</code><br>" +
+            "<b>Stiluri:</b> <code>culoare primară rosu</code><br><br>" +
+            "Când termini: <code>inchide mod editare</code>");
+        } else {
+          pushMessage("ai", "⚠️ Trebuie să fii în mod Admin sau GM.");
+        }
+        return true;
+      }
+
+      if (lower === "inchide mod editare" || lower === "gata") {
+        editMode = false;
+        pushMessage("ai", "✅ Mod editare închis. Vorbim normal!");
+        return true;
+      }
+
+      if (lower === "exit" || lower === "iesi") {
         currentMode = "standard";
+        editMode = false;
         updateModeUI();
-        pushMessage("ai", "👋 Mod Standard activat.");
+        pushMessage("ai", "👋 Ai ieșit din mod special.");
         return true;
       }
 
       return false;
+    }
+
+    // ===== CHAT =====
+    function pushMessage(type, html) {
+      const div = document.createElement("div");
+      div.className = "chat-msg " + type;
+      div.innerHTML = html;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     async function handleChatSend() {
@@ -814,52 +785,126 @@
 
       if (handleModeCommands(text)) return;
 
+      // Check for scan request
+      const scanRequest = detectScanRequest(text);
+      if (scanRequest && currentMode === "standard") {
+        openScanPopup(scanRequest.nume, "Scanează " + scanRequest.nume);
+        pushMessage("ai", "📷 Încarcă documentul pentru a continua.");
+        return;
+      }
+
+      // Check edit commands without edit mode
+      const lower = text.toLowerCase();
+      const isEditCmd = lower.includes("adaugă") || lower.includes("adauga") || lower.includes("șterge") || lower.includes("culoare") || lower.includes("titlu");
+      
+      if (isEditCmd && (currentMode === "admin" || currentMode === "gm") && !editMode) {
+        pushMessage("ai", "⚠️ Pentru a modifica, activează mai întâi:<br><code>deschide mod editare</code>");
+        return;
+      }
+
       pushMessage("ai", "⏳ Procesez...");
 
       try {
         let url = BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text);
+        
         if (currentMode === "gm") {
-          url += "&mode=gm&password=" + encodeURIComponent(GM_PASSWORD);
+          url += "&mode=gm&password=" + encodeURIComponent(GM_PASSWORD) + "&editMode=" + editMode;
+        } else if (currentMode === "admin") {
+          url += "&mode=admin&password=" + encodeURIComponent(ADMIN_PASSWORD);
         }
 
         const response = await fetch(url);
         const data = await response.json();
 
-        // Remove loading message
+        // Remove loading
         const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
         const last = msgs[msgs.length - 1];
-        if (last && last.textContent.includes("Procesez")) last.remove();
+        if (last?.textContent.includes("Procesez")) last.remove();
 
         if (data.ok && data.reply) {
-          let reply = data.reply
-            .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\n/g, '<br>');
+          let reply = data.reply.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
           pushMessage("ai", reply);
           
-          // Reload dacă s-a modificat ceva
-          if (data.reload) {
-            setTimeout(() => loadApp(), 500);
-          }
+          if (data.reload) setTimeout(() => loadApp(), 500);
+          if (data.requestUpload) openScanPopup(data.scanType, "Încarcă document");
         } else {
           pushMessage("ai", "⚠️ " + (data.error || "Eroare"));
         }
       } catch (e) {
         const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
         const last = msgs[msgs.length - 1];
-        if (last && last.textContent.includes("Procesez")) last.remove();
+        if (last?.textContent.includes("Procesez")) last.remove();
         pushMessage("ai", "⚠️ Eroare conexiune");
       }
     }
 
-    chatSend.addEventListener("click", handleChatSend);
-    chatInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") handleChatSend();
-    });
+    function detectScanRequest(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes("scanez") || lower.includes("notez") || lower.includes("încarcă") || lower.includes("vreau să")) {
+        const scans = appData.scanari || [];
+        for (const s of scans) {
+          if (lower.includes(s.nume.toLowerCase())) return s;
+        }
+        if (lower.includes("petrecere") || lower.includes("rezerv")) {
+          return { nume: "Petreceri", campuri: "Nume,Telefon,Data,Ora,Locatie" };
+        }
+      }
+      return null;
+    }
+
+    // ===== SCAN POPUP =====
+    function openScanPopup(scanType, title) {
+      currentScanType = scanType;
+      document.getElementById("scanPopupTitle").textContent = "📷 " + title;
+      scanPopup.classList.add("active");
+      overlay.classList.add("active");
+      uploadArea.style.display = "block";
+      scanStatus.style.display = "none";
+    }
+
+    function closeScanPopup() {
+      scanPopup.classList.remove("active");
+      overlay.classList.remove("active");
+    }
+
+    uploadArea.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
+
+    async function handleFileUpload(file) {
+      uploadArea.style.display = "none";
+      scanStatus.style.display = "block";
+      scanStatus.innerHTML = "⏳ Se scanează...";
+
+      try {
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "scanDocument", scanType: currentScanType, image: base64, fileName: file.name, mode: currentMode })
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          closeScanPopup();
+          pushMessage("ai", "✅ <b>Scanat și salvat!</b><br><br>" + data.message.replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'));
+          setTimeout(() => loadApp(), 500);
+        } else {
+          scanStatus.innerHTML = "❌ " + (data.error || "Eroare");
+        }
+      } catch (e) {
+        scanStatus.innerHTML = "❌ Eroare la încărcare";
+      }
+    }
 
     // ===== INIT =====
     loadApp();
-    updateModeUI();
     pushMessage("ai", "Salut! 👋 Sunt AI-ul SuperParty. Cu ce te pot ajuta?");
   </script>
 </body>
