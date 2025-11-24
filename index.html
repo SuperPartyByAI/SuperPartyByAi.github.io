@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty Test</title>
+  <title>SuperParty v2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
@@ -1411,6 +1411,7 @@
     // CONFIG FRONTEND - URL NOU ACTUALIZAT
     // =======================
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyfyw63pxz5z6hW0abaQXEvu1aU1OPSykc2v8Jz23-z2RFY14rw1zU90ETUEn8TLZXd/exec";
+    const GM_PASSWORD = "Gmandrei209512!";
 
     let currentPage = "home";
     let currentMode = "standard";
@@ -1586,11 +1587,15 @@
       pushAIMessage("⏳ Mă gândesc...");
 
       try {
-        // Trimite la backend (Apps Script) care vorbește cu GPT
-        const response = await fetch(BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text), {
-          method: "GET"
-        });
+        // Construiește URL-ul în funcție de mod
+        let url = BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text);
         
+        // Dacă suntem în GM mode, adaugă parametrii
+        if (currentMode === "gm") {
+          url += "&mode=gm&password=" + encodeURIComponent(GM_PASSWORD);
+        }
+        
+        const response = await fetch(url, { method: "GET" });
         const data = await response.json();
         
         // Șterge mesajul "se gândește"
@@ -1600,7 +1605,16 @@
         }
         
         if (data.ok && data.reply) {
-          pushAIMessage(data.reply);
+          // Formatează răspunsul (convertește **text** în bold)
+          let formattedReply = data.reply
+            .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+            .replace(/\n/g, '<br>');
+          pushAIMessage(formattedReply);
+          
+          // Dacă a fost o modificare, arată notificare
+          if (data.action === "modified") {
+            showNotification("✅ Modificare aplicată! Site-ul se actualizează...", "success");
+          }
         } else if (data.error) {
           pushAIMessage("⚠️ Eroare: " + data.error);
         } else {
@@ -1615,6 +1629,31 @@
         console.error("Chat error:", e);
         pushAIMessage("⚠️ Eroare la conectare cu AI-ul.");
       }
+    }
+
+    // Funcție pentru notificări
+    function showNotification(message, type) {
+      const notif = document.createElement("div");
+      notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: ${type === "success" ? "rgba(34, 197, 94, 0.9)" : "rgba(239, 68, 68, 0.9)"};
+        color: white;
+        border-radius: 10px;
+        z-index: 9999;
+        font-size: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+      `;
+      notif.textContent = message;
+      document.body.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.style.animation = "slideOut 0.3s ease";
+        setTimeout(() => notif.remove(), 300);
+      }, 4000);
     }
 
     chatSendBtn.addEventListener("click", handleChatSend);
