@@ -507,16 +507,64 @@
             const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
             if (firstPage) navigateTo(firstPage);
           }
+          
+          // PRELOAD toate datele în background
+          preloadAllData();
         }
       } catch (e) {
         if (showLoading) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare. <a href="#" onclick="loadApp()">Reîncearcă</a></div></div>';
       }
     }
     
+    // Preload toate datele pentru navigare instant
+    async function preloadAllData() {
+      // Preload conversații
+      if (!cache.conversatii) {
+        fetch(BACKEND_URL + "?action=loadConversatii")
+          .then(r => r.json())
+          .then(data => { if (data.ok) cache.conversatii = data.data; });
+      }
+      
+      // Preload reguli
+      if (!cache.reguli) {
+        fetch(BACKEND_URL + "?action=loadReguli")
+          .then(r => r.json())
+          .then(data => { if (data.ok) cache.reguli = data.data; });
+      }
+      
+      // Preload cunoștințe
+      if (!cache.cunostinte) {
+        fetch(BACKEND_URL + "?action=loadCunostinte")
+          .then(r => r.json())
+          .then(data => { if (data.ok) cache.cunostinte = data.data; });
+      }
+      
+      // Preload de verificat
+      if (!cache.deVerificat) {
+        fetch(BACKEND_URL + "?action=loadDeVerificat")
+          .then(r => r.json())
+          .then(data => { if (data.ok) cache.deVerificat = data.data; });
+      }
+      
+      // Preload toate tabelele
+      appData.tabele.forEach(table => {
+        if (!cache.tables[table.numeTabel]) {
+          fetch(BACKEND_URL + "?action=loadTable&table=" + table.numeTabel)
+            .then(r => r.json())
+            .then(data => { if (data.ok) cache.tables[table.numeTabel] = data.data; });
+        }
+      });
+    }
+    
     // Background refresh - doar actualizează datele, nu schimbă pagina
     setInterval(() => {
       if (document.visibilityState === 'visible') {
-        loadApp(false);
+        // Refresh cache în background
+        cache.conversatii = null;
+        cache.reguli = null;
+        cache.cunostinte = null;
+        cache.deVerificat = null;
+        preloadAllData();
       }
     }, CACHE_DURATION);
 
