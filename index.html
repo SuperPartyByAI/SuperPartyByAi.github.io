@@ -1501,19 +1501,33 @@
       status.innerHTML = '<span class="dot"></span> ' + (on ? "ON" : "OFF");
     }
 
+    // Parole pentru moduri
+    const ADMIN_PASSWORD = "Adminandrei209512!";
+    const GM_PASSWORD_LOCAL = "Gmandrei209512!";
+
     function handleModeCommands(textRaw) {
       const text = textRaw.trim().toLowerCase();
 
       if (text === "open mod andrei admin") {
-        currentMode = "admin";
-        updateModeUI();
-        pushAIMessage("✅ Am intrat în mod <b>Admin</b>. Ai acces la management utilizatori.");
+        const pass = prompt("🔐 Introdu parola pentru Admin:");
+        if (pass === ADMIN_PASSWORD) {
+          currentMode = "admin";
+          updateModeUI();
+          pushAIMessage("✅ Am intrat în mod <b>Admin</b>. Ai acces la management utilizatori.");
+        } else {
+          pushAIMessage("❌ Parolă greșită!");
+        }
         return true;
       }
       if (text === "open mod andrei gm") {
-        currentMode = "gm";
-        updateModeUI();
-        pushAIMessage("✅ Am intrat în mod <b>GM</b>. Poți vedea GM Panel și verificări AI.");
+        const pass = prompt("🔐 Introdu parola pentru GM:");
+        if (pass === GM_PASSWORD_LOCAL) {
+          currentMode = "gm";
+          updateModeUI();
+          pushAIMessage("✅ Am intrat în mod <b>GM</b>. Poți modifica aplicația din chat!");
+        } else {
+          pushAIMessage("❌ Parolă greșită!");
+        }
         return true;
       }
       if (text === "intra in mod logare") {
@@ -1528,7 +1542,7 @@
           updateModeUI();
           pushAIMessage("👋 Am ieșit din mod Admin.");
         } else {
-          // Removed message "Nu ești în mod Admin acum."
+          pushAIMessage("Nu ești în mod Admin acum.");
         }
         return true;
       }
@@ -1538,7 +1552,7 @@
           updateModeUI();
           pushAIMessage("👋 Am ieșit din mod GM.");
         } else {
-          // Removed message "Nu ești în mod GM acum."
+          pushAIMessage("Nu ești în mod GM acum.");
         }
         return true;
       }
