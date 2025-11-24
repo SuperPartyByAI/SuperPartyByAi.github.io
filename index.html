@@ -206,14 +206,17 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: var(--primary);
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       color: white;
       border: none;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(59,130,246,0.4);
       z-index: 200;
       transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .chat-toggle:hover { transform: scale(1.1); }
@@ -402,7 +405,7 @@
     </div>
   </main>
 
-  <button class="chat-toggle" id="chatToggle">💬</button>
+  <button class="chat-toggle" id="chatToggle">🤖</button>
 
   <div class="scan-popup" id="scanPopup">
     <button class="close-btn" onclick="closeScanPopup()">✕</button>
@@ -603,6 +606,11 @@
         document.title = s.app.title;
       }
       if (s.app?.logo) document.getElementById("logoIcon").textContent = s.app.logo;
+      
+      // Buton chat
+      if (s.chat?.button) {
+        document.getElementById("chatToggle").textContent = s.chat.button;
+      }
     }
 
     function shadeColor(color, percent) {
@@ -832,18 +840,26 @@
     }
 
     async function verificaCunostinta(id, actiune) {
-      // Optimistic update
-      if (cache.deVerificat) {
-        cache.deVerificat = cache.deVerificat.filter(item => item.id !== id);
-        renderDeVerificat(cache.deVerificat);
-      }
-      
       try {
         const url = BACKEND_URL + "?action=verificaCunostinta&id=" + encodeURIComponent(id) + "&actiune=" + encodeURIComponent(actiune);
-        await fetch(url);
-        cache.deVerificat = null;
-        cache.cunostinte = null; // Invalidează și cunoștințele dacă a fost aprobat
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă de verificat
+          const verResp = await fetch(BACKEND_URL + "?action=loadDeVerificat");
+          const verData = await verResp.json();
+          if (verData.ok) {
+            cache.deVerificat = verData.data;
+            renderDeVerificat(cache.deVerificat);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut verifica"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     // ===== REGULI FUNDAMENTALE =====
@@ -887,22 +903,31 @@
     }
 
     async function adaugaRegula() {
-      const regula = document.getElementById("regulaNoua").value.trim();
+      const input = document.getElementById("regulaNoua");
+      const regula = input ? input.value.trim() : "";
       if (!regula) return alert("Scrie o regulă!");
-      
-      // Optimistic update - adaugă instant în UI
-      if (cache.reguli) {
-        cache.reguli.push({ id: 'temp', regula: regula });
-        renderReguliFundamentale(cache.reguli);
-      }
       
       try {
         const url = BACKEND_URL + "?action=adaugaRegula&regula=" + encodeURIComponent(regula);
-        await fetch(url);
-        document.getElementById("regulaNoua").value = "";
-        cache.reguli = null; // Invalidează cache
-        showReguliFundamentale();
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            if (input) input.value = "";
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut adăuga"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     async function editeazaRegula(id, regulaVeche) {
@@ -911,27 +936,49 @@
       
       try {
         const url = BACKEND_URL + "?action=editeazaRegula&id=" + encodeURIComponent(id) + "&regula=" + encodeURIComponent(regulaNoua);
-        await fetch(url);
-        cache.reguli = null;
-        showReguliFundamentale();
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut edita"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     async function stergeRegula(id) {
       if (!confirm("Sigur ștergi această regulă?")) return;
       
-      // Optimistic update
-      if (cache.reguli) {
-        cache.reguli = cache.reguli.filter(r => r.id !== id);
-        renderReguliFundamentale(cache.reguli);
-      }
-      
       try {
         const url = BACKEND_URL + "?action=stergeRegula&id=" + encodeURIComponent(id);
-        await fetch(url);
-        cache.reguli = null;
-        showReguliFundamentale();
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut șterge"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     // ===== CONVERSAȚII =====
@@ -993,41 +1040,53 @@
     }
 
     async function marcheazaOK(id) {
-      // Optimistic update
-      if (cache.conversatii) {
-        const conv = cache.conversatii.find(c => c.id === id);
-        if (conv) conv.status = 'ok';
-        renderConversatii(cache.conversatii);
-      }
-      
       try {
         const url = BACKEND_URL + "?action=marcheazaOK&id=" + encodeURIComponent(id);
-        await fetch(url);
-        // Nu invalidăm cache-ul - păstrăm ce avem
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă conversațiile
+          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
+          const convData = await convResp.json();
+          if (convData.ok) {
+            cache.conversatii = convData.data;
+            renderConversatii(cache.conversatii);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut marca"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     async function corecteazaConversatie(id, mesajOriginal) {
       const corectie = prompt("Cum trebuia să răspundă AI-ul la:\n\"" + mesajOriginal + "\"");
       if (!corectie) return;
       
-      // Optimistic update
-      if (cache.conversatii) {
-        const conv = cache.conversatii.find(c => c.id === id);
-        if (conv) {
-          conv.status = 'corectat';
-          if (!conv.corectii) conv.corectii = [];
-          conv.corectii.push({ corectie: corectie, timestamp: new Date().toISOString() });
-        }
-        renderConversatii(cache.conversatii);
-      }
-      
       try {
         const url = BACKEND_URL + "?action=corecteazaConversatie&id=" + encodeURIComponent(id) + "&corectie=" + encodeURIComponent(corectie);
-        await fetch(url);
-        alert("✅ AI-ul a învățat din corecție!");
-        // Nu invalidăm cache-ul - păstrăm ce avem
-      } catch (e) { console.error(e); }
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          alert("✅ AI-ul a învățat din corecție!");
+          // Reîncarcă conversațiile
+          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
+          const convData = await convResp.json();
+          if (convData.ok) {
+            cache.conversatii = convData.data;
+            renderConversatii(cache.conversatii);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut corecta"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
     }
 
     // ===== MODE UI =====
