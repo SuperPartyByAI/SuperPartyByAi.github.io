@@ -771,26 +771,30 @@
     // ===== GM PAGES =====
     async function showCreierAI() {
       currentGMPage = "creier-ai";
+      currentPage = null;
       pageTitle.textContent = "Creier AI";
       
       // Arată din cache instant dacă există
       if (cache.cunostinte) {
         renderCreierAI(cache.cunostinte);
-      } else {
-        content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(4);
-        
-        // Încarcă
-        try {
-          const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
-          const data = await response.json();
-          if (data.ok && currentGMPage === "creier-ai") {
-            cache.cunostinte = data.data;
+        return; // STOP - nu mai încărca
+      }
+      
+      content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(4);
+      
+      // Încarcă doar dacă nu e în cache
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
+        const data = await response.json();
+        if (data.ok) {
+          cache.cunostinte = data.data;
+          if (currentGMPage === "creier-ai") { // Verifică dacă încă suntem pe această pagină
             renderCreierAI(data.data);
           }
-        } catch (e) {
-          if (currentGMPage === "creier-ai") {
-            content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-          }
+        }
+      } catch (e) {
+        if (currentGMPage === "creier-ai") {
+          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
         }
       }
     }
@@ -822,24 +826,28 @@
 
     async function showDeVerificat() {
       currentGMPage = "de-verificat";
+      currentPage = null;
       pageTitle.textContent = "De verificat";
       
       if (cache.deVerificat) {
         renderDeVerificat(cache.deVerificat);
-      } else {
-        content.innerHTML = '<div class="skeleton" style="height:100px;margin-bottom:15px;"></div>'.repeat(3);
-        
-        try {
-          const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
-          const data = await response.json();
-          if (data.ok && currentGMPage === "de-verificat") {
-            cache.deVerificat = data.data;
+        return;
+      }
+      
+      content.innerHTML = '<div class="skeleton" style="height:100px;margin-bottom:15px;"></div>'.repeat(3);
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
+        const data = await response.json();
+        if (data.ok) {
+          cache.deVerificat = data.data;
+          if (currentGMPage === "de-verificat") {
             renderDeVerificat(data.data);
           }
-        } catch (e) {
-          if (currentGMPage === "de-verificat") {
-            content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-          }
+        }
+      } catch (e) {
+        if (currentGMPage === "de-verificat") {
+          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
         }
       }
     }
@@ -883,24 +891,28 @@
     // ===== REGULI FUNDAMENTALE =====
     async function showReguliFundamentale() {
       currentGMPage = "reguli";
+      currentPage = null;
       pageTitle.textContent = "Reguli Fundamentale";
       
       if (cache.reguli) {
         renderReguliFundamentale(cache.reguli);
-      } else {
-        content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(3);
-        
-        try {
-          const response = await fetch(BACKEND_URL + "?action=loadReguli");
-          const data = await response.json();
-          if (data.ok && currentGMPage === "reguli") {
-            cache.reguli = data.data;
+        return;
+      }
+      
+      content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(3);
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadReguli");
+        const data = await response.json();
+        if (data.ok) {
+          cache.reguli = data.data;
+          if (currentGMPage === "reguli") {
             renderReguliFundamentale(data.data);
           }
-        } catch (e) {
-          if (currentGMPage === "reguli") {
-            content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-          }
+        }
+      } catch (e) {
+        if (currentGMPage === "reguli") {
+          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
         }
       }
     }
@@ -983,24 +995,28 @@
     // ===== CONVERSAȚII =====
     async function showConversatii() {
       currentGMPage = "conversatii";
+      currentPage = null;
       pageTitle.textContent = "Conversații";
       
       if (cache.conversatii) {
         renderConversatii(cache.conversatii);
-      } else {
-        content.innerHTML = '<div class="skeleton" style="height:120px;margin-bottom:15px;"></div>'.repeat(4);
-        
-        try {
-          const response = await fetch(BACKEND_URL + "?action=loadConversatii");
-          const data = await response.json();
-          if (data.ok && currentGMPage === "conversatii") {
-            cache.conversatii = data.data;
+        return;
+      }
+      
+      content.innerHTML = '<div class="skeleton" style="height:120px;margin-bottom:15px;"></div>'.repeat(4);
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadConversatii");
+        const data = await response.json();
+        if (data.ok) {
+          cache.conversatii = data.data;
+          if (currentGMPage === "conversatii") {
             renderConversatii(data.data);
           }
-        } catch (e) {
-          if (currentGMPage === "conversatii") {
-            content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-          }
+        }
+      } catch (e) {
+        if (currentGMPage === "conversatii") {
+          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
         }
       }
     }
