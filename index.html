@@ -1026,7 +1026,7 @@
                     <span class="icon">🎉</span>
                     Flux rapid Notează Petrecere
                   </div>
-                  <div class="card-subtitle">Poți și din chat: „vreau să notez o petrecere...”</div>
+                  <div class="card-subtitle">Poți și din chat: „vreau să notez o petrecere..."</div>
                 </div>
                 <span class="badge-soft pink">GPT Trigger</span>
               </div>
@@ -1038,7 +1038,7 @@
                   </code>
                 </div>
                 <button class="btn-xs primary" id="openNoteazaFromHome">
-                  Deschide „Notează Eveniment”
+                  Deschide „Notează Eveniment"
                 </button>
               </div>
             </div>
@@ -1210,7 +1210,7 @@
               </div>
             </div>
             <div class="muted">
-              Poate fi conectat ulterior la alt sheet / modul „Inventar”.
+              Poate fi conectat ulterior la alt sheet / modul „Inventar".
             </div>
           </div>
         </div>
@@ -1341,85 +1341,7 @@
 
               <!-- TAB 4: Verificări AI -->
               <div class="gm-panel" id="gm-verificari">
-                <div class="grid grid-3">
-                  <!-- A) Poze Analizate -->
-                  <div>
-                    <div class="card-subtitle" style="margin-bottom:4px;">📸 Poze Analizate</div>
-                    <div class="pill-filter">
-                      <span>Filtru:</span>
-                      <select>
-                        <option>Toate</option>
-                        <option>Neverificate</option>
-                        <option>Verificate</option>
-                      </select>
-                      <button>Refresh</button>
-                    </div>
-                    <table class="table-like">
-                      <thead>
-                        <tr><th>Poză</th><th>Status</th><th>Acțiuni</th></tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td class="muted">placeholder</td>
-                          <td><span class="badge-soft">⏳ Așteaptă</span></td>
-                          <td>
-                            <button class="btn-xs green">✅ E Corect</button>
-                            <button class="btn-xs yellow">✏️ Corectează</button>
-                            <button class="btn-xs blue">🔄 Re-scan</button>
-                            <button class="btn-xs">📋 Istoric</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- B) Salarii -->
-                  <div>
-                    <div class="card-subtitle" style="margin-bottom:4px;">💰 Salarii Calculate</div>
-                    <table class="table-like">
-                      <thead>
-                        <tr><th>Animator</th><th>Sumă</th><th>Status</th><th>Acțiuni</th></tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>Andrei</td>
-                          <td>720 lei</td>
-                          <td><span class="badge-soft">⏳ Așteaptă</span></td>
-                          <td>
-                            <button class="btn-xs green">✅ Aprobă</button>
-                            <button class="btn-xs yellow">✏️ Modifică</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- C) Roluri -->
-                  <div>
-                    <div class="card-subtitle" style="margin-bottom:4px;">🎭 Roluri Distribuite</div>
-                    <table class="table-like">
-                      <thead>
-                        <tr><th>Petrecere</th><th>Echipă propusă</th><th>Status</th><th>Acțiuni</th></tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>#001</td>
-                          <td>
-                            Elsa (⭐4.8, 32 evenimente)<br />
-                            Spiderman (⭐4.6, 21 evenimente)<br />
-                            <span class="muted">🤖 DE CE A ALES AI ACEASTĂ ECHIPĂ: proximitate, rating, experiență.</span>
-                          </td>
-                          <td><span class="badge-soft">⏳ Așteaptă</span></td>
-                          <td>
-                            <button class="btn-xs green">✅ Aprobă Echipa</button>
-                            <button class="btn-xs yellow">✏️ Modifică Logica AI</button>
-                            <button class="btn-xs blue">↔️ Schimbă Animatori</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <div class="muted">Secțiune pentru verificări AI - în dezvoltare.</div>
               </div>
 
               <!-- TAB 5: Analytics -->
@@ -1442,26 +1364,7 @@
 
               <!-- TAB 6: Training -->
               <div class="gm-panel" id="gm-training">
-                <div class="card-subtitle" style="margin-bottom:4px;">⚙️ Training AI</div>
-                <div class="muted" style="margin-bottom:6px;">
-                  În viitor: aici vor apărea întrebările noi detectate care necesită training, plus butoane:
-                  ✅ Adaugă în KB, ❌ Ignoră.
-                </div>
-                <table class="table-like">
-                  <thead>
-                    <tr><th>Întrebare</th><th>Propunere răspuns</th><th>Acțiuni</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>„Faceți și petreceri tematice cu dinozauri?”</td>
-                      <td class="muted">Răspuns propus de AI...</td>
-                      <td>
-                        <button class="btn-xs green">✅ Adaugă în KB</button>
-                        <button class="btn-xs">❌ Ignoră</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="muted">Secțiune pentru training AI - în dezvoltare.</div>
               </div>
             </div>
           </div>
@@ -1497,23 +1400,22 @@
         <button id="chatSendBtn">Trimite</button>
       </div>
       <div class="chat-hints">
-        <span>💡 ex: „open mod andrei admin”</span>
-        <span>💡 ex: „vreau să notez o petrecere...”</span>
+        <span>💡 ex: „ce servicii oferiți?"</span>
+        <span>💡 ex: „vreau să notez o petrecere..."</span>
       </div>
     </div>
   </div>
 
   <script>
     // =======================
-    // CONFIG FRONTEND
+    // CONFIG FRONTEND - URL NOU ACTUALIZAT
     // =======================
-    const BACKEND_URL =
-      "https://script.google.com/macros/s/AKfycbz03ZJQ_U5dGCb6a_IhOfrZkOYGou5ZmeojLCFghc5cY0JKCZXsjFWigQD77Vxp7A5E/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyfyw63pxz5z6hW0abaQXEvu1aU1OPSykc2v8Jz23-z2RFY14rw1zU90ETUEn8TLZXd/exec";
 
     let currentPage = "home";
-    let currentMode = "standard"; // "admin" | "gm" | "login"
+    let currentMode = "standard";
     let sessionId = "sess-" + Math.random().toString(36).slice(2);
-    let loggedUser = null; // {id,name,email,role}
+    let loggedUser = null;
 
     // =======================
     // GENERIC BACKEND CALL
@@ -1533,8 +1435,7 @@
         return data.data;
       } catch (e) {
         console.error("callBackend failed", e);
-        document.getElementById("backendStatusLabel").textContent =
-          "Eroare backend";
+        document.getElementById("backendStatusLabel").textContent = "Eroare backend";
         return null;
       }
     }
@@ -1552,42 +1453,17 @@
 
     function setActivePage(page) {
       currentPage = page;
-      document
-        .querySelectorAll(".nav-item")
-        .forEach((el) => el.classList.remove("active"));
-      document
-        .querySelector('.nav-item[data-page="' + page + '"]')
-        ?.classList.add("active");
-
-      document.querySelectorAll(".page").forEach((p) =>
-        p.classList.remove("active")
-      );
+      document.querySelectorAll(".nav-item").forEach((el) => el.classList.remove("active"));
+      document.querySelector('.nav-item[data-page="' + page + '"]')?.classList.add("active");
+      document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
       document.getElementById("page-" + page)?.classList.add("active");
-
-      // când schimbăm pagina, putem trage refresh de date
-      if (page === "home") {
-        loadStatsAndTopQuestions();
-      } else if (
-        page === "nealocate" ||
-        page === "ce-am" ||
-        page === "total"
-      ) {
-        loadPetreceriOverview();
-      } else if (page === "echipa" || page === "admin-users") {
-        loadUsersTables();
-      } else if (page === "gm-panel") {
-        loadGMData();
-      }
     }
 
-    document
-      .getElementById("openNoteazaFromHome")
-      .addEventListener("click", () => setActivePage("noteaza"));
+    document.getElementById("openNoteazaFromHome").addEventListener("click", () => setActivePage("noteaza"));
 
     // =======================
     // MODURI (ADMIN / GM / LOGARE)
     // =======================
-
     function updateModeUI() {
       const label = document.getElementById("currentModeLabel");
       const status = document.getElementById("currentModeStatus");
@@ -1619,10 +1495,9 @@
 
       label.textContent = modeText;
       chatLabel.textContent = modeText;
-
       status.classList.toggle("on", on);
       status.classList.toggle("off", !on);
-      status.innerHTML = `<span class="dot"></span> ${on ? "ON" : "OFF"}`;
+      status.innerHTML = '<span class="dot"></span> ' + (on ? "ON" : "OFF");
     }
 
     function handleModeCommands(textRaw) {
@@ -1631,25 +1506,19 @@
       if (text === "open mod andrei admin") {
         currentMode = "admin";
         updateModeUI();
-        pushAIMessage(
-          "✅ Am intrat în mod <b>Admin</b>. Ai acces la management utilizatori."
-        );
+        pushAIMessage("✅ Am intrat în mod <b>Admin</b>. Ai acces la management utilizatori.");
         return true;
       }
       if (text === "open mod andrei gm") {
         currentMode = "gm";
         updateModeUI();
-        pushAIMessage(
-          "✅ Am intrat în mod <b>GM</b>. Poți vedea GM Panel și verificări AI."
-        );
+        pushAIMessage("✅ Am intrat în mod <b>GM</b>. Poți vedea GM Panel și verificări AI.");
         return true;
       }
       if (text === "intra in mod logare") {
         currentMode = "login";
         updateModeUI();
-        pushAIMessage(
-          "🔐 Am intrat în mod <b>Logare</b>. Putem conecta UI-ul la un user din Echipa."
-        );
+        pushAIMessage("🔐 Am intrat în mod <b>Logare</b>. Putem conecta UI-ul la un user din Echipa.");
         return true;
       }
       if (text === "iesi din mod admin") {
@@ -1672,7 +1541,6 @@
         }
         return true;
       }
-
       return false;
     }
 
@@ -1695,14 +1563,7 @@
     function pushMessage(role, text) {
       const div = document.createElement("div");
       div.className = "chat-msg " + (role === "user" ? "user" : "ai");
-      div.innerHTML = `<div>${text}</div>
-        <div class="chat-meta">
-          <span>${role === "user" ? "Tu" : "AI"}</span>
-          <span>${new Date().toLocaleTimeString("ro-RO", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}</span>
-        </div>`;
+      div.innerHTML = '<div>' + text + '</div><div class="chat-meta"><span>' + (role === "user" ? "Tu" : "AI") + '</span><span>' + new Date().toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" }) + '</span></div>';
       chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -1717,24 +1578,43 @@
       chatInput.value = "";
       pushMessage("user", text);
 
-      // 1) salvăm conversația în backend
-      saveConversationToBackend(text, "user");
-
-      // 2) verificăm comenzi mod
       if (handleModeCommands(text)) {
         return;
       }
 
-      // 3) trigger logică petrecere
-      if (text.toLowerCase().startsWith("vreau să notez o petrecere")) {
-        await handleCreatePetrecereFromText(text);
-        return;
-      }
+      // Afișează "se gândește..."
+      pushAIMessage("⏳ Mă gândesc...");
 
-      // 4) fallback: răspuns AI dummy (deocamdată)
-      pushAIMessage(
-        "Am notat mesajul și l-am trimis în Creier AI. În implementarea următoare putem conecta și un model GPT pentru răspunsuri inteligente."
-      );
+      try {
+        // Trimite la backend (Apps Script) care vorbește cu GPT
+        const response = await fetch(BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text), {
+          method: "GET"
+        });
+        
+        const data = await response.json();
+        
+        // Șterge mesajul "se gândește"
+        const lastMsg = chatMessages.lastElementChild;
+        if (lastMsg && lastMsg.textContent.includes("gândesc")) {
+          lastMsg.remove();
+        }
+        
+        if (data.ok && data.reply) {
+          pushAIMessage(data.reply);
+        } else if (data.error) {
+          pushAIMessage("⚠️ Eroare: " + data.error);
+        } else {
+          pushAIMessage("⚠️ Nu am primit răspuns de la AI.");
+        }
+      } catch (e) {
+        // Șterge mesajul "se gândește"
+        const lastMsg = chatMessages.lastElementChild;
+        if (lastMsg && lastMsg.textContent.includes("gândesc")) {
+          lastMsg.remove();
+        }
+        console.error("Chat error:", e);
+        pushAIMessage("⚠️ Eroare la conectare cu AI-ul.");
+      }
     }
 
     chatSendBtn.addEventListener("click", handleChatSend);
@@ -1743,355 +1623,25 @@
     });
 
     // =======================
-    // SAVE CONVERSATION
+    // GM Tabs
     // =======================
-    async function saveConversationToBackend(message, from) {
-      const payload = {
-        sessionId,
-        userId: loggedUser?.id || "",
-        userName: loggedUser?.name || "Guest",
-        loggedIn: !!loggedUser,
-        from,
-        message,
-        mode: currentMode,
-        meta: {
-          page: currentPage,
-          ts: new Date().toISOString(),
-        },
-      };
-      await callBackend("saveConversation", payload);
-    }
-
-    // =======================
-    // PARSARE MESAJ "VREAU SĂ NOTEZ O PETRECERE..."
-    // =======================
-    async function handleCreatePetrecereFromText(text) {
-      pushAIMessage("📆 Detectez că vrei să notezi o petrecere. Lucrez...");
-
-      const lower = text.toLowerCase();
-      const phrase = "vreau să notez o petrecere";
-      let descriere = text;
-
-      const idx = lower.indexOf(phrase);
-      if (idx !== -1) {
-        descriere = text.substring(idx + phrase.length).trim();
-      }
-
-      const detalii = {
-        textOriginal: text,
-      };
-
-      const payload = {
-        descriere: descriere || text,
-        createdBy: loggedUser?.id || "Guest",
-        status: "Nealocată",
-        detalii,
-      };
-
-      const data = await callBackend("createPetrecere", payload);
-      if (data && data.petrecereId) {
-        pushAIMessage(
-          `✅ Am creat petrecerea cu ID <b>${data.petrecereId}</b> în Google Sheets (tab Petreceri).`
-        );
-        // reîncarcăm overview
-        loadPetreceriOverview();
-      } else {
-        pushAIMessage("⚠️ Nu am reușit să creez petrecerea (eroare backend).");
-      }
-    }
-
-    // =======================
-    // NOTEAZĂ EVENIMENT – FORM
-    // =======================
-    document
-      .getElementById("btnCreatePetrecereForm")
-      .addEventListener("click", async () => {
-        const descriere = document.getElementById("noteazaDescriere").value;
-        const detaliiText = document.getElementById("noteazaDetalii").value;
-        const statusSpan = document.getElementById("noteazaStatus");
-        let detalii = {};
-        try {
-          detalii = JSON.parse(detaliiText || "{}");
-        } catch {
-          detalii = { raw: detaliiText };
-        }
-
-        statusSpan.textContent = "Se salvează...";
-        const data = await callBackend("createPetrecere", {
-          descriere,
-          createdBy: loggedUser?.id || "Form",
-          status: "Nealocată",
-          detalii,
-        });
-        if (data && data.petrecereId) {
-          statusSpan.textContent =
-            "✅ Creată cu ID " + data.petrecereId + " în Petreceri.";
-          // optional: clear
-          // document.getElementById('noteazaDescriere').value = '';
-        } else {
-          statusSpan.textContent = "⚠️ Eroare la creare.";
-        }
-        loadPetreceriOverview();
-      });
-
-    // =======================
-    // STATS & TOP QUESTIONS
-    // =======================
-    async function loadStatsAndTopQuestions() {
-      const stats = await callBackend("getStats", {});
-      if (stats) {
-        document.getElementById("aiAccuracyValue").textContent =
-          stats.aiAccuracyPercent + "%";
-        document.getElementById(
-          "aiAccuracyBadge"
-        ).textContent = stats.aiAccuracyPercent + "% OK";
-        document.getElementById("timeSavedValue").textContent =
-          stats.timeSavedMinutes + " min";
-        document.getElementById("totalMessagesValue").textContent =
-          stats.totalMessages;
-        document.getElementById("totalConversationsValue").textContent =
-          stats.totalConversations;
-        document.getElementById("uniqueUsersValue").textContent =
-          stats.uniqueLoggedUsers;
-        document.getElementById("gmAiAccuracy").textContent =
-          stats.aiAccuracyPercent + "%";
-        document.getElementById("gmAvgResponse").textContent =
-          stats.avgResponseTimeSec + "s";
-        document.getElementById("gmTimeSaved").textContent =
-          stats.timeSavedMinutes + " min";
-      }
-
-      const top = await callBackend("getTopQuestions", {});
-      const list = document.getElementById("trendingTopicsList");
-      list.innerHTML = "";
-      if (!top || top.length === 0) {
-        list.innerHTML = '<li class="muted">Nu există încă întrebări populare.</li>';
-      } else {
-        top.slice(0, 3).forEach((q, idx) => {
-          const li = document.createElement("li");
-          li.className = "list-item";
-          li.innerHTML = `
-            <div class="list-item-main">
-              <span>#${idx + 1} – ${q.question}</span>
-              <span class="muted">${q.count} repetiții</span>
-            </div>
-          `;
-          list.appendChild(li);
-        });
-      }
-    }
-
-    // =======================
-    // PETRECERI OVERVIEW
-    // =======================
-    async function loadPetreceriOverview() {
-      const petreceri = await callBackend("getPetreceri", {});
-      if (!petreceri) return;
-
-      const tbodyNealocate = document.querySelector(
-        "#tableNealocate tbody"
-      );
-      const tbodyCeAm = document.querySelector("#tableCeAm tbody");
-
-      tbodyNealocate.innerHTML = "";
-      tbodyCeAm.innerHTML = "";
-
-      let total = petreceri.length;
-      let nealocate = 0;
-      let cuPersonaje = 0; // placeholder (în viitor cu join la personaje)
-
-      petreceri.forEach((p) => {
-        const detalii =
-          typeof p.detalii === "object"
-            ? JSON.stringify(p.detalii)
-            : p.DetaliiJson || "";
-
-        const trAll = document.createElement("tr");
-        trAll.innerHTML = `
-          <td>${p.PetrecereId}</td>
-          <td>${p.Descriere || ""}</td>
-          <td>${p.Status || ""}</td>
-          <td class="muted">${detalii}</td>
-        `;
-        tbodyCeAm.appendChild(trAll);
-
-        if ((p.Status || "").toLowerCase() === "nealocată") {
-          nealocate++;
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${p.PetrecereId}</td>
-            <td>${p.Descriere || ""}</td>
-            <td>${p.Status || ""}</td>
-            <td class="muted">${detalii}</td>
-          `;
-          tbodyNealocate.appendChild(tr);
-        }
-      });
-
-      document.getElementById("totalPetreceriCount").textContent = total;
-      document.getElementById("totalNealocateCount").textContent = nealocate;
-      document.getElementById("totalCuPersonajeCount").textContent =
-        cuPersonaje;
-    }
-
-    // =======================
-    // USERS TABLES
-    // =======================
-    async function loadUsersTables() {
-      const users = await callBackend("getAllUsers", {});
-      if (!users) return;
-
-      const tbodyEchipa = document.querySelector("#tableEchipa tbody");
-      const tbodyAdmin = document.querySelector("#tableAdminUsers tbody");
-      tbodyEchipa.innerHTML = "";
-      tbodyAdmin.innerHTML = "";
-
-      users.forEach((u) => {
-        const rowHtml = `
-          <td>${u.ID}</td>
-          <td>${u.Nume}</td>
-          <td>${u.Email}</td>
-          <td>${u.Rol}</td>
-          <td>${u.Aprobat}</td>
-          <td>${u.Blocat}</td>
-        `;
-
-        const tr1 = document.createElement("tr");
-        tr1.innerHTML = rowHtml;
-        tbodyEchipa.appendChild(tr1);
-
-        const tr2 = document.createElement("tr");
-        tr2.innerHTML =
-          rowHtml +
-          `<td>
-            <button class="btn-xs green" onclick="approveUser('${u.ID}')">Aprobă</button>
-            <button class="btn-xs" onclick="blockUser('${u.ID}')">Blochează</button>
-          </td>`;
-        tbodyAdmin.appendChild(tr2);
-      });
-    }
-
-    window.approveUser = async function (id) {
-      await callBackend("approveUser", { userId: id });
-      loadUsersTables();
-    };
-
-    window.blockUser = async function (id) {
-      await callBackend("blockUser", { userId: id });
-      loadUsersTables();
-    };
-
-    // =======================
-    // GM DATA (CONVERSAȚII + GUESTS)
-    // =======================
-    async function loadGMData() {
-      const convs = await callBackend("getConversations", { limit: 100 });
-      const tbodyC = document.querySelector("#tableGMConversations tbody");
-      tbodyC.innerHTML = "";
-      if (!convs || convs.length === 0) {
-        tbodyC.innerHTML =
-          '<tr><td colspan="6" class="muted">Nu există conversații.</td></tr>';
-      } else {
-        convs.forEach((c) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${c.Timestamp || ""}</td>
-            <td>${c.SessionId || ""}</td>
-            <td>${c.UserName || ""}</td>
-            <td>${c.From || ""}</td>
-            <td>${c.Message || ""}</td>
-            <td>${c.IsLoggedIn ? "Da" : "Nu"}</td>
-          `;
-          tbodyC.appendChild(tr);
-        });
-      }
-
-      const guests = await callBackend("getUnloggedUsers", {});
-      const tbodyG = document.querySelector("#tableGMGuests tbody");
-      tbodyG.innerHTML = "";
-      if (!guests || guests.length === 0) {
-        tbodyG.innerHTML =
-          '<tr><td colspan="4" class="muted">Nu există sesiuni nelogate.</td></tr>';
-      } else {
-        guests.forEach((g) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${g.sessionId}</td>
-            <td>${g.firstVisit}</td>
-            <td>${g.lastVisit}</td>
-            <td>${g.conversationsCount}</td>
-          `;
-          tbodyG.appendChild(tr);
-        });
-      }
-
-      // calcul simplu "utilizatori logați" bazat pe conversații
-      const mapLogged = {};
-      if (convs) {
-        convs.forEach((c) => {
-          if (c.UserId) {
-            if (!mapLogged[c.UserId])
-              mapLogged[c.UserId] = {
-                userId: c.UserId,
-                userName: c.UserName,
-                count: 0,
-              };
-            mapLogged[c.UserId].count++;
-          }
-        });
-      }
-      const tbodyL = document.querySelector("#tableGMLogged tbody");
-      tbodyL.innerHTML = "";
-      const listLogged = Object.values(mapLogged);
-      if (listLogged.length === 0) {
-        tbodyL.innerHTML =
-          '<tr><td colspan="3" class="muted">Nu există conversații cu utilizatori logați.</td></tr>';
-      } else {
-        listLogged.forEach((u) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${u.userName || u.userId}</td>
-            <td>${u.count}</td>
-            <td><button class="btn-xs primary">💬 Vezi Istoric</button></td>
-          `;
-          tbodyL.appendChild(tr);
-        });
-      }
-    }
-
-    // GM Tabs switching
     document.querySelectorAll(".gm-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const tab = btn.getAttribute("data-gm-tab");
-        document
-          .querySelectorAll(".gm-tab-btn")
-          .forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".gm-tab-btn").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-
-        document.querySelectorAll(".gm-panel").forEach((p) =>
-          p.classList.remove("active")
-        );
+        document.querySelectorAll(".gm-panel").forEach((p) => p.classList.remove("active"));
         document.getElementById(tab)?.classList.add("active");
-
-        if (tab === "gm-conversatii" || tab === "gm-nelogati" || tab === "gm-logati") {
-          loadGMData();
-        }
       });
     });
 
     // =======================
     // INIT
     // =======================
-    (async function init() {
+    (function init() {
       updateModeUI();
-      await loadStatsAndTopQuestions();
-      await loadPetreceriOverview();
-      await loadUsersTables();
-      document.getElementById("backendStatusLabel").textContent =
-        "Backend conectat ✔";
-      pushAIMessage(
-        "Salut! Sunt Creierul AI SuperParty. Poți să mă întrebi orice sau să tastezi o comandă: <br/><code>open mod andrei admin</code>, <code>open mod andrei gm</code>, sau <code>vreau să notez o petrecere...</code>."
-      );
+      document.getElementById("backendStatusLabel").textContent = "Backend conectat ✔";
+      pushAIMessage("Salut! Sunt Creierul AI SuperParty. Cu ce te pot ajuta?");
     })();
   </script>
 </body>
