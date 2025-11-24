@@ -533,6 +533,8 @@
         });
         html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon">🧠</span><span>Creier AI</span></div>`;
         html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon">✅</span><span>De verificat</span></div>`;
+        html += `<div class="nav-item" data-page-id="reguli-fundamentale"><span class="icon">🔒</span><span>Reguli Fundamentale</span></div>`;
+        html += `<div class="nav-item" data-page-id="conversatii"><span class="icon">💬</span><span>Conversații</span></div>`;
         html += '</div>';
       }
 
@@ -545,6 +547,8 @@
           
           if (pageId === "creier-ai") showCreierAI();
           else if (pageId === "de-verificat") showDeVerificat();
+          else if (pageId === "reguli-fundamentale") showReguliFundamentale();
+          else if (pageId === "conversatii") showConversatii();
           else {
             const page = appData.pagini.find(p => String(p.id) === pageId);
             if (page) navigateTo(page);
@@ -698,6 +702,152 @@
           body: JSON.stringify({ action: "verificaCunostinta", id: id, actiune: actiune })
         });
         showDeVerificat();
+      } catch (e) {}
+    }
+
+    // ===== REGULI FUNDAMENTALE =====
+    async function showReguliFundamentale() {
+      pageTitle.textContent = "Reguli Fundamentale";
+      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadReguli");
+        const data = await response.json();
+        
+        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><h2>🔒 Reguli Fundamentale</h2><p>Reguli pe care AI-ul le respectă MEREU</p></div>';
+        
+        html += '<div class="card"><div class="card-title">Adaugă Regulă Nouă</div>';
+        html += '<div style="display:flex;gap:10px;"><input type="text" id="regulaNoua" class="chat-input" style="flex:1;" placeholder="Ex: Întotdeauna salută clientul cu Bună ziua!">';
+        html += '<button class="btn btn-primary" onclick="adaugaRegula()">+ Adaugă</button></div></div>';
+        
+        html += '<div class="card"><div class="card-title">Reguli Active</div>';
+        
+        if (data.ok && data.data.length > 0) {
+          data.data.forEach((r, idx) => {
+            html += `<div style="padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+              <div><strong>#${idx + 1}</strong> &nbsp; "${r.regula}"</div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${r.regula.replace(/'/g, "\\'")}')">✏️</button>
+                <button class="btn" style="padding:5px 10px;font-size:12px;background:#ef4444;color:white;" onclick="stergeRegula('${r.id}')">🗑️</button>
+              </div>
+            </div>`;
+          });
+        } else {
+          html += '<div class="empty-state">Nicio regulă încă.<br>Adaugă prima regulă!</div>';
+        }
+        
+        html += '</div>';
+        content.innerHTML = html;
+      } catch (e) {
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+      }
+    }
+
+    async function adaugaRegula() {
+      const regula = document.getElementById("regulaNoua").value.trim();
+      if (!regula) return alert("Scrie o regulă!");
+      
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "adaugaRegula", regula: regula })
+        });
+        showReguliFundamentale();
+      } catch (e) {}
+    }
+
+    async function editeazaRegula(id, regulaVeche) {
+      const regulaNoua = prompt("Editează regula:", regulaVeche);
+      if (!regulaNoua || regulaNoua === regulaVeche) return;
+      
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "editeazaRegula", id: id, regula: regulaNoua })
+        });
+        showReguliFundamentale();
+      } catch (e) {}
+    }
+
+    async function stergeRegula(id) {
+      if (!confirm("Sigur ștergi această regulă?")) return;
+      
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "stergeRegula", id: id })
+        });
+        showReguliFundamentale();
+      } catch (e) {}
+    }
+
+    // ===== CONVERSAȚII =====
+    async function showConversatii() {
+      pageTitle.textContent = "Conversații";
+      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadConversatii");
+        const data = await response.json();
+        
+        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><h2>💬 Conversații</h2><p>Tot ce a întrebat oricine</p></div>';
+        
+        if (data.ok && data.data.length > 0) {
+          data.data.forEach((c, idx) => {
+            const timestamp = new Date(c.timestamp).toLocaleString('ro-RO');
+            const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
+            const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
+            
+            html += `<div class="card" style="${statusClass}">
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                <strong>#${idx + 1}</strong>
+                <span style="color:var(--text-soft);font-size:12px;">${statusIcon} ${timestamp} | ${c.user} (${c.mod})</span>
+              </div>
+              <div style="margin-bottom:8px;"><strong>User:</strong> "${c.mesaj}"</div>
+              <div style="margin-bottom:12px;color:var(--text-soft);"><strong>AI:</strong> "${c.raspuns ? c.raspuns.substring(0, 200) : ''}${c.raspuns && c.raspuns.length > 200 ? '...' : ''}"</div>
+              ${c.status !== 'ok' && c.status !== 'corectat' ? `
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>
+                <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ Corectează</button>
+              </div>` : ''}
+            </div>`;
+          });
+        } else {
+          html += '<div class="card"><div class="empty-state">Nicio conversație încă.</div></div>';
+        }
+        
+        content.innerHTML = html;
+      } catch (e) {
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+      }
+    }
+
+    async function marcheazaOK(id) {
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "marcheazaOK", id: id })
+        });
+        showConversatii();
+      } catch (e) {}
+    }
+
+    async function corecteazaConversatie(id, mesajOriginal) {
+      const corectie = prompt("Cum trebuia să răspundă AI-ul la:\n\"" + mesajOriginal + "\"");
+      if (!corectie) return;
+      
+      try {
+        await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "corecteazaConversatie", id: id, corectie: corectie })
+        });
+        showConversatii();
+        alert("✅ AI-ul a învățat din corecție!");
       } catch (e) {}
     }
 
