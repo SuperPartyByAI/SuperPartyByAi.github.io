@@ -584,16 +584,8 @@
       }
     }
     
-    // Background refresh - DOAR cache, NICIODATĂ nu schimbă pagina
-    setInterval(() => {
-      if (document.visibilityState === 'visible' && initialLoadDone) {
-        // Refresh silent în background
-        fetch(BACKEND_URL + "?action=loadConversatii").then(r => r.json()).then(d => { if(d.ok) cache.conversatii = d.data; }).catch(()=>{});
-        fetch(BACKEND_URL + "?action=loadReguli").then(r => r.json()).then(d => { if(d.ok) cache.reguli = d.data; }).catch(()=>{});
-        fetch(BACKEND_URL + "?action=loadCunostinte").then(r => r.json()).then(d => { if(d.ok) cache.cunostinte = d.data; }).catch(()=>{});
-        fetch(BACKEND_URL + "?action=loadDeVerificat").then(r => r.json()).then(d => { if(d.ok) cache.deVerificat = d.data; }).catch(()=>{});
-      }
-    }, CACHE_DURATION);
+    // Background refresh DEZACTIVAT - totul e din cache-ul inițial
+    // Pentru date noi, utilizatorul dă refresh la pagină
 
     // ===== APPLY STYLES =====
     function applyStyles() {
@@ -769,33 +761,15 @@
     }
 
     // ===== GM PAGES =====
-    async function showCreierAI() {
+    function showCreierAI() {
       currentGMPage = "creier-ai";
       currentPage = null;
       pageTitle.textContent = "Creier AI";
       
-      // Arată din cache instant dacă există
       if (cache.cunostinte) {
         renderCreierAI(cache.cunostinte);
-        return; // STOP - nu mai încărca
-      }
-      
-      content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(4);
-      
-      // Încarcă doar dacă nu e în cache
-      try {
-        const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
-        const data = await response.json();
-        if (data.ok) {
-          cache.cunostinte = data.data;
-          if (currentGMPage === "creier-ai") { // Verifică dacă încă suntem pe această pagină
-            renderCreierAI(data.data);
-          }
-        }
-      } catch (e) {
-        if (currentGMPage === "creier-ai") {
-          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-        }
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
       }
     }
     
@@ -824,31 +798,15 @@
       content.innerHTML = html;
     }
 
-    async function showDeVerificat() {
+    function showDeVerificat() {
       currentGMPage = "de-verificat";
       currentPage = null;
       pageTitle.textContent = "De verificat";
       
       if (cache.deVerificat) {
         renderDeVerificat(cache.deVerificat);
-        return;
-      }
-      
-      content.innerHTML = '<div class="skeleton" style="height:100px;margin-bottom:15px;"></div>'.repeat(3);
-      
-      try {
-        const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
-        const data = await response.json();
-        if (data.ok) {
-          cache.deVerificat = data.data;
-          if (currentGMPage === "de-verificat") {
-            renderDeVerificat(data.data);
-          }
-        }
-      } catch (e) {
-        if (currentGMPage === "de-verificat") {
-          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-        }
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
       }
     }
     
@@ -889,31 +847,15 @@
     }
 
     // ===== REGULI FUNDAMENTALE =====
-    async function showReguliFundamentale() {
+    function showReguliFundamentale() {
       currentGMPage = "reguli";
       currentPage = null;
       pageTitle.textContent = "Reguli Fundamentale";
       
       if (cache.reguli) {
         renderReguliFundamentale(cache.reguli);
-        return;
-      }
-      
-      content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(3);
-      
-      try {
-        const response = await fetch(BACKEND_URL + "?action=loadReguli");
-        const data = await response.json();
-        if (data.ok) {
-          cache.reguli = data.data;
-          if (currentGMPage === "reguli") {
-            renderReguliFundamentale(data.data);
-          }
-        }
-      } catch (e) {
-        if (currentGMPage === "reguli") {
-          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-        }
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
       }
     }
     
@@ -993,31 +935,15 @@
     }
 
     // ===== CONVERSAȚII =====
-    async function showConversatii() {
+    function showConversatii() {
       currentGMPage = "conversatii";
       currentPage = null;
       pageTitle.textContent = "Conversații";
       
       if (cache.conversatii) {
         renderConversatii(cache.conversatii);
-        return;
-      }
-      
-      content.innerHTML = '<div class="skeleton" style="height:120px;margin-bottom:15px;"></div>'.repeat(4);
-      
-      try {
-        const response = await fetch(BACKEND_URL + "?action=loadConversatii");
-        const data = await response.json();
-        if (data.ok) {
-          cache.conversatii = data.data;
-          if (currentGMPage === "conversatii") {
-            renderConversatii(data.data);
-          }
-        }
-      } catch (e) {
-        if (currentGMPage === "conversatii") {
-          content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
-        }
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
       }
     }
     
