@@ -512,43 +512,73 @@
 
     // ===== RENDER NAV =====
     function renderNav() {
+      // Filtrează paginile în funcție de mod
       const visiblePages = appData.pagini.filter(p => {
         if (!p.vizibil) return false;
-        if (p.mod === "admin" && currentMode !== "admin") return false;
-        if (p.mod === "gm" && currentMode !== "gm") return false;
-        return true;
+        
+        // Paginile "normal" se văd în toate modurile
+        // Paginile "admin" se văd doar în admin și gm
+        // Paginile "gm" se văd doar în gm
+        if (p.mod === "normal" || p.mod === "all") return true;
+        if (p.mod === "admin" && (currentMode === "admin" || currentMode === "gm")) return true;
+        if (p.mod === "gm" && currentMode === "gm") return true;
+        
+        return false;
       });
 
-      let html = '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
+      let html = '';
       
-      visiblePages.forEach(p => {
-        html += `<div class="nav-item" data-page-id="${p.id}">
-          <span class="icon">${p.icon || '📄'}</span>
-          <span>${p.nume}</span>
-        </div>`;
-      });
-      
-      html += '</div>';
-
-      // GM și Admin pages când sunt în mod
-      if (currentMode === "gm") {
-        html += `<div class="nav-section">
-          <div class="nav-section-title">GM Panel</div>
-          <div class="nav-item" data-page-id="gm-panel">
-            <span class="icon">⚙️</span>
-            <span>GM Panel</span>
-          </div>
-        </div>`;
+      // Secțiune Normal
+      const normalPages = visiblePages.filter(p => p.mod === "normal" || p.mod === "all");
+      if (normalPages.length > 0) {
+        html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
+        normalPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}">
+            <span class="icon">${p.icon || '📄'}</span>
+            <span>${p.nume}</span>
+          </div>`;
+        });
+        html += '</div>';
       }
 
-      if (currentMode === "admin") {
-        html += `<div class="nav-section">
-          <div class="nav-section-title">Admin</div>
-          <div class="nav-item" data-page-id="admin-panel">
-            <span class="icon">🔐</span>
-            <span>Admin Panel</span>
-          </div>
-        </div>`;
+      // Secțiune Admin (vizibilă în admin și gm)
+      if (currentMode === "admin" || currentMode === "gm") {
+        const adminPages = visiblePages.filter(p => p.mod === "admin");
+        html += '<div class="nav-section"><div class="nav-section-title">Admin</div>';
+        if (adminPages.length > 0) {
+          adminPages.forEach(p => {
+            html += `<div class="nav-item" data-page-id="${p.id}">
+              <span class="icon">${p.icon || '📄'}</span>
+              <span>${p.nume}</span>
+            </div>`;
+          });
+        }
+        html += `<div class="nav-item" data-page-id="admin-panel">
+          <span class="icon">🔐</span>
+          <span>Admin Panel</span>
+        </div></div>`;
+      }
+
+      // Secțiune GM (vizibilă doar în gm)
+      if (currentMode === "gm") {
+        const gmPages = visiblePages.filter(p => p.mod === "gm");
+        html += '<div class="nav-section"><div class="nav-section-title">GM</div>';
+        if (gmPages.length > 0) {
+          gmPages.forEach(p => {
+            html += `<div class="nav-item" data-page-id="${p.id}">
+              <span class="icon">${p.icon || '📄'}</span>
+              <span>${p.nume}</span>
+            </div>`;
+          });
+        }
+        html += `<div class="nav-item" data-page-id="gm-panel">
+          <span class="icon">⚙️</span>
+          <span>GM Panel</span>
+        </div></div>`;
+      }
+
+      if (html === '') {
+        html = '<div class="nav-section"><div class="nav-section-title">Meniu</div><div class="empty-state">Nicio pagină</div></div>';
       }
 
       sidebarNav.innerHTML = html;
@@ -664,19 +694,19 @@
       content.innerHTML = `
         <div class="welcome-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
           <h2>⚙️ GM Panel</h2>
-          <p>Modifică aplicația din chat. Comenzile se execută instant.</p>
+          <p>Construiește aplicația pentru toate modurile: normal, admin, gm</p>
         </div>
         <div class="card">
           <div class="card-title">Comenzi rapide</div>
           <div style="font-size:13px;color:var(--text-soft);line-height:1.9;">
-            <b>Pagini:</b><br>
-            • <code>adaugă pagină Clienți 👥</code><br>
-            • <code>șterge pagină Clienți</code><br>
-            • <code>ascunde pagină Clienți</code><br><br>
+            <b>Pagini (specifică unde):</b><br>
+            • <code>adaugă pagină Clienți 👥 în normal</code><br>
+            • <code>adaugă pagină Setări ⚙️ în admin</code><br>
+            • <code>adaugă pagină Debug 🔧 în gm</code><br>
+            • <code>șterge pagină NumePagină</code><br><br>
             <b>Tabele:</b><br>
             • <code>adaugă tabel Clienți cu Nume, Telefon, Email</code><br>
-            • <code>adaugă coloană Adresă în Clienți</code><br>
-            • <code>șterge tabel Clienți</code><br><br>
+            • <code>adaugă coloană Adresă în Clienți</code><br><br>
             <b>Stiluri:</b><br>
             • <code>culoare primară rosu</code><br>
             • <code>titlu SuperParty Nou</code><br><br>
