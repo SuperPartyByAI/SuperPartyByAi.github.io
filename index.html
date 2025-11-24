@@ -1061,12 +1061,15 @@
         const d = await r.json();
         if (d.ok) {
           let html = '<div class="card fade-in"><div class="card-title">👥 Gestionare Utilizatori</div>';
-          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Aprobă sau blochează utilizatori.</p>';
-          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Status</th><th>Acțiuni</th></tr></thead><tbody>';
+          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Aprobă, blochează și completează codul + cine notează.</p>';
+          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Cod</th><th>Cine Notează</th><th>Status</th><th>Acțiuni</th></tr></thead><tbody>';
           (d.users || []).forEach(u => {
             const st = u.blocked ? '🔒 Blocat' : (u.approved ? '✅ Activ' : '⏳ În așteptare');
             const cl = u.blocked ? '#ef4444' : (u.approved ? '#22c55e' : '#f59e0b');
-            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td style="color:${cl};font-weight:600;">${st}</td><td>`;
+            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td>`;
+            html += `<td><input type="text" value="${u.cod||''}" onchange="updateUserField('${u.email}','cod',this.value)" style="width:80px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Ex: A23"></td>`;
+            html += `<td><input type="text" value="${u.cineNoteaza||''}" onchange="updateUserField('${u.email}','cineNoteaza',this.value)" style="width:120px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Nume"></td>`;
+            html += `<td style="color:${cl};font-weight:600;">${st}</td><td>`;
             if (!u.approved && !u.blocked) html += `<button onclick="approveUser('${u.email}')" style="background:#22c55e;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:5px;">✅ Aprobă</button>`;
             if (u.approved && !u.blocked) html += `<button onclick="blockUser('${u.email}')" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">🔒 Blochează</button>`;
             if (u.blocked) html += `<button onclick="unblockUser('${u.email}')" style="background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">✅ Deblochează</button>`;
@@ -1088,13 +1091,16 @@
         const d = await r.json();
         if (d.ok) {
           let html = '<div class="card fade-in"><div class="card-title">👥 Utilizatori (Full)</div>';
-          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Control complet + vezi conversațiile lor.</p>';
-          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Status</th><th>Chat</th><th>Acțiuni</th></tr></thead><tbody>';
+          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Control complet + conversații.</p>';
+          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Cod</th><th>Cine Notează</th><th>Status</th><th>Chat</th><th>Acțiuni</th></tr></thead><tbody>';
           (d.users || []).forEach(u => {
             const st = u.blocked ? '🔒 Blocat' : (u.approved ? '✅ Activ' : '⏳ În așteptare');
             const cl = u.blocked ? '#ef4444' : (u.approved ? '#22c55e' : '#f59e0b');
-            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td style="color:${cl};font-weight:600;">${st}</td>`;
-            html += `<td><button onclick="viewUserChat('${u.email}')" style="background:#8b5cf6;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">💬 Vezi</button></td><td>`;
+            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td>`;
+            html += `<td><input type="text" value="${u.cod||''}" onchange="updateUserField('${u.email}','cod',this.value)" style="width:80px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Ex: A23"></td>`;
+            html += `<td><input type="text" value="${u.cineNoteaza||''}" onchange="updateUserField('${u.email}','cineNoteaza',this.value)" style="width:120px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Nume"></td>`;
+            html += `<td style="color:${cl};font-weight:600;">${st}</td>`;
+            html += `<td><button onclick="viewUserChat('${u.email}')" style="background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">💬</button></td><td>`;
             if (!u.approved && !u.blocked) html += `<button onclick="approveUser('${u.email}')" style="background:#22c55e;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">✅</button>`;
             if (u.approved && !u.blocked) html += `<button onclick="blockUser('${u.email}')" style="background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">🔒</button>`;
             if (u.blocked) html += `<button onclick="unblockUser('${u.email}')" style="background:#3b82f6;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">✅</button>`;
@@ -1126,6 +1132,11 @@
       if (!confirm('⚠️ Ștergi definitiv?')) return;
       await fetch(BACKEND_URL + '?action=deleteUser&email=' + encodeURIComponent(email));
       showUsersGM();
+    }
+    
+    // Update user field (cod, cineNoteaza)
+    async function updateUserField(email, field, value) {
+      await fetch(BACKEND_URL + '?action=updateUserField&email=' + encodeURIComponent(email) + '&field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value));
     }
     async function viewUserChat(email) {
       const r = await fetch(BACKEND_URL + '?action=getUserConversations&identifier=' + encodeURIComponent(email));
