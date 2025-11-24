@@ -357,6 +357,27 @@
     .upload-area p { color: var(--text-soft); font-size: 14px; }
 
     .loading { text-align: center; padding: 40px; color: var(--text-soft); }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -420,6 +441,17 @@
     let currentPage = null;
     let appData = { pagini: [], tabele: [], elemente: [], scanari: [], stiluri: {} };
     let currentScanType = null;
+    
+    // ===== CACHE =====
+    let cache = {
+      tables: {},
+      conversatii: null,
+      reguli: null,
+      cunostinte: null,
+      deVerificat: null,
+      lastUpdate: 0
+    };
+    const CACHE_DURATION = 30000; // 30 secunde
 
     // ===== ELEMENTS =====
     const sidebar = document.getElementById("sidebar");
@@ -455,23 +487,40 @@
     chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleChatSend(); });
 
     // ===== LOAD APP =====
-    async function loadApp() {
+    async function loadApp(showLoading = true) {
+      // Arată skeleton instant
+      if (showLoading && !appData.pagini.length) {
+        content.innerHTML = '<div class="card skeleton" style="height:100px;margin-bottom:15px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>'.repeat(3);
+      }
+      
       try {
         const response = await fetch(BACKEND_URL + "?action=loadApp");
         const data = await response.json();
         if (data.ok) {
           appData = data.data;
+          cache.lastUpdate = Date.now();
           applyStyles();
           renderNav();
           
           // Navighează la prima pagină vizibilă
-          const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
-          if (firstPage) navigateTo(firstPage);
+          if (!currentPage) {
+            const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+            if (firstPage) navigateTo(firstPage);
+          } else {
+            navigateTo(currentPage);
+          }
         }
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+        if (showLoading) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare. <a href="#" onclick="loadApp()">Reîncearcă</a></div></div>';
       }
     }
+    
+    // Background refresh
+    setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadApp(false);
+      }
+    }, CACHE_DURATION);
 
     // ===== APPLY STYLES =====
     function applyStyles() {
@@ -570,24 +619,48 @@
       const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
       const pageElements = (appData.elemente || []).filter(e => e.paginaId === page.id);
       
-      let html = `<div class="welcome-card"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
+      let html = `<div class="welcome-card fade-in"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
       
       if (pageElements.length > 0) {
-        html += '<div class="card"><div class="card-title">Acțiuni</div><div>';
+        html += '<div class="card fade-in"><div class="card-title">Acțiuni</div><div>';
         pageElements.forEach(el => { html += renderElement(el); });
         html += '</div></div>';
       }
       
       if (pageTables.length === 0 && pageElements.length === 0) {
-        html += '<div class="card"><div class="empty-state">Pagină goală</div></div>';
+        html += '<div class="card fade-in"><div class="empty-state">Pagină goală</div></div>';
       } else {
         pageTables.forEach(table => {
-          html += `<div class="card"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="loading">Se încarcă...</div></div></div>`;
+          // Arată din cache instant dacă există
+          const cachedData = cache.tables[table.numeTabel];
+          if (cachedData) {
+            html += `<div class="card fade-in"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}">${renderTableHTML(cachedData)}</div></div>`;
+          } else {
+            html += `<div class="card fade-in"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="skeleton" style="height:100px;"></div></div></div>`;
+          }
         });
       }
       
       content.innerHTML = html;
+      
+      // Încarcă/actualizează datele în background
       pageTables.forEach(table => loadTableData(table));
+    }
+    
+    function renderTableHTML(data) {
+      if (!data || !data.rows || data.rows.length === 0) {
+        return '<div class="empty-state">Nicio înregistrare</div>';
+      }
+      let html = '<table class="data-table"><thead><tr>';
+      data.headers.forEach(h => { html += `<th>${h}</th>`; });
+      html += '</tr></thead><tbody>';
+      data.rows.forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => { html += `<td>${cell || ''}</td>`; });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
     }
 
     function renderElement(el) {
@@ -607,147 +680,190 @@
         const data = await response.json();
         const container = document.getElementById("table-" + table.numeTabel);
         
-        if (data.ok && data.data.rows.length > 0) {
-          let html = '<table class="data-table"><thead><tr>';
-          data.data.headers.forEach(h => { html += `<th>${h}</th>`; });
-          html += '</tr></thead><tbody>';
-          data.data.rows.forEach(row => {
-            html += '<tr>';
-            row.forEach(cell => { html += `<td>${cell || ''}</td>`; });
-            html += '</tr>';
-          });
-          html += '</tbody></table>';
-          container.innerHTML = html;
-        } else {
-          container.innerHTML = '<div class="empty-state">Nicio înregistrare</div>';
+        if (data.ok) {
+          // Salvează în cache
+          cache.tables[table.numeTabel] = data.data;
+          
+          if (container) {
+            container.innerHTML = renderTableHTML(data.data);
+          }
         }
       } catch (e) {
-        document.getElementById("table-" + table.numeTabel).innerHTML = '<div class="empty-state">Eroare</div>';
+        const container = document.getElementById("table-" + table.numeTabel);
+        if (container) container.innerHTML = '<div class="empty-state">Eroare</div>';
       }
     }
 
     // ===== GM PAGES =====
     async function showCreierAI() {
       pageTitle.textContent = "Creier AI";
-      content.innerHTML = '<div class="loading">Se încarcă...</div>';
       
+      // Arată din cache instant dacă există
+      if (cache.cunostinte) {
+        renderCreierAI(cache.cunostinte);
+      } else {
+        content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(4);
+      }
+      
+      // Încarcă în background
       try {
         const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
         const data = await response.json();
-        
-        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);"><h2>🧠 Creier AI</h2><p>Tot ce știe AI-ul</p></div>';
-        
-        if (data.ok && data.data.length > 0) {
-          // Group by category
-          const grouped = {};
-          data.data.forEach(c => {
-            const cat = c.categorie || 'general';
-            if (!grouped[cat]) grouped[cat] = [];
-            grouped[cat].push(c);
-          });
-          
-          for (const cat in grouped) {
-            html += `<div class="card"><div class="card-title">${cat.toUpperCase()}</div>`;
-            grouped[cat].forEach(c => {
-              html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`;
-            });
-            html += '</div>';
-          }
-        } else {
-          html += '<div class="card"><div class="empty-state">AI-ul nu știe nimic încă.<br><br>Învață-l din chat: <code>învață: [informație]</code></div></div>';
+        if (data.ok) {
+          cache.cunostinte = data.data;
+          renderCreierAI(data.data);
         }
-        
-        content.innerHTML = html;
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+        if (!cache.cunostinte) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
       }
+    }
+    
+    function renderCreierAI(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);"><h2>🧠 Creier AI</h2><p>Tot ce știe AI-ul</p></div>';
+      
+      if (data && data.length > 0) {
+        const grouped = {};
+        data.forEach(c => {
+          const cat = c.categorie || 'general';
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(c);
+        });
+        
+        for (const cat in grouped) {
+          html += `<div class="card fade-in"><div class="card-title">${cat.toUpperCase()}</div>`;
+          grouped[cat].forEach(c => {
+            html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`;
+          });
+          html += '</div>';
+        }
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">AI-ul nu știe nimic încă.<br><br>Învață-l din chat: <code>învață: [informație]</code></div></div>';
+      }
+      
+      content.innerHTML = html;
     }
 
     async function showDeVerificat() {
       pageTitle.textContent = "De verificat";
-      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      if (cache.deVerificat) {
+        renderDeVerificat(cache.deVerificat);
+      } else {
+        content.innerHTML = '<div class="skeleton" style="height:100px;margin-bottom:15px;"></div>'.repeat(3);
+      }
       
       try {
         const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
         const data = await response.json();
-        
-        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><h2>✅ De verificat</h2><p>Cunoștințe de la utilizatori</p></div>';
-        
-        if (data.ok && data.data.length > 0) {
-          data.data.forEach(item => {
-            html += `<div class="card">
-              <div style="margin-bottom:10px;"><strong>Sursa:</strong> ${item.sursa}</div>
-              <div style="margin-bottom:15px;">${item.informatie}</div>
-              <div style="display:flex;gap:10px;">
-                <button class="btn btn-primary" onclick="verificaCunostinta('${item.id}', 'aproba')">✅ Aprobă</button>
-                <button class="btn" style="background:#ef4444;color:white;" onclick="verificaCunostinta('${item.id}', 'respinge')">❌ Respinge</button>
-              </div>
-            </div>`;
-          });
-        } else {
-          html += '<div class="card"><div class="empty-state">Nimic de verificat! 🎉</div></div>';
+        if (data.ok) {
+          cache.deVerificat = data.data;
+          renderDeVerificat(data.data);
         }
-        
-        content.innerHTML = html;
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+        if (!cache.deVerificat) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
       }
+    }
+    
+    function renderDeVerificat(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><h2>✅ De verificat</h2><p>Cunoștințe de la utilizatori</p></div>';
+      
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          html += `<div class="card fade-in">
+            <div style="margin-bottom:10px;"><strong>Sursa:</strong> ${item.sursa}</div>
+            <div style="margin-bottom:15px;">${item.informatie}</div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" onclick="verificaCunostinta('${item.id}', 'aproba')">✅ Aprobă</button>
+              <button class="btn" style="background:#ef4444;color:white;" onclick="verificaCunostinta('${item.id}', 'respinge')">❌ Respinge</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">Nimic de verificat! 🎉</div></div>';
+      }
+      
+      content.innerHTML = html;
     }
 
     async function verificaCunostinta(id, actiune) {
+      // Optimistic update
+      if (cache.deVerificat) {
+        cache.deVerificat = cache.deVerificat.filter(item => item.id !== id);
+        renderDeVerificat(cache.deVerificat);
+      }
+      
       try {
         const url = BACKEND_URL + "?action=verificaCunostinta&id=" + encodeURIComponent(id) + "&actiune=" + encodeURIComponent(actiune);
         await fetch(url);
-        showDeVerificat();
+        cache.deVerificat = null;
+        cache.cunostinte = null; // Invalidează și cunoștințele dacă a fost aprobat
       } catch (e) { console.error(e); }
     }
 
     // ===== REGULI FUNDAMENTALE =====
     async function showReguliFundamentale() {
       pageTitle.textContent = "Reguli Fundamentale";
-      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      if (cache.reguli) {
+        renderReguliFundamentale(cache.reguli);
+      } else {
+        content.innerHTML = '<div class="skeleton" style="height:80px;margin-bottom:15px;"></div>'.repeat(3);
+      }
       
       try {
         const response = await fetch(BACKEND_URL + "?action=loadReguli");
         const data = await response.json();
-        
-        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><h2>🔒 Reguli Fundamentale</h2><p>Reguli pe care AI-ul le respectă MEREU</p></div>';
-        
-        html += '<div class="card"><div class="card-title">Adaugă Regulă Nouă</div>';
-        html += '<div style="display:flex;gap:10px;"><input type="text" id="regulaNoua" class="chat-input" style="flex:1;" placeholder="Ex: Întotdeauna salută clientul cu Bună ziua!">';
-        html += '<button class="btn btn-primary" onclick="adaugaRegula()">+ Adaugă</button></div></div>';
-        
-        html += '<div class="card"><div class="card-title">Reguli Active</div>';
-        
-        if (data.ok && data.data.length > 0) {
-          data.data.forEach((r, idx) => {
-            html += `<div style="padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-              <div><strong>#${idx + 1}</strong> &nbsp; "${r.regula}"</div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${r.regula.replace(/'/g, "\\'")}')">✏️</button>
-                <button class="btn" style="padding:5px 10px;font-size:12px;background:#ef4444;color:white;" onclick="stergeRegula('${r.id}')">🗑️</button>
-              </div>
-            </div>`;
-          });
-        } else {
-          html += '<div class="empty-state">Nicio regulă încă.<br>Adaugă prima regulă!</div>';
+        if (data.ok) {
+          cache.reguli = data.data;
+          renderReguliFundamentale(data.data);
         }
-        
-        html += '</div>';
-        content.innerHTML = html;
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+        if (!cache.reguli) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
       }
+    }
+    
+    function renderReguliFundamentale(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><h2>🔒 Reguli Fundamentale</h2><p>Reguli pe care AI-ul le respectă MEREU</p></div>';
+      
+      html += '<div class="card fade-in"><div class="card-title">Adaugă Regulă Nouă</div>';
+      html += '<div style="display:flex;gap:10px;"><input type="text" id="regulaNoua" class="chat-input" style="flex:1;" placeholder="Ex: Întotdeauna salută clientul cu Bună ziua!">';
+      html += '<button class="btn btn-primary" onclick="adaugaRegula()">+ Adaugă</button></div></div>';
+      
+      html += '<div class="card fade-in"><div class="card-title">Reguli Active</div>';
+      
+      if (data && data.length > 0) {
+        data.forEach((r, idx) => {
+          html += `<div style="padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div><strong>#${idx + 1}</strong> &nbsp; "${r.regula}"</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${r.regula.replace(/'/g, "\\'")}')">✏️</button>
+              <button class="btn" style="padding:5px 10px;font-size:12px;background:#ef4444;color:white;" onclick="stergeRegula('${r.id}')">🗑️</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="empty-state">Nicio regulă încă.<br>Adaugă prima regulă!</div>';
+      }
+      
+      html += '</div>';
+      content.innerHTML = html;
     }
 
     async function adaugaRegula() {
       const regula = document.getElementById("regulaNoua").value.trim();
       if (!regula) return alert("Scrie o regulă!");
       
+      // Optimistic update - adaugă instant în UI
+      if (cache.reguli) {
+        cache.reguli.push({ id: 'temp', regula: regula });
+        renderReguliFundamentale(cache.reguli);
+      }
+      
       try {
         const url = BACKEND_URL + "?action=adaugaRegula&regula=" + encodeURIComponent(regula);
         await fetch(url);
         document.getElementById("regulaNoua").value = "";
+        cache.reguli = null; // Invalidează cache
         showReguliFundamentale();
       } catch (e) { console.error(e); }
     }
@@ -759,6 +875,7 @@
       try {
         const url = BACKEND_URL + "?action=editeazaRegula&id=" + encodeURIComponent(id) + "&regula=" + encodeURIComponent(regulaNoua);
         await fetch(url);
+        cache.reguli = null;
         showReguliFundamentale();
       } catch (e) { console.error(e); }
     }
@@ -766,9 +883,16 @@
     async function stergeRegula(id) {
       if (!confirm("Sigur ștergi această regulă?")) return;
       
+      // Optimistic update
+      if (cache.reguli) {
+        cache.reguli = cache.reguli.filter(r => r.id !== id);
+        renderReguliFundamentale(cache.reguli);
+      }
+      
       try {
         const url = BACKEND_URL + "?action=stergeRegula&id=" + encodeURIComponent(id);
         await fetch(url);
+        cache.reguli = null;
         showReguliFundamentale();
       } catch (e) { console.error(e); }
     }
@@ -776,64 +900,82 @@
     // ===== CONVERSAȚII =====
     async function showConversatii() {
       pageTitle.textContent = "Conversații";
-      content.innerHTML = '<div class="loading">Se încarcă...</div>';
+      
+      if (cache.conversatii) {
+        renderConversatii(cache.conversatii);
+      } else {
+        content.innerHTML = '<div class="skeleton" style="height:120px;margin-bottom:15px;"></div>'.repeat(4);
+      }
       
       try {
         const response = await fetch(BACKEND_URL + "?action=loadConversatii");
         const data = await response.json();
-        
-        let html = '<div class="welcome-card" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><h2>💬 Conversații</h2><p>Tot ce a întrebat oricine</p></div>';
-        
-        if (data.ok && data.data.length > 0) {
-          data.data.forEach((c, idx) => {
-            const timestamp = new Date(c.timestamp).toLocaleString('ro-RO');
-            const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
-            const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
-            
-            // Istoric corecții
-            let corectiiHtml = '';
-            if (c.corectii && c.corectii.length > 0) {
-              corectiiHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">';
-              corectiiHtml += '<div style="font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;">📜 Istoric modificări:</div>';
-              c.corectii.forEach((cor, corIdx) => {
-                const corTime = new Date(cor.timestamp).toLocaleString('ro-RO');
-                corectiiHtml += `<div style="padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;margin-bottom:6px;font-size:13px;">
-                  <span style="color:var(--text-soft);">#${corIdx + 1} • ${corTime}</span><br>
-                  <span style="color:#059669;">→ "${cor.corectie}"</span>
-                </div>`;
-              });
-              corectiiHtml += '</div>';
-            }
-            
-            html += `<div class="card" style="${statusClass}">
-              <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                <strong>#${idx + 1}</strong>
-                <span style="color:var(--text-soft);font-size:12px;">${statusIcon} ${timestamp} | ${c.user} (${c.mod})</span>
-              </div>
-              <div style="margin-bottom:8px;"><strong>User:</strong> "${c.mesaj}"</div>
-              <div style="margin-bottom:12px;color:var(--text-soft);"><strong>AI:</strong> "${c.raspuns ? c.raspuns.substring(0, 200) : ''}${c.raspuns && c.raspuns.length > 200 ? '...' : ''}"</div>
-              ${corectiiHtml}
-              <div style="display:flex;gap:10px;margin-top:12px;">
-                ${c.status !== 'ok' ? `<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>` : ''}
-                <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
-              </div>
-            </div>`;
-          });
-        } else {
-          html += '<div class="card"><div class="empty-state">Nicio conversație încă.</div></div>';
+        if (data.ok) {
+          cache.conversatii = data.data;
+          renderConversatii(data.data);
         }
-        
-        content.innerHTML = html;
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
+        if (!cache.conversatii) content.innerHTML = '<div class="card"><div class="empty-state">Eroare la încărcare</div></div>';
       }
+    }
+    
+    function renderConversatii(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><h2>💬 Conversații</h2><p>Tot ce a întrebat oricine</p></div>';
+      
+      if (data && data.length > 0) {
+        data.forEach((c, idx) => {
+          const timestamp = new Date(c.timestamp).toLocaleString('ro-RO');
+          const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
+          const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
+          
+          // Istoric corecții
+          let corectiiHtml = '';
+          if (c.corectii && c.corectii.length > 0) {
+            corectiiHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">';
+            corectiiHtml += '<div style="font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;">📜 Istoric modificări:</div>';
+            c.corectii.forEach((cor, corIdx) => {
+              const corTime = new Date(cor.timestamp).toLocaleString('ro-RO');
+              corectiiHtml += `<div style="padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;margin-bottom:6px;font-size:13px;">
+                <span style="color:var(--text-soft);">#${corIdx + 1} • ${corTime}</span><br>
+                <span style="color:#059669;">→ "${cor.corectie}"</span>
+              </div>`;
+            });
+            corectiiHtml += '</div>';
+          }
+          
+          html += `<div class="card fade-in" style="${statusClass}">
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+              <strong>#${idx + 1}</strong>
+              <span style="color:var(--text-soft);font-size:12px;">${statusIcon} ${timestamp} | ${c.user} (${c.mod})</span>
+            </div>
+            <div style="margin-bottom:8px;"><strong>User:</strong> "${c.mesaj}"</div>
+            <div style="margin-bottom:12px;color:var(--text-soft);"><strong>AI:</strong> "${c.raspuns ? c.raspuns.substring(0, 200) : ''}${c.raspuns && c.raspuns.length > 200 ? '...' : ''}"</div>
+            ${corectiiHtml}
+            <div style="display:flex;gap:10px;margin-top:12px;">
+              ${c.status !== 'ok' ? `<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>` : ''}
+              <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">Nicio conversație încă.</div></div>';
+      }
+      
+      content.innerHTML = html;
     }
 
     async function marcheazaOK(id) {
+      // Optimistic update
+      if (cache.conversatii) {
+        const conv = cache.conversatii.find(c => c.id === id);
+        if (conv) conv.status = 'ok';
+        renderConversatii(cache.conversatii);
+      }
+      
       try {
         const url = BACKEND_URL + "?action=marcheazaOK&id=" + encodeURIComponent(id);
         await fetch(url);
-        showConversatii();
+        cache.conversatii = null;
       } catch (e) { console.error(e); }
     }
 
@@ -841,10 +983,21 @@
       const corectie = prompt("Cum trebuia să răspundă AI-ul la:\n\"" + mesajOriginal + "\"");
       if (!corectie) return;
       
+      // Optimistic update
+      if (cache.conversatii) {
+        const conv = cache.conversatii.find(c => c.id === id);
+        if (conv) {
+          conv.status = 'corectat';
+          if (!conv.corectii) conv.corectii = [];
+          conv.corectii.push({ corectie: corectie, timestamp: new Date().toISOString() });
+        }
+        renderConversatii(cache.conversatii);
+      }
+      
       try {
         const url = BACKEND_URL + "?action=corecteazaConversatie&id=" + encodeURIComponent(id) + "&corectie=" + encodeURIComponent(corectie);
         await fetch(url);
-        showConversatii();
+        cache.conversatii = null;
         alert("✅ AI-ul a învățat din corecție!");
       } catch (e) { console.error(e); }
     }
