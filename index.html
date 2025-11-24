@@ -502,12 +502,10 @@
           applyStyles();
           renderNav();
           
-          // Navighează la prima pagină vizibilă
-          if (!currentPage) {
+          // Navighează doar dacă nu avem pagină curentă
+          if (!currentPage && showLoading) {
             const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
             if (firstPage) navigateTo(firstPage);
-          } else {
-            navigateTo(currentPage);
           }
         }
       } catch (e) {
@@ -515,7 +513,7 @@
       }
     }
     
-    // Background refresh
+    // Background refresh - doar actualizează datele, nu schimbă pagina
     setInterval(() => {
       if (document.visibilityState === 'visible') {
         loadApp(false);
@@ -975,7 +973,7 @@
       try {
         const url = BACKEND_URL + "?action=marcheazaOK&id=" + encodeURIComponent(id);
         await fetch(url);
-        cache.conversatii = null;
+        // Nu invalidăm cache-ul - păstrăm ce avem
       } catch (e) { console.error(e); }
     }
 
@@ -997,8 +995,8 @@
       try {
         const url = BACKEND_URL + "?action=corecteazaConversatie&id=" + encodeURIComponent(id) + "&corectie=" + encodeURIComponent(corectie);
         await fetch(url);
-        cache.conversatii = null;
         alert("✅ AI-ul a învățat din corecție!");
+        // Nu invalidăm cache-ul - păstrăm ce avem
       } catch (e) { console.error(e); }
     }
 
