@@ -2,1573 +2,707 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty v2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuperParty</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     :root {
-      --bg: #0f172a;
-      --bg-alt: #020617;
-      --card: #020617;
-      --card-alt: #020617;
-      --accent: #e11d48;
-      --accent-soft: rgba(225, 29, 72, 0.15);
-      --border-subtle: #1f2937;
-      --text: #e5e7eb;
-      --text-soft: #9ca3af;
-      --text-soft2: #6b7280;
-      --radius-lg: 16px;
-      --radius-xl: 24px;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.95);
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --bg: #f8fafc;
+      --bg-alt: #ffffff;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-soft: #64748b;
+      --text-muted: #94a3b8;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Roboto", sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #020617 55%, #020617 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    .app-shell {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      height: 100vh;
-      max-height: 100vh;
+    /* ===== LAYOUT ===== */
+    .app {
+      display: flex;
+      min-height: 100vh;
     }
 
-    /* SIDEBAR */
-
+    /* ===== SIDEBAR ===== */
     .sidebar {
-      background: radial-gradient(circle at top left, #111827 0, #020617 55%, #020617 100%);
-      border-right: 1px solid rgba(148, 163, 184, 0.15);
-      padding: 18px 14px;
+      width: 280px;
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
     }
 
-    .logo-row {
+    .sidebar.hidden-mobile {
+      transform: translateX(-100%);
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 8px 10px 14px;
-      border-radius: 999px;
-      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.32), transparent 55%);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.85);
     }
 
-    .logo-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #f97316, #e11d48);
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
       color: white;
-      font-size: 16px;
-      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
-    }
-
-    .logo-text-main {
-      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      font-size: 18px;
     }
 
-    .logo-text-sub {
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .logo-sub {
       font-size: 11px;
-      color: var(--text-soft);
+      color: var(--text-muted);
     }
 
-    .sidebar-section-label {
+    .sidebar-nav {
+      flex: 1;
+      padding: 15px 10px;
+      overflow-y: auto;
+    }
+
+    .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .nav-section-title {
       font-size: 11px;
       text-transform: uppercase;
-      color: var(--text-soft2);
-      letter-spacing: 0.18em;
-      margin: 6px 8px 4px;
-    }
-
-    .nav-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 6px;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      letter-spacing: 0.5px;
     }
 
     .nav-item {
-      border-radius: 999px;
-      padding: 7px 11px;
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
+      padding: 12px 15px;
+      border-radius: var(--radius);
       cursor: pointer;
-      font-size: 13px;
+      transition: all 0.2s;
       color: var(--text-soft);
-      transition: all 0.18s ease;
-      border: 1px solid transparent;
-      position: relative;
-    }
-
-    .nav-item .nav-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: transparent;
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.5);
-    }
-
-    .nav-item span.label {
-      flex: 1;
-      white-space: nowrap;
-    }
-
-    .nav-item small {
-      font-size: 11px;
-      color: var(--text-soft2);
+      font-size: 14px;
     }
 
     .nav-item:hover {
-      background: rgba(15, 23, 42, 0.9);
+      background: var(--bg);
       color: var(--text);
-      border-color: rgba(148, 163, 184, 0.3);
     }
 
     .nav-item.active {
-      background: radial-gradient(circle at 15% 0%, rgba(248, 113, 113, 0.5), transparent 65%);
-      color: #f9fafb;
-      border-color: rgba(248, 113, 113, 0.65);
-      box-shadow: 0 10px 30px rgba(248, 113, 113, 0.55);
+      background: var(--primary);
+      color: white;
     }
 
-    .nav-item.active .nav-dot {
-      background: #f97316;
-      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.8),
-        0 0 15px rgba(248, 113, 113, 0.9);
+    .nav-item .icon {
+      font-size: 18px;
+    }
+
+    .nav-group {
+      display: none;
+    }
+
+    .nav-group.visible {
+      display: block;
     }
 
     .sidebar-footer {
-      margin-top: auto;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(148, 163, 184, 0.25);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 11px;
-      color: var(--text-soft2);
-    }
-
-    .mode-pill {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 7px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 11px;
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
-    }
-
-    .mode-pill span {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .mode-badge {
-      border-radius: 999px;
-      padding: 1px 7px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      background: rgba(15, 118, 110, 0.1);
-      color: #a5f3fc;
-      border: 1px solid rgba(34, 211, 238, 0.35);
-    }
-
-    .mode-pill strong {
-      color: #f9fafb;
-      font-weight: 600;
+      padding: 15px;
+      border-top: 1px solid var(--border);
     }
 
     .mode-status {
-      border-radius: 999px;
-      padding: 2px 7px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      font-size: 13px;
     }
 
-    .mode-status span.dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    .mode-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
     }
 
-    .mode-status.off span.dot {
-      background: #6b7280;
-      box-shadow: none;
+    .mode-dot.active {
+      background: var(--success);
     }
 
-    .mode-status.off {
-      color: var(--text-soft2);
-      border: 1px solid rgba(75, 85, 99, 0.4);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .mode-status.on {
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.6);
-      background: rgba(22, 163, 74, 0.15);
-    }
-
-    .hint-commands {
-      font-size: 10px;
-      line-height: 1.5;
-      color: var(--text-soft2);
-    }
-
-    .hint-commands code {
-      font-size: 10px;
-      border-radius: 999px;
-      padding: 2px 6px;
-      border: 1px solid rgba(75, 85, 99, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-    }
-
-    /* MAIN LAYOUT */
-
+    /* ===== MAIN CONTENT ===== */
     .main {
+      flex: 1;
+      margin-left: 280px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-      padding: 14px 16px 16px;
     }
 
-    .main-header {
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      padding: 15px 25px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
-    .main-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+      color: var(--text);
     }
 
-    .main-title {
-      font-size: 20px;
+    .page-title {
+      font-size: 18px;
       font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .main-title span.emoji {
-      font-size: 20px;
-    }
-
-    .main-subtitle {
-      font-size: 12px;
-      color: var(--text-soft2);
-    }
-
-    .header-badges {
+    .header-actions {
       display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.82);
-    }
-
-    .pill.accent {
-      border-color: rgba(248, 113, 113, 0.8);
-      color: #fecaca;
-      background: radial-gradient(circle at 0 50%, rgba(248, 113, 113, 0.32), rgba(15, 23, 42, 0.85));
-    }
-
-    .pill span.dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #f97316;
-      box-shadow: 0 0 10px rgba(248, 113, 113, 0.8);
-    }
-
-    .main-body {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
       gap: 10px;
+    }
+
+    /* ===== CONTENT ===== */
+    .content {
+      flex: 1;
+      padding: 25px;
     }
 
     .page {
       display: none;
-      height: 100%;
-      overflow: auto;
-      padding-right: 4px;
     }
 
     .page.active {
       display: block;
     }
 
-    /* CARDS, LAYOUTS */
-
-    .grid {
-      display: grid;
-      gap: 10px;
+    /* ===== HOME PAGE ===== */
+    .welcome-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius);
+      padding: 30px;
+      color: white;
+      margin-bottom: 25px;
     }
 
-    .grid-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    @media (max-width: 1100px) {
-      .app-shell {
-        grid-template-columns: 220px 1fr;
-      }
-      .grid-3 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .grid-3,
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: radial-gradient(circle at 0 0, #020617 0, #020617 60%, #020617 100%);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      padding: 12px 14px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .card-title span.icon {
-      font-size: 15px;
-    }
-
-    .card-subtitle {
-      font-size: 11px;
-      color: var(--text-soft2);
-    }
-
-    .stat-main {
-      font-size: 19px;
-      font-weight: 600;
-      margin-top: 4px;
-    }
-
-    .stat-sub {
-      font-size: 11px;
-      color: var(--text-soft2);
-    }
-
-    .badge-soft {
-      border-radius: 999px;
-      padding: 2px 7px;
-      font-size: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: #e5e7eb;
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .badge-soft.green {
-      color: #bbf7d0;
-      border-color: rgba(34, 197, 94, 0.6);
-      background: rgba(22, 163, 74, 0.18);
-    }
-
-    .badge-soft.pink {
-      color: #fecaca;
-      border-color: rgba(248, 113, 113, 0.7);
-      background: rgba(248, 113, 113, 0.12);
-    }
-
-    .divider {
-      border-bottom: 1px dashed rgba(31, 41, 55, 0.9);
-      margin: 8px -14px;
-    }
-
-    .list {
-      list-style: none;
-      padding: 0;
-      margin: 4px 0 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-    }
-
-    .list-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      padding: 4px 0;
-    }
-
-    .list-item-main {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .muted {
-      color: var(--text-soft2);
-      font-size: 11px;
-    }
-
-    /* GM MODULE */
-
-    .gm-tabs {
-      display: inline-flex;
-      gap: 6px;
-      padding: 4px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(75, 85, 99, 0.7);
+    .welcome-card h2 {
+      font-size: 24px;
       margin-bottom: 8px;
     }
 
-    .gm-tab-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 4px 10px;
-      font-size: 11px;
-      color: var(--text-soft2);
-      background: transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+    .welcome-card p {
+      opacity: 0.9;
+      font-size: 14px;
     }
 
-    .gm-tab-btn:hover {
-      color: #e5e7eb;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
     }
 
-    .gm-tab-btn.active {
-      background: radial-gradient(circle at 0 0, rgba(248, 113, 113, 0.32), rgba(15, 23, 42, 0.9));
-      color: #fee2e2;
-      box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5);
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
     }
 
-    .gm-panels {
-      margin-top: 6px;
+    .stat-card .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
     }
 
-    .gm-panel {
-      display: none;
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
     }
 
-    .gm-panel.active {
-      display: block;
-    }
-
-    .table-like {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .table-like thead {
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .table-like th,
-    .table-like td {
-      padding: 5px 6px;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
-      text-align: left;
-    }
-
-    .table-like th {
-      font-weight: 500;
-      color: var(--text-soft2);
-      font-size: 11px;
-    }
-
-    .btn-xs {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
-      padding: 2px 7px;
-      font-size: 10px;
-      cursor: pointer;
-      color: #e5e7eb;
-    }
-
-    .btn-xs.primary {
-      border-color: rgba(248, 113, 113, 0.8);
-      background: rgba(248, 113, 113, 0.1);
-      color: #fecaca;
-    }
-
-    .btn-xs.green {
-      border-color: rgba(34, 197, 94, 0.7);
-      background: rgba(22, 163, 74, 0.12);
-      color: #bbf7d0;
-    }
-
-    .btn-xs.yellow {
-      border-color: rgba(234, 179, 8, 0.7);
-      background: rgba(234, 179, 8, 0.14);
-      color: #fef9c3;
-    }
-
-    .btn-xs.blue {
-      border-color: rgba(59, 130, 246, 0.7);
-      background: rgba(37, 99, 235, 0.14);
-      color: #bfdbfe;
-    }
-
-    .btn-xs + .btn-xs {
-      margin-left: 4px;
-    }
-
-    .pill-filter {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .pill-filter select {
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      border-radius: 999px;
-      border: 1px solid rgba(75, 85, 99, 0.9);
-      padding: 2px 7px;
-      font-size: 11px;
-    }
-
-    .pill-filter button {
-      margin-left: 4px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      padding: 2px 7px;
-      font-size: 11px;
-      cursor: pointer;
-      color: #e5e7eb;
-    }
-
-    /* CHAT FLOATING */
-
-    .chat-launcher {
+    /* ===== CHAT BUTTON ===== */
+    .chat-toggle {
       position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-    }
-
-    .chat-badge {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-soft);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      backdrop-filter: blur(10px);
-    }
-
-    .chat-toggle-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 999px;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 50%;
       border: none;
       cursor: pointer;
-      background: radial-gradient(circle at 30% 0, #f97316, #e11d48);
-      box-shadow: 0 18px 45px rgba(248, 113, 113, 0.8);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 26px;
       color: white;
-      font-size: 24px;
-      position: relative;
+      z-index: 200;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .chat-toggle-btn span.ping {
-      position: absolute;
-      width: 82%;
-      height: 82%;
-      border-radius: inherit;
-      border: 1px solid rgba(248, 250, 252, 0.7);
-      opacity: 0.6;
-      animation: ping 1.5s infinite;
+    .chat-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
     }
 
-    @keyframes ping {
-      0% {
-        transform: scale(1);
-        opacity: 0.6;
-      }
-      100% {
-        transform: scale(1.45);
-        opacity: 0;
-      }
-    }
-
+    /* ===== CHAT WINDOW ===== */
     .chat-window {
       position: fixed;
-      right: 16px;
-      bottom: 80px;
-      width: 320px;
-      max-height: 460px;
-      background: radial-gradient(circle at top, #020617 0, #020617 50%, #020617 100%);
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      bottom: 90px;
+      right: 20px;
+      width: 380px;
+      height: 500px;
+      background: var(--bg-alt);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
+      z-index: 199;
       overflow: hidden;
-      z-index: 40;
-      backdrop-filter: blur(22px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .chat-window.hidden {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      pointer-events: none;
     }
 
     .chat-header {
-      padding: 8px 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 15px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.95);
-      background: radial-gradient(circle at 0 0, rgba(248, 113, 113, 0.32), rgba(15, 23, 42, 0.95));
     }
 
-    .chat-header-main {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .chat-header-main strong {
-      font-size: 13px;
+    .chat-header-title {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
     }
 
-    .chat-header-main span.mode-label {
-      font-size: 10px;
-      color: #fee2e2;
+    .chat-header h3 {
+      font-size: 15px;
+      font-weight: 600;
     }
 
-    .chat-header-sub {
-      font-size: 10px;
-      color: #fecaca;
+    .chat-mode-label {
+      font-size: 11px;
+      background: rgba(255,255,255,0.2);
+      padding: 3px 8px;
+      border-radius: 10px;
     }
 
     .chat-messages {
       flex: 1;
-      padding: 8px;
       overflow-y: auto;
-      font-size: 12px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 0.96), #020617 65%);
+      gap: 10px;
     }
 
     .chat-msg {
-      max-width: 82%;
-      padding: 6px 8px;
-      border-radius: 11px;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      position: relative;
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
     .chat-msg.user {
-      margin-left: auto;
-      background: rgba(37, 99, 235, 0.16);
-      border-color: rgba(59, 130, 246, 0.85);
+      background: var(--primary);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
     }
 
     .chat-msg.ai {
-      margin-right: auto;
-      background: rgba(15, 23, 42, 0.9);
-      border-color: rgba(55, 65, 81, 0.9);
+      background: var(--bg);
+      color: var(--text);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
     }
 
-    .chat-meta {
-      font-size: 9px;
-      color: var(--text-soft2);
-      margin-top: 2px;
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .chat-input-wrap {
-      padding: 7px;
-      border-top: 1px solid rgba(31, 41, 55, 0.95);
-      background: rgba(15, 23, 42, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .chat-input-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .chat-input-row input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.95);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 6px 10px;
-      font-size: 12px;
-      outline: none;
-    }
-
-    .chat-input-row input::placeholder {
-      color: var(--text-soft2);
-    }
-
-    .chat-input-row button {
-      border-radius: 999px;
-      border: 1px solid rgba(248, 113, 113, 0.85);
-      background: radial-gradient(circle at 0 0, rgba(248, 113, 113, 0.3), rgba(15, 23, 42, 1));
-      color: #fee2e2;
-      padding: 5px 10px;
-      font-size: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .chat-hints {
+    .chat-msg .time {
       font-size: 10px;
-      color: var(--text-soft2);
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border);
       display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
+      gap: 10px;
     }
 
-    .chat-hints span {
-      border-radius: 999px;
-      border: 1px dashed rgba(75, 85, 99, 0.9);
-      padding: 1px 6px;
+    .chat-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      padding: 10px 18px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
     }
 
-    .hidden {
-      display: none !important;
+    .chat-input:focus {
+      border-color: var(--primary);
+    }
+
+    .chat-send {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .chat-send:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ===== OVERLAY ===== */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .menu-btn {
+        display: block;
+      }
+
+      .header {
+        padding: 12px 15px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .chat-window {
+        right: 10px;
+        left: 10px;
+        bottom: 80px;
+        width: auto;
+        height: calc(100vh - 160px);
+        max-height: 500px;
+      }
+
+      .chat-toggle {
+        bottom: 15px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+      }
+
+      .welcome-card {
+        padding: 20px;
+      }
+
+      .welcome-card h2 {
+        font-size: 20px;
+      }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-msg {
+      animation: slideIn 0.2s ease;
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
+  <div class="app">
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="logo-row">
-        <div class="logo-badge">SP</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">SP</div>
         <div>
-          <div class="logo-text-main">SuperParty</div>
-          <div class="logo-text-sub">Creier AI + GM Dashboard</div>
+          <div class="logo-text">SuperParty</div>
+          <div class="logo-sub">Management</div>
         </div>
       </div>
 
-      <div>
-        <div class="sidebar-section-label">Navigare</div>
-        <div class="nav-list">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Meniu</div>
           <div class="nav-item active" data-page="home">
-            <div class="nav-dot"></div>
-            <span class="label">🏠 Acasă</span>
-            <small>overview</small>
-          </div>
-          <div class="nav-item" data-page="noteaza">
-            <div class="nav-dot"></div>
-            <span class="label">📝 Notează Eveniment</span>
-            <small>rapid</small>
-          </div>
-          <div class="nav-item" data-page="nealocate">
-            <div class="nav-dot"></div>
-            <span class="label">🎈 Petreceri Nealocate</span>
-          </div>
-          <div class="nav-item" data-page="ce-am">
-            <div class="nav-dot"></div>
-            <span class="label">📅 Ce Petreceri Am</span>
-          </div>
-          <div class="nav-item" data-page="total">
-            <div class="nav-dot"></div>
-            <span class="label">📊 Total Petreceri</span>
-          </div>
-          <div class="nav-item" data-page="soferi">
-            <div class="nav-dot"></div>
-            <span class="label">🚗 Evenimente cu Șoferi</span>
-          </div>
-          <div class="nav-item" data-page="echipa">
-            <div class="nav-dot"></div>
-            <span class="label">👥 Echipa</span>
-          </div>
-          <div class="nav-item" data-page="inventar">
-            <div class="nav-dot"></div>
-            <span class="label">📦 Inventar</span>
-          </div>
-          <div class="nav-item" data-page="piniata">
-            <div class="nav-dot"></div>
-            <span class="label">🎊 Piniata</span>
+            <span class="icon">🏠</span>
+            <span>Acasă</span>
           </div>
         </div>
-      </div>
 
-      <div id="adminNavGroup" class="hidden">
-        <div class="sidebar-section-label">Admin</div>
-        <div class="nav-list">
+        <!-- ADMIN GROUP -->
+        <div class="nav-section nav-group" id="adminNavGroup">
+          <div class="nav-section-title">Admin</div>
           <div class="nav-item" data-page="admin-users">
-            <div class="nav-dot"></div>
-            <span class="label">🔐 Management Utilizatori</span>
+            <span class="icon">👥</span>
+            <span>Utilizatori</span>
           </div>
         </div>
-      </div>
 
-      <div id="gmNavGroup" class="hidden">
-        <div class="sidebar-section-label">GM</div>
-        <div class="nav-list">
+        <!-- GM GROUP -->
+        <div class="nav-section nav-group" id="gmNavGroup">
+          <div class="nav-section-title">GM Panel</div>
           <div class="nav-item" data-page="gm-panel">
-            <div class="nav-dot"></div>
-            <span class="label">🎮 GM Panel</span>
+            <span class="icon">⚙️</span>
+            <span>GM Panel</span>
           </div>
         </div>
-      </div>
+      </nav>
 
       <div class="sidebar-footer">
-        <div class="mode-pill">
-          <span>
-            <span class="mode-badge">Mode</span>
-            <strong id="currentModeLabel">Standard</strong>
-          </span>
-          <span id="currentModeStatus" class="mode-status off">
-            <span class="dot"></span> OFF
-          </span>
-        </div>
-        <div class="hint-commands">
-          Comenzi secrete în chat:<br />
-          <code>open mod andrei admin</code><br />
-          <code>open mod andrei gm</code><br />
-          <code>intra in mod logare</code><br />
-          <code>iesi din mod admin</code><br />
-          <code>iesi din mod gm</code>
+        <div class="mode-status">
+          <span class="mode-dot" id="modeDot"></span>
+          <span>Mod: <strong id="modeLabel">Standard</strong></span>
         </div>
       </div>
     </aside>
 
+    <!-- OVERLAY (mobile) -->
+    <div class="overlay" id="overlay"></div>
+
     <!-- MAIN -->
     <main class="main">
-      <header class="main-header">
-        <div class="main-title-wrap">
-          <div class="main-title">
-            <span class="emoji">🧠</span>
-            SuperParty – Creier AI
-          </div>
-          <div class="main-subtitle">
-            Dashboard pentru petreceri, echipă & GM – conectat la Google Sheets.
-          </div>
-        </div>
-        <div class="header-badges">
-          <div class="pill accent">
-            <span class="dot"></span>
-            <span>AI Live</span>
-          </div>
-          <div class="pill">
-            🌐 <span id="backendStatusLabel">Backend conectat</span>
-          </div>
-        </div>
+      <header class="header">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <h1 class="page-title" id="pageTitle">Acasă</h1>
+        <div class="header-actions"></div>
       </header>
 
-      <section class="main-body">
-        <!-- PAGINA ACASĂ -->
-        <div class="page active" id="page-home">
-          <div class="grid grid-3">
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title">
-                    <span class="icon">📈</span>
-                    Acuratețe AI
-                  </div>
-                  <div class="card-subtitle">Estimat pe baza verificărilor GM</div>
-                </div>
-                <span class="badge-soft green" id="aiAccuracyBadge">92% OK</span>
-              </div>
-              <div class="stat-main" id="aiAccuracyValue">92%</div>
-              <div class="stat-sub">Ultima actualizare: automat din Creier AI</div>
+      <div class="content">
+        <!-- HOME PAGE -->
+        <section class="page active" id="page-home">
+          <div class="welcome-card">
+            <h2>Bine ai venit! 👋</h2>
+            <p>Aplicația ta SuperParty este gata. Folosește chat-ul pentru a o personaliza.</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Status</div>
+              <div class="value" style="font-size: 18px; color: var(--success);">✓ Conectat</div>
             </div>
-
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title">
-                    <span class="icon">⏱️</span>
-                    Timp economisit
-                  </div>
-                  <div class="card-subtitle">Față de munca manuală cu Excel / WhatsApp</div>
-                </div>
-              </div>
-              <div class="stat-main" id="timeSavedValue">120 min</div>
-              <div class="stat-sub">Pe ultimele conversații / calcule de salarii</div>
-            </div>
-
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title">
-                    <span class="icon">💬</span>
-                    Conversații AI
-                  </div>
-                  <div class="card-subtitle">Ce se întâmplă în chat-ul de pe site</div>
-                </div>
-              </div>
-              <div class="stat-main" id="totalMessagesValue">–</div>
-              <div class="stat-sub">
-                conversații: <span id="totalConversationsValue">–</span> · useri logați:
-                <span id="uniqueUsersValue">–</span>
-              </div>
+            <div class="stat-card">
+              <div class="label">Mod curent</div>
+              <div class="value" style="font-size: 18px;" id="homeModLabel">Standard</div>
             </div>
           </div>
+        </section>
 
-          <div class="grid grid-2" style="margin-top: 10px;">
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title">
-                    <span class="icon">📌</span>
-                    Trending Topics
-                  </div>
-                  <div class="card-subtitle">Top 3 întrebări puse de părinți / clienți</div>
-                </div>
-                <span class="badge-soft">auto din Conversații</span>
-              </div>
-              <ul class="list" id="trendingTopicsList">
-                <li class="muted">Se încarcă din Creier AI...</li>
-              </ul>
-            </div>
+        <!-- ADMIN PAGE -->
+        <section class="page" id="page-admin-users">
+          <div class="welcome-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <h2>Admin Panel 🔐</h2>
+            <p>Management utilizatori și setări</p>
+          </div>
+        </section>
 
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title">
-                    <span class="icon">🎉</span>
-                    Flux rapid Notează Petrecere
-                  </div>
-                  <div class="card-subtitle">Poți și din chat: „vreau să notez o petrecere..."</div>
-                </div>
-                <span class="badge-soft pink">GPT Trigger</span>
-              </div>
-              <div>
-                <div class="muted" style="margin-bottom: 6px;">
-                  Exemplu: <br />
-                  <code style="font-size:11px;">
-                    vreau să notez o petrecere pe 15 martie la ora 17:00, la X, cu Elsa și Spiderman
-                  </code>
-                </div>
-                <button class="btn-xs primary" id="openNoteazaFromHome">
-                  Deschide „Notează Eveniment"
-                </button>
-              </div>
+        <!-- GM PAGE -->
+        <section class="page" id="page-gm-panel">
+          <div class="welcome-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <h2>GM Panel ⚙️</h2>
+            <p>Modifică aplicația din chat. Scrie comenzi pentru a adăuga/șterge/modifica elemente.</p>
+          </div>
+          <div class="stat-card" style="margin-top: 20px;">
+            <div class="label">Comenzi rapide</div>
+            <div style="font-size: 13px; color: var(--text-soft); line-height: 1.8; margin-top: 10px;">
+              • <code>culoare sidebar rosu</code> - schimbă culoare<br>
+              • <code>titlu Nume Nou</code> - schimbă titlul<br>
+              • <code>versiuni</code> - vezi istoric<br>
+              • <code>undo</code> - anulează modificare<br>
+              • <code>ajutor</code> - toate comenzile
             </div>
           </div>
-        </div>
-
-        <!-- PAGE: NOTEAZĂ EVENIMENT -->
-        <div class="page" id="page-noteaza">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">
-                  <span class="icon">📝</span>
-                  Notează Eveniment
-                </div>
-                <div class="card-subtitle">Formular simplu – dar poți folosi și chat-ul AI.</div>
-              </div>
-            </div>
-            <div style="font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
-              <div>
-                <label>Descriere petrecere</label><br />
-                <textarea id="noteazaDescriere" rows="4" style="width:100%;background:#020617;color:#e5e7eb;border-radius:10px;border:1px solid rgba(55,65,81,0.95);padding:6px;font-size:12px;"></textarea>
-              </div>
-              <div>
-                <label>Detalii structurate (JSON simplu)</label><br />
-                <textarea id="noteazaDetalii" rows="4" style="width:100%;background:#020617;color:#e5e7eb;border-radius:10px;border:1px solid rgba(55,65,81,0.95);padding:6px;font-size:12px;">{
-  "data": "",
-  "ora": "",
-  "locatie": "",
-  "contact": ""
-}</textarea>
-                <div style="margin-top:8px;">
-                  <button class="btn-xs primary" id="btnCreatePetrecereForm">Creează Petrecere</button>
-                  <span class="muted" id="noteazaStatus"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE: PETRECERI NEALOCATE -->
-        <div class="page" id="page-nealocate">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">🎈</span>
-                Petreceri Nealocate
-              </div>
-            </div>
-            <table class="table-like" id="tableNealocate">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Descriere</th>
-                  <th>Status</th>
-                  <th>Detalii</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td colspan="4" class="muted">Se vor încărca din Creier AI...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- PAGE: CE PETRECERI AM -->
-        <div class="page" id="page-ce-am">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">📅</span>
-                Ce Petreceri Am
-              </div>
-            </div>
-            <div class="muted">
-              În viitor: filtrare după user logat. Momentan afișăm toate petrecerile din Google Sheets.
-            </div>
-            <table class="table-like" id="tableCeAm">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Descriere</th>
-                  <th>Status</th>
-                  <th>Detalii</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td colspan="4" class="muted">Se vor încărca din Creier AI...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- PAGE: TOTAL PETRECERI -->
-        <div class="page" id="page-total">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">📊</span>
-                Total Petreceri
-              </div>
-            </div>
-            <div class="grid grid-3">
-              <div>
-                <div class="muted">Total petreceri</div>
-                <div class="stat-main" id="totalPetreceriCount">–</div>
-              </div>
-              <div>
-                <div class="muted">Nealocate</div>
-                <div class="stat-main" id="totalNealocateCount">–</div>
-              </div>
-              <div>
-                <div class="muted">Cu personaje alocate</div>
-                <div class="stat-main" id="totalCuPersonajeCount">–</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE: ȘOFERI -->
-        <div class="page" id="page-soferi">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">🚗</span>
-                Evenimente cu Șoferi
-              </div>
-            </div>
-            <div class="muted">
-              În viitor putem marca în DetaliiJson dacă e nevoie de șofer și filtra aici.
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE: ECHIPA -->
-        <div class="page" id="page-echipa">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">👥</span>
-                Echipa
-              </div>
-            </div>
-            <table class="table-like" id="tableEchipa">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nume</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Aprobat</th>
-                  <th>Blocat</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td colspan="6" class="muted">Se vor încărca din Creier AI...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- PAGE: INVENTAR -->
-        <div class="page" id="page-inventar">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">📦</span>
-                Inventar
-              </div>
-            </div>
-            <div class="muted">
-              Poate fi conectat ulterior la alt sheet / modul „Inventar".
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE: PINIATA -->
-        <div class="page" id="page-piniata">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">🎊</span>
-                Piniata
-              </div>
-            </div>
-            <div class="muted">
-              Modul special Piniata – de construit ulterior. Acum este un placeholder în UI.
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE: ADMIN USERS -->
-        <div class="page" id="page-admin-users">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon">🔐</span>
-                Management Utilizatori (Admin)
-              </div>
-            </div>
-            <table class="table-like" id="tableAdminUsers">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nume</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Aprobat</th>
-                  <th>Blocat</th>
-                  <th>Acțiuni</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td colspan="7" class="muted">Vizibil doar în mod Admin.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- PAGE: GM PANEL -->
-        <div class="page" id="page-gm-panel">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">
-                  <span class="icon">🎮</span>
-                  GM Panel
-                </div>
-                <div class="card-subtitle">
-                  Control pentru verificări AI, conversații și training.
-                </div>
-              </div>
-              <span class="badge-soft pink">mod GM</span>
-            </div>
-
-            <div class="gm-tabs">
-              <button class="gm-tab-btn active" data-gm-tab="gm-conversatii">📋 Toate Conversațiile</button>
-              <button class="gm-tab-btn" data-gm-tab="gm-logati">👤 Utilizatori Logați</button>
-              <button class="gm-tab-btn" data-gm-tab="gm-nelogati">👻 Nelogați</button>
-              <button class="gm-tab-btn" data-gm-tab="gm-verificari">🔍 Verificări AI</button>
-              <button class="gm-tab-btn" data-gm-tab="gm-analytics">📊 Analytics</button>
-              <button class="gm-tab-btn" data-gm-tab="gm-training">⚙️ Training</button>
-            </div>
-
-            <div class="gm-panels">
-              <!-- TAB 1: Conversații -->
-              <div class="gm-panel active" id="gm-conversatii">
-                <div class="muted">Ultimele conversații (logate + nelogate).</div>
-                <table class="table-like" id="tableGMConversations">
-                  <thead>
-                    <tr>
-                      <th>TS</th>
-                      <th>Session</th>
-                      <th>User</th>
-                      <th>From</th>
-                      <th>Mesaj</th>
-                      <th>Logat?</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td colspan="6" class="muted">Se vor încărca din Creier AI...</td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- TAB 2: Logați -->
-              <div class="gm-panel" id="gm-logati">
-                <div class="muted">Utilizatori logați (din Echipa + conversații).</div>
-                <table class="table-like" id="tableGMLogged">
-                  <thead>
-                    <tr>
-                      <th>User</th>
-                      <th>Conversații</th>
-                      <th>Acțiune</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td colspan="3" class="muted">Se calculează din date.</td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- TAB 3: Nelogați -->
-              <div class="gm-panel" id="gm-nelogati">
-                <div class="muted">Session guests: prima/ultima vizită, nr. conversații.</div>
-                <table class="table-like" id="tableGMGuests">
-                  <thead>
-                    <tr>
-                      <th>Session</th>
-                      <th>Prima vizită</th>
-                      <th>Ultima vizită</th>
-                      <th>Conversații</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td colspan="4" class="muted">Se încarcă din getUnloggedUsers...</td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- TAB 4: Verificări AI -->
-              <div class="gm-panel" id="gm-verificari">
-                <div class="muted">Secțiune pentru verificări AI - în dezvoltare.</div>
-              </div>
-
-              <!-- TAB 5: Analytics -->
-              <div class="gm-panel" id="gm-analytics">
-                <div class="grid grid-3">
-                  <div>
-                    <div class="card-subtitle">Acuratețe AI (%)</div>
-                    <div class="stat-main" id="gmAiAccuracy">92%</div>
-                  </div>
-                  <div>
-                    <div class="card-subtitle">Timp mediu răspuns</div>
-                    <div class="stat-main" id="gmAvgResponse">3s</div>
-                  </div>
-                  <div>
-                    <div class="card-subtitle">Timp economisit</div>
-                    <div class="stat-main" id="gmTimeSaved">120 min</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TAB 6: Training -->
-              <div class="gm-panel" id="gm-training">
-                <div class="muted">Secțiune pentru training AI - în dezvoltare.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   </div>
 
-  <!-- CHAT FLOATING -->
-  <div class="chat-launcher">
-    <div class="chat-badge">Întreabă Creierul AI sau tastează comanda secretă…</div>
-    <button class="chat-toggle-btn" id="chatToggleBtn">
-      <span class="ping"></span>
-      🤖
-    </button>
-  </div>
+  <!-- CHAT TOGGLE -->
+  <button class="chat-toggle" id="chatToggle">💬</button>
 
+  <!-- CHAT WINDOW -->
   <div class="chat-window hidden" id="chatWindow">
     <div class="chat-header">
-      <div class="chat-header-main">
-        <strong>
-          🤖 SuperParty Bot
-          <span class="mode-label" id="chatModeLabel">Standard</span>
-        </strong>
-        <span class="chat-header-sub">Poți scrie natural sau cu comenzi speciale.</span>
+      <div class="chat-header-title">
+        <span>🤖</span>
+        <h3>SuperParty AI</h3>
       </div>
-      <span class="badge-soft">Conectat la Creier AI</span>
+      <span class="chat-mode-label" id="chatModeLabel">Standard</span>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-wrap">
-      <div class="chat-input-row">
-        <input id="chatInput" placeholder="Scrie un mesaj... ex: 'vreau să notez o petrecere...'" />
-        <button id="chatSendBtn">Trimite</button>
-      </div>
-      <div class="chat-hints">
-        <span>💡 ex: „ce servicii oferiți?"</span>
-        <span>💡 ex: „vreau să notez o petrecere..."</span>
-      </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Scrie un mesaj...">
+      <button class="chat-send" id="chatSend">➤</button>
     </div>
   </div>
 
   <script>
-    // =======================
-    // CONFIG FRONTEND - URL NOU ACTUALIZAT
-    // =======================
+    // ===== CONFIG =====
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyfyw63pxz5z6hW0abaQXEvu1aU1OPSykc2v8Jz23-z2RFY14rw1zU90ETUEn8TLZXd/exec";
     const GM_PASSWORD = "Gmandrei209512!";
+    const ADMIN_PASSWORD = "Adminandrei209512!";
 
+    // ===== STATE =====
     let currentPage = "home";
     let currentMode = "standard";
-    let sessionId = "sess-" + Math.random().toString(36).slice(2);
-    let loggedUser = null;
 
-    // =======================
-    // GENERIC BACKEND CALL
-    // =======================
-    async function callBackend(action, payload = {}) {
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action, payload }),
-        });
-        const data = await res.json();
-        if (!data.ok) {
-          console.error("Backend error:", data.error);
-          throw new Error(data.error || "Eroare backend");
-        }
-        return data.data;
-      } catch (e) {
-        console.error("callBackend failed", e);
-        document.getElementById("backendStatusLabel").textContent = "Eroare backend";
-        return null;
-      }
-    }
+    // ===== ELEMENTS =====
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const menuBtn = document.getElementById("menuBtn");
+    const pageTitle = document.getElementById("pageTitle");
+    const chatToggle = document.getElementById("chatToggle");
+    const chatWindow = document.getElementById("chatWindow");
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const chatSend = document.getElementById("chatSend");
 
-    // =======================
-    // SIDEBAR NAV
-    // =======================
-    document.querySelectorAll(".nav-item").forEach((item) => {
+    // ===== MOBILE MENU =====
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.add("open");
+      overlay.classList.add("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+    });
+
+    // ===== NAVIGATION =====
+    document.querySelectorAll(".nav-item").forEach(item => {
       item.addEventListener("click", () => {
-        const page = item.getAttribute("data-page");
+        const page = item.dataset.page;
         if (!page) return;
-        setActivePage(page);
+
+        // Update nav
+        document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+
+        // Update page
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById("page-" + page)?.classList.add("active");
+
+        // Update title
+        pageTitle.textContent = item.querySelector("span:last-child").textContent;
+        currentPage = page;
+
+        // Close mobile menu
+        sidebar.classList.remove("open");
+        overlay.classList.remove("active");
       });
     });
 
-    function setActivePage(page) {
-      currentPage = page;
-      document.querySelectorAll(".nav-item").forEach((el) => el.classList.remove("active"));
-      document.querySelector('.nav-item[data-page="' + page + '"]')?.classList.add("active");
-      document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-      document.getElementById("page-" + page)?.classList.add("active");
-    }
-
-    document.getElementById("openNoteazaFromHome").addEventListener("click", () => setActivePage("noteaza"));
-
-    // =======================
-    // MODURI (ADMIN / GM / LOGARE)
-    // =======================
+    // ===== MODE UI =====
     function updateModeUI() {
-      const label = document.getElementById("currentModeLabel");
-      const status = document.getElementById("currentModeStatus");
-      const chatLabel = document.getElementById("chatModeLabel");
+      const modeLabel = document.getElementById("modeLabel");
+      const modeDot = document.getElementById("modeDot");
+      const chatModeLabel = document.getElementById("chatModeLabel");
+      const homeModLabel = document.getElementById("homeModLabel");
+      const adminNav = document.getElementById("adminNavGroup");
+      const gmNav = document.getElementById("gmNavGroup");
 
-      let modeText = "Standard";
-      let on = false;
+      modeLabel.textContent = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+      chatModeLabel.textContent = modeLabel.textContent;
+      homeModLabel.textContent = modeLabel.textContent;
 
-      if (currentMode === "admin") {
-        modeText = "Admin";
-        on = true;
-        document.getElementById("adminNavGroup").classList.remove("hidden");
-      } else {
-        document.getElementById("adminNavGroup").classList.add("hidden");
-      }
+      modeDot.classList.toggle("active", currentMode !== "standard");
 
-      if (currentMode === "gm") {
-        modeText = "GM";
-        on = true;
-        document.getElementById("gmNavGroup").classList.remove("hidden");
-      } else if (currentMode !== "gm") {
-        document.getElementById("gmNavGroup").classList.add("hidden");
-      }
-
-      if (currentMode === "login") {
-        modeText = "Logare";
-        on = true;
-      }
-
-      label.textContent = modeText;
-      chatLabel.textContent = modeText;
-      status.classList.toggle("on", on);
-      status.classList.toggle("off", !on);
-      status.innerHTML = '<span class="dot"></span> ' + (on ? "ON" : "OFF");
+      adminNav.classList.toggle("visible", currentMode === "admin");
+      gmNav.classList.toggle("visible", currentMode === "gm");
     }
 
-    // Parole pentru moduri
-    const ADMIN_PASSWORD = "Adminandrei209512!";
-    const GM_PASSWORD_LOCAL = "Gmandrei209512!";
-
-    function handleModeCommands(textRaw) {
-      const text = textRaw.trim().toLowerCase();
-
-      if (text === "open mod andrei admin") {
-        const pass = prompt("🔐 Introdu parola pentru Admin:");
-        if (pass === ADMIN_PASSWORD) {
-          currentMode = "admin";
-          updateModeUI();
-          pushAIMessage("✅ Am intrat în mod <b>Admin</b>. Ai acces la management utilizatori.");
-        } else {
-          pushAIMessage("❌ Parolă greșită!");
-        }
-        return true;
-      }
-      if (text === "open mod andrei gm") {
-        const pass = prompt("🔐 Introdu parola pentru GM:");
-        if (pass === GM_PASSWORD_LOCAL) {
-          currentMode = "gm";
-          updateModeUI();
-          pushAIMessage("✅ Am intrat în mod <b>GM</b>. Poți modifica aplicația din chat!");
-        } else {
-          pushAIMessage("❌ Parolă greșită!");
-        }
-        return true;
-      }
-      if (text === "intra in mod logare") {
-        currentMode = "login";
-        updateModeUI();
-        pushAIMessage("🔐 Am intrat în mod <b>Logare</b>. Putem conecta UI-ul la un user din Echipa.");
-        return true;
-      }
-      if (text === "iesi din mod admin") {
-        if (currentMode === "admin") {
-          currentMode = "standard";
-          updateModeUI();
-          pushAIMessage("👋 Am ieșit din mod Admin.");
-        } else {
-          pushAIMessage("Nu ești în mod Admin acum.");
-        }
-        return true;
-      }
-      if (text === "iesi din mod gm") {
-        if (currentMode === "gm") {
-          currentMode = "standard";
-          updateModeUI();
-          pushAIMessage("👋 Am ieșit din mod GM.");
-        } else {
-          pushAIMessage("Nu ești în mod GM acum.");
-        }
-        return true;
-      }
-      return false;
-    }
-
-    // =======================
-    // CHAT UI
-    // =======================
-    const chatWindow = document.getElementById("chatWindow");
-    const chatToggleBtn = document.getElementById("chatToggleBtn");
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const chatSendBtn = document.getElementById("chatSendBtn");
-
-    chatToggleBtn.addEventListener("click", () => {
+    // ===== CHAT =====
+    chatToggle.addEventListener("click", () => {
       chatWindow.classList.toggle("hidden");
       if (!chatWindow.classList.contains("hidden")) {
         chatInput.focus();
@@ -1577,125 +711,100 @@
 
     function pushMessage(role, text) {
       const div = document.createElement("div");
-      div.className = "chat-msg " + (role === "user" ? "user" : "ai");
-      div.innerHTML = '<div>' + text + '</div><div class="chat-meta"><span>' + (role === "user" ? "Tu" : "AI") + '</span><span>' + new Date().toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" }) + '</span></div>';
+      div.className = "chat-msg " + role;
+      div.innerHTML = text + '<div class="time">' + new Date().toLocaleTimeString("ro-RO", {hour: "2-digit", minute: "2-digit"}) + '</div>';
       chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function pushAIMessage(text) {
-      pushMessage("ai", text);
+    function handleModeCommands(text) {
+      const lower = text.toLowerCase().trim();
+
+      if (lower === "open mod andrei admin") {
+        const pass = prompt("🔐 Parola Admin:");
+        if (pass === ADMIN_PASSWORD) {
+          currentMode = "admin";
+          updateModeUI();
+          pushMessage("ai", "✅ Mod <b>Admin</b> activat!");
+        } else {
+          pushMessage("ai", "❌ Parolă greșită!");
+        }
+        return true;
+      }
+
+      if (lower === "open mod andrei gm") {
+        const pass = prompt("🔐 Parola GM:");
+        if (pass === GM_PASSWORD) {
+          currentMode = "gm";
+          updateModeUI();
+          pushMessage("ai", "✅ Mod <b>GM</b> activat! Poți modifica aplicația din chat.");
+        } else {
+          pushMessage("ai", "❌ Parolă greșită!");
+        }
+        return true;
+      }
+
+      if (lower === "iesi din mod admin" || lower === "iesi din mod gm" || lower === "exit") {
+        currentMode = "standard";
+        updateModeUI();
+        pushMessage("ai", "👋 Revenit la mod Standard.");
+        return true;
+      }
+
+      return false;
     }
 
     async function handleChatSend() {
       const text = chatInput.value.trim();
       if (!text) return;
+
       chatInput.value = "";
       pushMessage("user", text);
 
-      if (handleModeCommands(text)) {
-        return;
-      }
+      if (handleModeCommands(text)) return;
 
-      // Afișează "se gândește..."
-      pushAIMessage("⏳ Mă gândesc...");
+      pushMessage("ai", "⏳ Mă gândesc...");
 
       try {
-        // Construiește URL-ul în funcție de mod
         let url = BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text);
-        
-        // Dacă suntem în GM mode, adaugă parametrii
         if (currentMode === "gm") {
           url += "&mode=gm&password=" + encodeURIComponent(GM_PASSWORD);
         }
-        
-        const response = await fetch(url, { method: "GET" });
+
+        const response = await fetch(url);
         const data = await response.json();
-        
-        // Șterge mesajul "se gândește"
-        const lastMsg = chatMessages.lastElementChild;
-        if (lastMsg && lastMsg.textContent.includes("gândesc")) {
-          lastMsg.remove();
+
+        // Remove thinking message
+        const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
+        const last = msgs[msgs.length - 1];
+        if (last && last.textContent.includes("gândesc")) {
+          last.remove();
         }
-        
+
         if (data.ok && data.reply) {
-          // Formatează răspunsul (convertește **text** în bold)
-          let formattedReply = data.reply
-            .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-            .replace(/\n/g, '<br>');
-          pushAIMessage(formattedReply);
-          
-          // Dacă a fost o modificare, arată notificare
-          if (data.action === "modified") {
-            showNotification("✅ Modificare aplicată! Site-ul se actualizează...", "success");
-          }
-        } else if (data.error) {
-          pushAIMessage("⚠️ Eroare: " + data.error);
+          let reply = data.reply.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+          pushMessage("ai", reply);
         } else {
-          pushAIMessage("⚠️ Nu am primit răspuns de la AI.");
+          pushMessage("ai", "⚠️ " + (data.error || "Eroare necunoscută"));
         }
       } catch (e) {
-        // Șterge mesajul "se gândește"
-        const lastMsg = chatMessages.lastElementChild;
-        if (lastMsg && lastMsg.textContent.includes("gândesc")) {
-          lastMsg.remove();
+        const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
+        const last = msgs[msgs.length - 1];
+        if (last && last.textContent.includes("gândesc")) {
+          last.remove();
         }
-        console.error("Chat error:", e);
-        pushAIMessage("⚠️ Eroare la conectare cu AI-ul.");
+        pushMessage("ai", "⚠️ Eroare conexiune.");
       }
     }
 
-    // Funcție pentru notificări
-    function showNotification(message, type) {
-      const notif = document.createElement("div");
-      notif.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 25px;
-        background: ${type === "success" ? "rgba(34, 197, 94, 0.9)" : "rgba(239, 68, 68, 0.9)"};
-        color: white;
-        border-radius: 10px;
-        z-index: 9999;
-        font-size: 14px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        animation: slideIn 0.3s ease;
-      `;
-      notif.textContent = message;
-      document.body.appendChild(notif);
-      
-      setTimeout(() => {
-        notif.style.animation = "slideOut 0.3s ease";
-        setTimeout(() => notif.remove(), 300);
-      }, 4000);
-    }
-
-    chatSendBtn.addEventListener("click", handleChatSend);
-    chatInput.addEventListener("keydown", (e) => {
+    chatSend.addEventListener("click", handleChatSend);
+    chatInput.addEventListener("keydown", e => {
       if (e.key === "Enter") handleChatSend();
     });
 
-    // =======================
-    // GM Tabs
-    // =======================
-    document.querySelectorAll(".gm-tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const tab = btn.getAttribute("data-gm-tab");
-        document.querySelectorAll(".gm-tab-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        document.querySelectorAll(".gm-panel").forEach((p) => p.classList.remove("active"));
-        document.getElementById(tab)?.classList.add("active");
-      });
-    });
-
-    // =======================
-    // INIT
-    // =======================
-    (function init() {
-      updateModeUI();
-      document.getElementById("backendStatusLabel").textContent = "Backend conectat ✔";
-      pushAIMessage("Salut! Sunt Creierul AI SuperParty. Cu ce te pot ajuta?");
-    })();
+    // ===== INIT =====
+    updateModeUI();
+    pushMessage("ai", "Salut! 👋 Sunt AI-ul SuperParty. Cu ce te pot ajuta?");
   </script>
 </body>
 </html>
