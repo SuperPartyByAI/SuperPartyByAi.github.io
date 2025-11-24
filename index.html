@@ -880,7 +880,7 @@
             <div class="nav-dot"></div>
             <span class="label">📦 Inventar</span>
           </div>
-          <div class="nav-item" data-page="piniata" id="navPiniata">
+          <div class="nav-item" data-page="piniata">
             <div class="nav-dot"></div>
             <span class="label">🎊 Piniata</span>
           </div>
@@ -1469,7 +1469,6 @@
       const label = document.getElementById("currentModeLabel");
       const status = document.getElementById("currentModeStatus");
       const chatLabel = document.getElementById("chatModeLabel");
-      const piniataNav = document.getElementById("navPiniata");
 
       let modeText = "Standard";
       let on = false;
@@ -1493,15 +1492,6 @@
       if (currentMode === "login") {
         modeText = "Logare";
         on = true;
-        // Ascunde butonul piniata în modul logare
-        if (piniataNav) {
-          piniataNav.style.display = "none";
-        }
-      } else {
-        // Arată butonul piniata în alte moduri
-        if (piniataNav) {
-          piniataNav.style.display = "";
-        }
       }
 
       label.textContent = modeText;
@@ -1538,7 +1528,7 @@
           updateModeUI();
           pushAIMessage("👋 Am ieșit din mod Admin.");
         } else {
-          pushAIMessage("Nu ești în mod Admin acum.");
+          // Removed message "Nu ești în mod Admin acum."
         }
         return true;
       }
@@ -1548,7 +1538,7 @@
           updateModeUI();
           pushAIMessage("👋 Am ieșit din mod GM.");
         } else {
-          pushAIMessage("Nu ești în mod GM acum.");
+          // Removed message "Nu ești în mod GM acum."
         }
         return true;
       }
