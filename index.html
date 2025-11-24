@@ -790,6 +790,21 @@
             const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
             const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
             
+            // Istoric corecții
+            let corectiiHtml = '';
+            if (c.corectii && c.corectii.length > 0) {
+              corectiiHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">';
+              corectiiHtml += '<div style="font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;">📜 Istoric modificări:</div>';
+              c.corectii.forEach((cor, corIdx) => {
+                const corTime = new Date(cor.timestamp).toLocaleString('ro-RO');
+                corectiiHtml += `<div style="padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;margin-bottom:6px;font-size:13px;">
+                  <span style="color:var(--text-soft);">#${corIdx + 1} • ${corTime}</span><br>
+                  <span style="color:#059669;">→ "${cor.corectie}"</span>
+                </div>`;
+              });
+              corectiiHtml += '</div>';
+            }
+            
             html += `<div class="card" style="${statusClass}">
               <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
                 <strong>#${idx + 1}</strong>
@@ -797,11 +812,11 @@
               </div>
               <div style="margin-bottom:8px;"><strong>User:</strong> "${c.mesaj}"</div>
               <div style="margin-bottom:12px;color:var(--text-soft);"><strong>AI:</strong> "${c.raspuns ? c.raspuns.substring(0, 200) : ''}${c.raspuns && c.raspuns.length > 200 ? '...' : ''}"</div>
-              ${c.status !== 'ok' && c.status !== 'corectat' ? `
-              <div style="display:flex;gap:10px;">
-                <button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>
-                <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ Corectează</button>
-              </div>` : ''}
+              ${corectiiHtml}
+              <div style="display:flex;gap:10px;margin-top:12px;">
+                ${c.status !== 'ok' ? `<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>` : ''}
+                <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
+              </div>
             </div>`;
           });
         } else {
