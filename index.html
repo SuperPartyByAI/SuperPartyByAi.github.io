@@ -400,7 +400,9 @@
       <h1 class="page-title" id="pageTitle">Acasă</h1>
       <div></div>
     </header>
-    <div class="content" id="content"></div>
+    <div class="content" id="content">
+      <div class="loading">Se încarcă...</div>
+    </div>
   </main>
 
   <button class="chat-toggle" id="chatToggle">🤖</button>
@@ -435,17 +437,6 @@
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyfyw63pxz5z6hW0abaQXEvu1aU1OPSykc2v8Jz23-z2RFY14rw1zU90ETUEn8TLZXd/exec";
     const GM_PASSWORD = "Gmandrei209512!";
     const ADMIN_PASSWORD = "Adminandrei209512!";
-    
-    // User session
-    let currentUser = null;
-    let isLoggedIn = false;
-    
-    function loadUserSession() {
-      const saved = localStorage.getItem('superparty_user');
-      if (saved) { try { currentUser = JSON.parse(saved); isLoggedIn = true; } catch(e) {} }
-    }
-    function saveUserSession(user) { currentUser = user; isLoggedIn = true; localStorage.setItem('superparty_user', JSON.stringify(user)); }
-    function clearUserSession() { currentUser = null; isLoggedIn = false; localStorage.removeItem('superparty_user'); }
 
     // ===== STATE =====
     let currentMode = "standard";
@@ -490,15 +481,18 @@
 
     // ===== LOAD APP =====
     async function loadApp() {
-      // Fără loading screen - încărcare rapidă
+      content.innerHTML = '<div style="text-align:center;padding:50px;"><div style="font-size:32px;margin-bottom:15px;">🎉</div><div>Se încarcă...</div></div>';
+      
       try {
         const response = await fetch(BACKEND_URL + "?action=loadApp");
         const data = await response.json();
         if (data.ok) {
           appData = data.data;
           
-          // Încarcă configurații avansate în background
-          fetch(BACKEND_URL + "?action=loadPageConfig").then(r => r.json()).then(configData => {
+          // Încarcă configurații avansate (filtre, formule, stiluri)
+          try {
+            const configResp = await fetch(BACKEND_URL + "?action=loadPageConfig");
+            const configData = await configResp.json();
             if (configData.ok) {
               appData.filters = configData.data.filters || [];
               appData.formulas = configData.data.formulas || [];
@@ -506,7 +500,7 @@
               appData.tableSorts = configData.data.tableSorts || [];
               appData.pageStyles = configData.data.pageStyles || {};
             }
-          }).catch(() => {});
+          } catch(e) {}
           
           applyStyles();
           renderNav();
@@ -516,7 +510,7 @@
           if (firstPage) navigateTo(firstPage);
         }
       } catch (e) {
-        content.innerHTML = '<div class="card"><div class="empty-state">Eroare conexiune. <a href="javascript:location.reload()">Reîncarcă</a></div></div>';
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare. <a href="javascript:location.reload()">Reîncarcă</a></div></div>';
       }
     }
 
@@ -566,48 +560,27 @@
         html += '</div>';
       }
 
-      // Admin pages - only if in admin mode (NOT in gm - gm has its own section)
-      if (currentMode === "admin") {
+      // Admin pages
+      if (currentMode === "admin" || currentMode === "gm") {
         const adminPages = appData.pagini.filter(p => p.vizibil && p.mod === "admin");
-        html += '<div class="nav-section"><div class="nav-section-title">📂 🔒 Mod Admin</div>';
+        html += '<div class="nav-section"><div class="nav-section-title">Admin</div>';
         adminPages.forEach(p => {
           html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
         });
-        html += `<div class="nav-item" data-page-id="users-admin"><span class="icon">👥</span><span>Gestionare Utilizatori</span></div>`;
-        html += `<div class="nav-item" onclick="exitMode()" style="color:#ef4444;margin-top:10px;border-top:1px solid var(--border);padding-top:15px;"><span class="icon">🚪</span><span>Ieși din Admin</span></div>`;
         html += '</div>';
       }
 
-      // GM pages - only if in gm mode (includes admin pages too)
+      // GM pages
       if (currentMode === "gm") {
-        // Admin section for GM
-        const adminPages = appData.pagini.filter(p => p.vizibil && p.mod === "admin");
-        html += '<div class="nav-section"><div class="nav-section-title">📂 🔒 Mod Admin</div>';
-        adminPages.forEach(p => {
-          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
-        });
-        html += `<div class="nav-item" data-page-id="users-admin"><span class="icon">👥</span><span>Gestionare Utilizatori</span></div>`;
-        html += '</div>';
-        
-        // GM section
         const gmPages = appData.pagini.filter(p => p.vizibil && p.mod === "gm");
-        html += '<div class="nav-section"><div class="nav-section-title">📂 🎮 Mod GM</div>';
+        html += '<div class="nav-section"><div class="nav-section-title">GM</div>';
         gmPages.forEach(p => {
           html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
         });
-        html += `<div class="nav-item" data-page-id="users-gm"><span class="icon">👥</span><span>Utilizatori (Full)</span></div>`;
         html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon">🧠</span><span>Creier AI</span></div>`;
         html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon">✅</span><span>De verificat</span></div>`;
         html += `<div class="nav-item" data-page-id="reguli-fundamentale"><span class="icon">🔒</span><span>Reguli Fundamentale</span></div>`;
         html += `<div class="nav-item" data-page-id="conversatii"><span class="icon">💬</span><span>Conversații</span></div>`;
-        html += `<div class="nav-item" onclick="exitMode()" style="color:#ef4444;margin-top:10px;border-top:1px solid var(--border);padding-top:15px;"><span class="icon">🚪</span><span>Ieși din GM</span></div>`;
-        html += '</div>';
-      }
-      
-      // Buton ieșire din cont - pentru utilizatori logați
-      if (isLoggedIn) {
-        html += '<div class="nav-section" style="margin-top:auto;border-top:1px solid var(--border);padding-top:15px;">';
-        html += `<div class="nav-item" onclick="logoutUser()" style="color:#ef4444;"><span class="icon">🚪</span><span>Ieși din cont</span></div>`;
         html += '</div>';
       }
 
@@ -622,8 +595,6 @@
           else if (pageId === "de-verificat") showDeVerificat();
           else if (pageId === "reguli-fundamentale") showReguliFundamentale();
           else if (pageId === "conversatii") showConversatii();
-          else if (pageId === "users-admin") showUsersAdmin();
-          else if (pageId === "users-gm") showUsersGM();
           else {
             const page = appData.pagini.find(p => String(p.id) === pageId);
             if (page) navigateTo(page);
@@ -1051,106 +1022,6 @@
     }
 
     // ===== CONVERSAȚII =====
-    // ===== GESTIONARE UTILIZATORI - ADMIN =====
-    async function showUsersAdmin() {
-      currentGMPage = "users-admin"; currentPage = null;
-      pageTitle.textContent = "Gestionare Utilizatori";
-      content.innerHTML = '<div class="card"><div style="text-align:center;padding:30px;">⏳ Se încarcă...</div></div>';
-      try {
-        const r = await fetch(BACKEND_URL + '?action=getAllUsers');
-        const d = await r.json();
-        if (d.ok) {
-          let html = '<div class="card fade-in"><div class="card-title">👥 Gestionare Utilizatori</div>';
-          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Aprobă, blochează și completează codul + cine notează.</p>';
-          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Cod</th><th>Cine Notează</th><th>Status</th><th>Acțiuni</th></tr></thead><tbody>';
-          (d.users || []).forEach(u => {
-            const st = u.blocked ? '🔒 Blocat' : (u.approved ? '✅ Activ' : '⏳ În așteptare');
-            const cl = u.blocked ? '#ef4444' : (u.approved ? '#22c55e' : '#f59e0b');
-            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td>`;
-            html += `<td><input type="text" value="${u.cod||''}" onchange="updateUserField('${u.email}','cod',this.value)" style="width:80px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Ex: A23"></td>`;
-            html += `<td><input type="text" value="${u.cineNoteaza||''}" onchange="updateUserField('${u.email}','cineNoteaza',this.value)" style="width:120px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Nume"></td>`;
-            html += `<td style="color:${cl};font-weight:600;">${st}</td><td>`;
-            if (!u.approved && !u.blocked) html += `<button onclick="approveUser('${u.email}')" style="background:#22c55e;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:5px;">✅ Aprobă</button>`;
-            if (u.approved && !u.blocked) html += `<button onclick="blockUser('${u.email}')" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">🔒 Blochează</button>`;
-            if (u.blocked) html += `<button onclick="unblockUser('${u.email}')" style="background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">✅ Deblochează</button>`;
-            html += '</td></tr>';
-          });
-          html += '</tbody></table></div>';
-          content.innerHTML = html;
-        }
-      } catch(e) { content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare</div></div>'; }
-    }
-    
-    // ===== GESTIONARE UTILIZATORI - GM (COMPLET) =====
-    async function showUsersGM() {
-      currentGMPage = "users-gm"; currentPage = null;
-      pageTitle.textContent = "Utilizatori (Full)";
-      content.innerHTML = '<div class="card"><div style="text-align:center;padding:30px;">⏳ Se încarcă...</div></div>';
-      try {
-        const r = await fetch(BACKEND_URL + '?action=getAllUsers');
-        const d = await r.json();
-        if (d.ok) {
-          let html = '<div class="card fade-in"><div class="card-title">👥 Utilizatori (Full)</div>';
-          html += '<p style="color:var(--text-soft);margin-bottom:20px;">Control complet + conversații.</p>';
-          html += '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>Cod</th><th>Cine Notează</th><th>Status</th><th>Chat</th><th>Acțiuni</th></tr></thead><tbody>';
-          (d.users || []).forEach(u => {
-            const st = u.blocked ? '🔒 Blocat' : (u.approved ? '✅ Activ' : '⏳ În așteptare');
-            const cl = u.blocked ? '#ef4444' : (u.approved ? '#22c55e' : '#f59e0b');
-            html += `<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td>`;
-            html += `<td><input type="text" value="${u.cod||''}" onchange="updateUserField('${u.email}','cod',this.value)" style="width:80px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Ex: A23"></td>`;
-            html += `<td><input type="text" value="${u.cineNoteaza||''}" onchange="updateUserField('${u.email}','cineNoteaza',this.value)" style="width:120px;padding:6px;border:1px solid #e5e7eb;border-radius:4px;" placeholder="Nume"></td>`;
-            html += `<td style="color:${cl};font-weight:600;">${st}</td>`;
-            html += `<td><button onclick="viewUserChat('${u.email}')" style="background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">💬</button></td><td>`;
-            if (!u.approved && !u.blocked) html += `<button onclick="approveUser('${u.email}')" style="background:#22c55e;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">✅</button>`;
-            if (u.approved && !u.blocked) html += `<button onclick="blockUser('${u.email}')" style="background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">🔒</button>`;
-            if (u.blocked) html += `<button onclick="unblockUser('${u.email}')" style="background:#3b82f6;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:3px;">✅</button>`;
-            html += `<button onclick="deleteUser('${u.email}')" style="background:#dc2626;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">🗑️</button></td></tr>`;
-          });
-          html += '</tbody></table></div>';
-          content.innerHTML = html;
-        }
-      } catch(e) { content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare</div></div>'; }
-    }
-    
-    // User actions
-    async function approveUser(email) {
-      if (!confirm('Aprobi?')) return;
-      await fetch(BACKEND_URL + '?action=approveUser&email=' + encodeURIComponent(email));
-      if (currentGMPage === 'users-admin') showUsersAdmin(); else showUsersGM();
-    }
-    async function blockUser(email) {
-      if (!confirm('Blochezi?')) return;
-      await fetch(BACKEND_URL + '?action=blockUser&email=' + encodeURIComponent(email));
-      if (currentGMPage === 'users-admin') showUsersAdmin(); else showUsersGM();
-    }
-    async function unblockUser(email) {
-      if (!confirm('Deblochezi?')) return;
-      await fetch(BACKEND_URL + '?action=unblockUser&email=' + encodeURIComponent(email));
-      if (currentGMPage === 'users-admin') showUsersAdmin(); else showUsersGM();
-    }
-    async function deleteUser(email) {
-      if (!confirm('⚠️ Ștergi definitiv?')) return;
-      await fetch(BACKEND_URL + '?action=deleteUser&email=' + encodeURIComponent(email));
-      showUsersGM();
-    }
-    
-    // Update user field (cod, cineNoteaza)
-    async function updateUserField(email, field, value) {
-      await fetch(BACKEND_URL + '?action=updateUserField&email=' + encodeURIComponent(email) + '&field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value));
-    }
-    async function viewUserChat(email) {
-      const r = await fetch(BACKEND_URL + '?action=getUserConversations&identifier=' + encodeURIComponent(email));
-      const d = await r.json();
-      let ch = '<div style="max-height:400px;overflow-y:auto;">';
-      if (d.ok && d.conversations?.length > 0) {
-        d.conversations.forEach(c => {
-          ch += `<div style="margin-bottom:15px;"><div style="background:#ede9fe;padding:10px;border-radius:8px;margin-bottom:5px;"><b>👤:</b> ${c.userMessage}</div><div style="background:#f3f4f6;padding:10px;border-radius:8px;"><b>🤖:</b> ${c.aiResponse}</div><div style="font-size:11px;color:#6b7280;margin-top:5px;">${c.timestamp}</div></div>`;
-        });
-      } else { ch += '<p style="color:#6b7280;">Nicio conversație.</p>'; }
-      ch += '</div>';
-      document.body.insertAdjacentHTML('beforeend', `<div id="chatModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;"><div style="background:white;padding:25px;border-radius:16px;width:90%;max-width:600px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><h3>💬 ${email}</h3><button onclick="document.getElementById('chatModal').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;">✕</button></div>${ch}</div></div>`);
-    }
-
     function showConversatii() {
       currentGMPage = "conversatii";
       currentPage = null;
@@ -1320,98 +1191,8 @@
         pushMessage("ai", "👋 Ai ieșit din mod special.");
         return true;
       }
-      
-      // Login command
-      if (lower === "intra in mod logare" || lower === "intră în mod logare") {
-        document.getElementById('chatPanel').style.display = 'none';
-        showLoginForm();
-        return true;
-      }
 
       return false;
-    }
-    
-    // ===== LOGIN SYSTEM =====
-    function showLoginForm() {
-      document.body.insertAdjacentHTML('beforeend', `
-        <div id="loginOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;">
-          <div style="background:white;padding:30px;border-radius:16px;width:90%;max-width:400px;">
-            <div id="loginBox">
-              <h2 style="text-align:center;margin-bottom:20px;">🔐 Autentificare</h2>
-              <input type="email" id="loginEmail" placeholder="📧 Email" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:10px;font-size:16px;">
-              <input type="password" id="loginPass" placeholder="🔒 Parolă" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:15px;font-size:16px;">
-              <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;">🚀 Intră în cont</button>
-              <button onclick="showRegBox()" style="width:100%;padding:14px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:16px;cursor:pointer;">✨ Înregistrează-te</button>
-              <button onclick="closeLogin()" style="width:100%;padding:10px;background:none;color:#6b7280;border:none;cursor:pointer;margin-top:10px;">✕ Închide</button>
-            </div>
-            <div id="regBox" style="display:none;">
-              <h2 style="text-align:center;margin-bottom:20px;">✨ Înregistrează-te</h2>
-              <input type="text" id="regName" placeholder="👤 Nume" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:10px;font-size:16px;">
-              <input type="email" id="regEmail" placeholder="📧 Email" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:10px;font-size:16px;">
-              <input type="password" id="regPass" placeholder="🔒 Parolă" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:10px;font-size:16px;">
-              <input type="password" id="regPass2" placeholder="🔒 Repetă parola" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:10px;font-size:16px;">
-              <select id="regRole" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:15px;font-size:16px;">
-                <option value="Animator">Animator</option><option value="Șofer">Șofer</option><option value="Trainer">Trainer</option><option value="Altul">Altul</option>
-              </select>
-              <button onclick="doRegister()" style="width:100%;padding:14px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;">✨ Creează cont</button>
-              <button onclick="showLoginBox()" style="width:100%;padding:14px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:16px;cursor:pointer;">👤 Am deja cont</button>
-            </div>
-          </div>
-        </div>
-      `);
-    }
-    function showRegBox() { document.getElementById('loginBox').style.display='none'; document.getElementById('regBox').style.display='block'; }
-    function showLoginBox() { document.getElementById('loginBox').style.display='block'; document.getElementById('regBox').style.display='none'; }
-    function closeLogin() { document.getElementById('loginOverlay')?.remove(); }
-    
-    // Exit din moduri
-    function exitMode() {
-      currentMode = "standard";
-      editMode = false;
-      updateModeUI();
-      alert('👋 Ai ieșit din mod!');
-    }
-    
-    // Logout user
-    function logoutUser() {
-      if (confirm('Sigur vrei să ieși din cont?')) {
-        clearUserSession();
-        alert('👋 Te-ai delogat!');
-        location.reload();
-      }
-    }
-    
-    async function doLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      if (!email || !pass) { alert('⚠️ Completează email și parola!'); return; }
-      try {
-        const r = await fetch(BACKEND_URL + '?action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass));
-        const d = await r.json();
-        if (d.ok && d.user) {
-          if (!d.user.approved) { alert('⏳ Contul tău așteaptă aprobarea administratorului.'); return; }
-          if (d.user.blocked) { alert('🔒 Contul tău este blocat.'); return; }
-          saveUserSession(d.user);
-          closeLogin();
-          alert('✅ Bine ai venit, ' + d.user.name + '!');
-        } else { alert('❌ Email sau parolă incorectă!'); }
-      } catch(e) { alert('❌ Eroare: ' + e.message); }
-    }
-    
-    async function doRegister() {
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPass').value;
-      const pass2 = document.getElementById('regPass2').value;
-      const role = document.getElementById('regRole').value;
-      if (!name || !email || !pass) { alert('⚠️ Completează toate câmpurile!'); return; }
-      if (pass !== pass2) { alert('⚠️ Parolele nu coincid!'); return; }
-      try {
-        const r = await fetch(BACKEND_URL + '?action=register&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass) + '&role=' + encodeURIComponent(role));
-        const d = await r.json();
-        if (d.ok) { alert('✅ Cont creat!\\n\\n⏳ Contul așteaptă aprobarea administratorului.'); showLoginBox(); }
-        else { alert('❌ ' + (d.error || 'Eroare')); }
-      } catch(e) { alert('❌ Eroare: ' + e.message); }
     }
 
     // ===== CHAT =====
