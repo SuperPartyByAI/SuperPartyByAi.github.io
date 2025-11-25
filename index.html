@@ -446,7 +446,7 @@
     let appData = { pagini: [], tabele: [], elemente: [], scanari: [], stiluri: {} };
     let currentScanType = null;
 
-    // ✅ FIX: definim cache ca să nu mai dea ReferenceError
+    // ✅ CACHE DEFINIT CORECT
     const cache = {
       tables: {},
       cunostinte: null,
@@ -620,7 +620,7 @@
     // ===== NAVIGATE =====
     function navigateTo(page) {
       currentPage = page;
-      currentGMPage = null; // Reset GM page when navigating to normal page
+      currentGMPage = null;
       pageTitle.textContent = page.nume;
       
       const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
@@ -628,14 +628,12 @@
       const pageFilters = (appData.filters || []).filter(f => f.pageName === page.nume);
       const pageStyles = (appData.pageStyles || {})[page.nume] || {};
       
-      // Aplică stiluri pagină
       let pageStyleCSS = '';
       if (pageStyles.background) pageStyleCSS += `background:${pageStyles.background};`;
       if (pageStyles.darkMode === 'true') pageStyleCSS += 'background:#1f2937;color:#f9fafb;';
       
       let html = `<div class="welcome-card fade-in" style="${pageStyleCSS}"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
       
-      // Afișează filtre dacă există
       if (pageFilters.length > 0) {
         html += '<div class="card fade-in"><div class="card-title">🔍 Filtre</div><div style="display:flex;flex-wrap:wrap;gap:10px;">';
         pageFilters.forEach(filter => {
@@ -661,7 +659,6 @@
         html += '<div class="card fade-in"><div class="empty-state">Pagină goală</div></div>';
       } else {
         pageTables.forEach(table => {
-          // Arată din cache instant dacă există
           const cachedData = cache.tables[table.numeTabel];
           if (cachedData) {
             html += `<div class="card fade-in" style="${pageStyleCSS}"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}">${renderAdvancedTable(cachedData, page.nume)}</div></div>`;
@@ -672,8 +669,6 @@
       }
       
       content.innerHTML = html;
-      
-      // Încarcă/actualizează datele în background
       pageTables.forEach(table => loadTableData(table));
     }
     
@@ -683,10 +678,8 @@
       }
       
       const progressBars = (appData.progressBars || []).filter(p => p.pageName === pageName);
-      const formulas = (appData.formulas || []).filter(f => f.pageName === pageName);
       const sortConfig = (appData.tableSorts || []).find(s => s.pageName === pageName);
       
-      // Sortare dacă e configurată
       let rows = [...data.rows];
       if (sortConfig) {
         const sortIndex = data.headers.indexOf(sortConfig.sortBy);
@@ -708,7 +701,6 @@
         row.forEach((cell, colIndex) => {
           const colName = data.headers[colIndex];
           
-          // Verifică dacă e coloană cu progress bar
           const progressConfig = progressBars.find(p => p.column === colName);
           if (progressConfig) {
             const maxColIndex = data.headers.indexOf(progressConfig.maxColumn);
@@ -723,18 +715,15 @@
               </div>
             </td>`;
           }
-          // Verifică dacă e coloană Poziție pentru medalii
           else if (colName === 'Pozitie' || colName === 'Poziție') {
             const pos = parseInt(cell) || (rowIndex + 1);
             const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
             html += `<td style="font-size:${pos <= 3 ? '20px' : '14px'};">${medal}</td>`;
           }
-          // Verifică dacă e coloană Total/Venit pentru formatare
           else if (colName === 'Total' || colName === 'Venit' || colName === 'Pret' || colName === 'BaniGenerati') {
             const val = parseFloat(cell) || 0;
             html += `<td style="font-weight:600;color:#059669;">${val.toLocaleString('ro-RO')} lei</td>`;
           }
-          // Verifică status pentru culori
           else if (colName === 'Status') {
             const statusColors = {
               'confirmat': '#22c55e',
@@ -751,7 +740,6 @@
         html += '</tr>';
       });
       
-      // Afișează total dacă e pagină de salarii
       if (data.headers.includes('Total')) {
         const totalIndex = data.headers.indexOf('Total');
         const sum = rows.reduce((acc, row) => acc + (parseFloat(row[totalIndex]) || 0), 0);
@@ -770,7 +758,6 @@
       return renderAdvancedTable(data, '');
     }
     
-    // Filtru activ
     let activeFilters = {};
     
     function applyFilter(filterBy, value) {
@@ -779,7 +766,6 @@
       } else {
         delete activeFilters[filterBy];
       }
-      // Reîncarcă tabelul cu filtre
       if (currentPage) {
         const pageTables = appData.tabele.filter(t => t.paginaId === currentPage.id);
         pageTables.forEach(table => loadTableData(table, activeFilters));
@@ -804,9 +790,7 @@
         const container = document.getElementById("table-" + table.numeTabel);
         
         if (data.ok) {
-          // Salvează în cache
           cache.tables[table.numeTabel] = data.data;
-          
           if (container) {
             container.innerHTML = renderTableHTML(data.data);
           }
@@ -817,16 +801,29 @@
       }
     }
 
-    // ===== GM PAGES =====
-    function showCreierAI() {
+    // ===== GM PAGES - FIXED: ACUM ÎNCARCĂ DATELE! =====
+    
+    async function showCreierAI() {
       currentGMPage = "creier-ai";
       currentPage = null;
       pageTitle.textContent = "Creier AI";
       
-      if (cache.cunostinte) {
-        renderCreierAI(cache.cunostinte);
-      } else {
-        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      // Arată loading
+      content.innerHTML = '<div class="card"><div class="empty-state">⏳ Se încarcă...</div></div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadCunostinte");
+        const data = await response.json();
+        
+        if (data.ok) {
+          cache.cunostinte = data.data;
+          renderCreierAI(cache.cunostinte);
+        } else {
+          content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare: ' + (data.error || 'Nu s-au putut încărca') + '</div></div>';
+        }
+      } catch (e) {
+        console.error(e);
+        content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare conexiune</div></div>';
       }
     }
     
@@ -855,15 +852,27 @@
       content.innerHTML = html;
     }
 
-    function showDeVerificat() {
+    async function showDeVerificat() {
       currentGMPage = "de-verificat";
       currentPage = null;
       pageTitle.textContent = "De verificat";
       
-      if (cache.deVerificat) {
-        renderDeVerificat(cache.deVerificat);
-      } else {
-        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      // Arată loading
+      content.innerHTML = '<div class="card"><div class="empty-state">⏳ Se încarcă...</div></div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadDeVerificat");
+        const data = await response.json();
+        
+        if (data.ok) {
+          cache.deVerificat = data.data;
+          renderDeVerificat(cache.deVerificat);
+        } else {
+          content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare: ' + (data.error || 'Nu s-au putut încărca') + '</div></div>';
+        }
+      } catch (e) {
+        console.error(e);
+        content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare conexiune</div></div>';
       }
     }
     
@@ -895,13 +904,7 @@
         const data = await response.json();
         
         if (data.ok) {
-          // Reîncarcă de verificat
-          const verResp = await fetch(BACKEND_URL + "?action=loadDeVerificat");
-          const verData = await verResp.json();
-          if (verData.ok) {
-            cache.deVerificat = verData.data;
-            renderDeVerificat(cache.deVerificat);
-          }
+          showDeVerificat(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut verifica"));
         }
@@ -911,16 +914,28 @@
       }
     }
 
-    // ===== REGULI FUNDAMENTALE =====
-    function showReguliFundamentale() {
+    // ===== REGULI FUNDAMENTALE - FIXED =====
+    async function showReguliFundamentale() {
       currentGMPage = "reguli";
       currentPage = null;
       pageTitle.textContent = "Reguli Fundamentale";
       
-      if (cache.reguli) {
-        renderReguliFundamentale(cache.reguli);
-      } else {
-        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      // Arată loading
+      content.innerHTML = '<div class="card"><div class="empty-state">⏳ Se încarcă...</div></div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadReguli");
+        const data = await response.json();
+        
+        if (data.ok) {
+          cache.reguli = data.data;
+          renderReguliFundamentale(cache.reguli);
+        } else {
+          content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare: ' + (data.error || 'Nu s-au putut încărca') + '</div></div>';
+        }
+      } catch (e) {
+        console.error(e);
+        content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare conexiune</div></div>';
       }
     }
     
@@ -935,10 +950,11 @@
       
       if (data && data.length > 0) {
         data.forEach((r, idx) => {
+          const regulaEscaped = (r.regula || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
           html += `<div style="padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
             <div><strong>#${idx + 1}</strong> &nbsp; "${r.regula}"</div>
             <div style="display:flex;gap:8px;">
-              <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${r.regula.replace(/'/g, "\\'")}')">✏️</button>
+              <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${regulaEscaped}')">✏️</button>
               <button class="btn" style="padding:5px 10px;font-size:12px;background:#ef4444;color:white;" onclick="stergeRegula('${r.id}')">🗑️</button>
             </div>
           </div>`;
@@ -962,14 +978,8 @@
         const data = await response.json();
         
         if (data.ok) {
-          // Reîncarcă regulile
-          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
-          const regData = await regResp.json();
-          if (regData.ok) {
-            cache.reguli = regData.data;
-            if (input) input.value = "";
-            renderReguliFundamentale(cache.reguli);
-          }
+          if (input) input.value = "";
+          showReguliFundamentale(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut adăuga"));
         }
@@ -989,13 +999,7 @@
         const data = await response.json();
         
         if (data.ok) {
-          // Reîncarcă regulile
-          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
-          const regData = await regResp.json();
-          if (regData.ok) {
-            cache.reguli = regData.data;
-            renderReguliFundamentale(cache.reguli);
-          }
+          showReguliFundamentale(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut edita"));
         }
@@ -1014,13 +1018,7 @@
         const data = await response.json();
         
         if (data.ok) {
-          // Reîncarcă regulile
-          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
-          const regData = await regResp.json();
-          if (regData.ok) {
-            cache.reguli = regData.data;
-            renderReguliFundamentale(cache.reguli);
-          }
+          showReguliFundamentale(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut șterge"));
         }
@@ -1030,16 +1028,28 @@
       }
     }
 
-    // ===== CONVERSAȚII =====
-    function showConversatii() {
+    // ===== CONVERSAȚII - FIXED =====
+    async function showConversatii() {
       currentGMPage = "conversatii";
       currentPage = null;
       pageTitle.textContent = "Conversații";
       
-      if (cache.conversatii) {
-        renderConversatii(cache.conversatii);
-      } else {
-        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      // Arată loading
+      content.innerHTML = '<div class="card"><div class="empty-state">⏳ Se încarcă...</div></div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadConversatii");
+        const data = await response.json();
+        
+        if (data.ok) {
+          cache.conversatii = data.data;
+          renderConversatii(cache.conversatii);
+        } else {
+          content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare: ' + (data.error || 'Nu s-au putut încărca') + '</div></div>';
+        }
+      } catch (e) {
+        console.error(e);
+        content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare conexiune</div></div>';
       }
     }
     
@@ -1052,7 +1062,6 @@
           const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
           const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
           
-          // Istoric corecții
           let corectiiHtml = '';
           if (c.corectii && c.corectii.length > 0) {
             corectiiHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">';
@@ -1067,6 +1076,8 @@
             corectiiHtml += '</div>';
           }
           
+          const mesajEscaped = (c.mesaj || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+          
           html += `<div class="card fade-in" style="${statusClass}">
             <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
               <strong>#${idx + 1}</strong>
@@ -1077,7 +1088,7 @@
             ${corectiiHtml}
             <div style="display:flex;gap:10px;margin-top:12px;">
               ${c.status !== 'ok' ? `<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>` : ''}
-              <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
+              <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${mesajEscaped}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
             </div>
           </div>`;
         });
@@ -1095,13 +1106,7 @@
         const data = await response.json();
         
         if (data.ok) {
-          // Reîncarcă conversațiile
-          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
-          const convData = await convResp.json();
-          if (convData.ok) {
-            cache.conversatii = convData.data;
-            renderConversatii(cache.conversatii);
-          }
+          showConversatii(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut marca"));
         }
@@ -1122,13 +1127,7 @@
         
         if (data.ok) {
           alert("✅ AI-ul a învățat din corecție!");
-          // Reîncarcă conversațiile
-          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
-          const convData = await convResp.json();
-          if (convData.ok) {
-            cache.conversatii = convData.data;
-            renderConversatii(cache.conversatii);
-          }
+          showConversatii(); // Reîncarcă
         } else {
           alert("⚠️ Eroare: " + (data.error || "Nu s-a putut corecta"));
         }
@@ -1222,7 +1221,6 @@
 
       if (handleModeCommands(text)) return;
 
-      // Check for scan request
       const scanRequest = detectScanRequest(text);
       if (scanRequest && currentMode === "standard") {
         openScanPopup(scanRequest.nume, "Scanează " + scanRequest.nume);
@@ -1230,7 +1228,6 @@
         return;
       }
 
-      // Check edit commands without edit mode
       const lower = text.toLowerCase();
       const isEditCmd = lower.includes("adaugă") || lower.includes("adauga") || lower.includes("șterge") || lower.includes("culoare") || lower.includes("titlu");
       
@@ -1253,7 +1250,6 @@
         const response = await fetch(url);
         const data = await response.json();
 
-        // Remove loading
         const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
         const last = msgs[msgs.length - 1];
         if (last?.textContent.includes("Procesez")) last.remove();
