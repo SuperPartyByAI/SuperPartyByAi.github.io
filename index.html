@@ -488,6 +488,20 @@
         const data = await response.json();
         if (data.ok) {
           appData = data.data;
+          
+          // Încarcă configurații avansate (filtre, formule, stiluri)
+          try {
+            const configResp = await fetch(BACKEND_URL + "?action=loadPageConfig");
+            const configData = await configResp.json();
+            if (configData.ok) {
+              appData.filters = configData.data.filters || [];
+              appData.formulas = configData.data.formulas || [];
+              appData.progressBars = configData.data.progressBars || [];
+              appData.tableSorts = configData.data.tableSorts || [];
+              appData.pageStyles = configData.data.pageStyles || {};
+            }
+          } catch(e) {}
+          
           applyStyles();
           renderNav();
           
@@ -602,8 +616,31 @@
       
       const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
       const pageElements = (appData.elemente || []).filter(e => e.paginaId === page.id);
+      const pageFilters = (appData.filters || []).filter(f => f.pageName === page.nume);
+      const pageStyles = (appData.pageStyles || {})[page.nume] || {};
       
-      let html = `<div class="welcome-card fade-in"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
+      // Aplică stiluri pagină
+      let pageStyleCSS = '';
+      if (pageStyles.background) pageStyleCSS += `background:${pageStyles.background};`;
+      if (pageStyles.darkMode === 'true') pageStyleCSS += 'background:#1f2937;color:#f9fafb;';
+      
+      let html = `<div class="welcome-card fade-in" style="${pageStyleCSS}"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
+      
+      // Afișează filtre dacă există
+      if (pageFilters.length > 0) {
+        html += '<div class="card fade-in"><div class="card-title">🔍 Filtre</div><div style="display:flex;flex-wrap:wrap;gap:10px;">';
+        pageFilters.forEach(filter => {
+          const options = filter.options ? filter.options.split(',') : [];
+          html += `<div style="flex:1;min-width:150px;">
+            <label style="font-size:12px;color:var(--text-soft);">${filter.filterName}</label>
+            <select class="chat-input" style="width:100%;padding:8px;margin-top:4px;" onchange="applyFilter('${filter.filterBy}', this.value)">
+              <option value="">Toate</option>
+              ${options.map(opt => `<option value="${opt.trim()}">${opt.trim()}</option>`).join('')}
+            </select>
+          </div>`;
+        });
+        html += '</div></div>';
+      }
       
       if (pageElements.length > 0) {
         html += '<div class="card fade-in"><div class="card-title">Acțiuni</div><div>';
@@ -618,9 +655,9 @@
           // Arată din cache instant dacă există
           const cachedData = cache.tables[table.numeTabel];
           if (cachedData) {
-            html += `<div class="card fade-in"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}">${renderTableHTML(cachedData)}</div></div>`;
+            html += `<div class="card fade-in" style="${pageStyleCSS}"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}">${renderAdvancedTable(cachedData, page.nume)}</div></div>`;
           } else {
-            html += `<div class="card fade-in"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="skeleton" style="height:100px;"></div></div></div>`;
+            html += `<div class="card fade-in" style="${pageStyleCSS}"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="skeleton" style="height:100px;"></div></div></div>`;
           }
         });
       }
@@ -631,20 +668,113 @@
       pageTables.forEach(table => loadTableData(table));
     }
     
-    function renderTableHTML(data) {
+    function renderAdvancedTable(data, pageName) {
       if (!data || !data.rows || data.rows.length === 0) {
         return '<div class="empty-state">Nicio înregistrare</div>';
       }
+      
+      const progressBars = (appData.progressBars || []).filter(p => p.pageName === pageName);
+      const formulas = (appData.formulas || []).filter(f => f.pageName === pageName);
+      const sortConfig = (appData.tableSorts || []).find(s => s.pageName === pageName);
+      
+      // Sortare dacă e configurată
+      let rows = [...data.rows];
+      if (sortConfig) {
+        const sortIndex = data.headers.indexOf(sortConfig.sortBy);
+        if (sortIndex >= 0) {
+          rows.sort((a, b) => {
+            const valA = parseFloat(a[sortIndex]) || 0;
+            const valB = parseFloat(b[sortIndex]) || 0;
+            return sortConfig.order === 'asc' ? valA - valB : valB - valA;
+          });
+        }
+      }
+      
       let html = '<table class="data-table"><thead><tr>';
       data.headers.forEach(h => { html += `<th>${h}</th>`; });
       html += '</tr></thead><tbody>';
-      data.rows.forEach(row => {
+      
+      rows.forEach((row, rowIndex) => {
         html += '<tr>';
-        row.forEach(cell => { html += `<td>${cell || ''}</td>`; });
+        row.forEach((cell, colIndex) => {
+          const colName = data.headers[colIndex];
+          
+          // Verifică dacă e coloană cu progress bar
+          const progressConfig = progressBars.find(p => p.column === colName);
+          if (progressConfig) {
+            const maxColIndex = data.headers.indexOf(progressConfig.maxColumn);
+            const maxVal = maxColIndex >= 0 ? parseFloat(row[maxColIndex]) || 100 : 100;
+            const percent = Math.min(100, Math.round((parseFloat(cell) || 0) / maxVal * 100));
+            html += `<td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+                  <div style="width:${percent}%;height:100%;background:${progressConfig.color || '#22c55e'};transition:width 0.3s;"></div>
+                </div>
+                <span style="font-size:12px;font-weight:600;">${percent}%</span>
+              </div>
+            </td>`;
+          }
+          // Verifică dacă e coloană Poziție pentru medalii
+          else if (colName === 'Pozitie' || colName === 'Poziție') {
+            const pos = parseInt(cell) || (rowIndex + 1);
+            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
+            html += `<td style="font-size:${pos <= 3 ? '20px' : '14px'};">${medal}</td>`;
+          }
+          // Verifică dacă e coloană Total/Venit pentru formatare
+          else if (colName === 'Total' || colName === 'Venit' || colName === 'Pret' || colName === 'BaniGenerati') {
+            const val = parseFloat(cell) || 0;
+            html += `<td style="font-weight:600;color:#059669;">${val.toLocaleString('ro-RO')} lei</td>`;
+          }
+          // Verifică status pentru culori
+          else if (colName === 'Status') {
+            const statusColors = {
+              'confirmat': '#22c55e',
+              'în așteptare': '#f59e0b',
+              'anulat': '#ef4444'
+            };
+            const color = statusColors[cell?.toLowerCase()] || '#6b7280';
+            html += `<td><span style="padding:4px 8px;border-radius:4px;background:${color}20;color:${color};font-size:12px;font-weight:600;">${cell || ''}</span></td>`;
+          }
+          else {
+            html += `<td>${cell || ''}</td>`;
+          }
+        });
         html += '</tr>';
       });
+      
+      // Afișează total dacă e pagină de salarii
+      if (data.headers.includes('Total')) {
+        const totalIndex = data.headers.indexOf('Total');
+        const sum = rows.reduce((acc, row) => acc + (parseFloat(row[totalIndex]) || 0), 0);
+        html += `<tr style="background:#f0fdf4;font-weight:bold;">
+          <td colspan="${totalIndex}">TOTAL</td>
+          <td style="color:#059669;">${sum.toLocaleString('ro-RO')} lei</td>
+          ${totalIndex < data.headers.length - 1 ? `<td colspan="${data.headers.length - totalIndex - 1}"></td>` : ''}
+        </tr>`;
+      }
+      
       html += '</tbody></table>';
       return html;
+    }
+    
+    function renderTableHTML(data) {
+      return renderAdvancedTable(data, '');
+    }
+    
+    // Filtru activ
+    let activeFilters = {};
+    
+    function applyFilter(filterBy, value) {
+      if (value) {
+        activeFilters[filterBy] = value;
+      } else {
+        delete activeFilters[filterBy];
+      }
+      // Reîncarcă tabelul cu filtre
+      if (currentPage) {
+        const pageTables = appData.tabele.filter(t => t.paginaId === currentPage.id);
+        pageTables.forEach(table => loadTableData(table, activeFilters));
+      }
     }
 
     function renderElement(el) {
