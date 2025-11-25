@@ -1,4 +1,438 @@
-<script>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SuperParty</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-soft: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon { font-size: 28px; }
+    .logo-text { font-weight: 700; font-size: 18px; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px 0;
+    }
+
+    .nav-section { margin-bottom: 20px; }
+    
+    .nav-section-title {
+      padding: 8px 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text);
+    }
+
+    .nav-item:hover { background: var(--bg); }
+    .nav-item.active { background: var(--primary); color: white; }
+    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+
+    /* MAIN */
+    .main { margin-left: 260px; min-height: 100vh; }
+
+    .header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .page-title { font-size: 20px; font-weight: 600; }
+
+    .content { padding: 25px; max-width: 1200px; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .welcome-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 25px;
+    }
+
+    .welcome-card h2 { margin-bottom: 8px; }
+    .welcome-card p { opacity: 0.9; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-soft);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    /* TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table th, .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table th {
+      font-weight: 600;
+      background: var(--bg);
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .content { padding: 15px; }
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+    .overlay.active { display: block; }
+
+    /* CHAT */
+    .chat-toggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+      z-index: 200;
+      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-toggle:hover { transform: scale(1.1); }
+
+    .chat-window {
+      position: fixed;
+      bottom: 100px;
+      right: 25px;
+      width: 380px;
+      height: 500px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .chat-window.hidden { display: none; }
+
+    .chat-header {
+      padding: 15px 20px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header h3 { font-size: 16px; }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .chat-msg.user {
+      background: var(--primary);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg.ai {
+      background: var(--bg);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chat-input:focus { border-color: var(--primary); }
+
+    .chat-send {
+      padding: 12px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .chat-window {
+        width: calc(100% - 20px);
+        height: 60vh;
+        right: 10px;
+        bottom: 90px;
+      }
+    }
+
+    /* SCAN POPUP */
+    .scan-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      z-index: 300;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .scan-popup.active { display: block; }
+
+    .scan-popup h3 { margin-bottom: 15px; }
+
+    .scan-popup .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-area:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); }
+    .upload-area .icon { font-size: 40px; margin-bottom: 10px; }
+    .upload-area p { color: var(--text-soft); font-size: 14px; }
+
+    .loading { text-align: center; padding: 40px; color: var(--text-soft); }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon" id="logoIcon">🎉</span>
+      <span class="logo-text" id="logoText">SuperParty</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main">
+    <header class="header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <h1 class="page-title" id="pageTitle">Acasă</h1>
+      <div></div>
+    </header>
+    <div class="content" id="content">
+      <div class="loading">Se încarcă...</div>
+    </div>
+  </main>
+
+  <button class="chat-toggle" id="chatToggle">🤖</button>
+
+  <div class="scan-popup" id="scanPopup">
+    <button class="close-btn" onclick="closeScanPopup()">✕</button>
+    <h3 id="scanPopupTitle">📷 Scanează document</h3>
+    <div class="upload-area" id="uploadArea">
+      <div class="icon">📤</div>
+      <p>Click sau trage fișierul</p>
+      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;">
+    </div>
+    <div id="scanStatus" style="display:none;text-align:center;padding:20px;"></div>
+  </div>
+
+  <div class="chat-window hidden" id="chatWindow">
+    <div class="chat-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span>🤖</span>
+        <h3>SuperParty AI</h3>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Scrie un mesaj...">
+      <button class="chat-send" id="chatSend">Trimite</button>
+    </div>
+  </div>
+
+  <script>
     // ===== CONFIG =====
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyfyw63pxz5z6hW0abaQXEvu1aU1OPSykc2v8Jz23-z2RFY14rw1zU90ETUEn8TLZXd/exec";
     const GM_PASSWORD = "Gmandrei209512!";
@@ -12,8 +446,7 @@
     let appData = { pagini: [], tabele: [], elemente: [], scanari: [], stiluri: {} };
     let currentScanType = null;
 
-    // ✅✅✅ AICI E REPARAȚIA PRINCIPALĂ ✅✅✅
-    // cache era folosit peste tot fără să fie definit → ReferenceError → nu merg butoanele
+    // ✅ FIX: definim cache ca să nu mai dea ReferenceError
     const cache = {
       tables: {},
       cunostinte: null,
@@ -21,7 +454,6 @@
       reguli: null,
       conversatii: null
     };
-    // ✅✅✅ SFÂRȘIT REPARAȚIE ✅✅✅
 
     // ===== ELEMENTS =====
     const sidebar = document.getElementById("sidebar");
@@ -40,5 +472,877 @@
     const fileInput = document.getElementById("fileInput");
     const scanStatus = document.getElementById("scanStatus");
 
-    // ... restul scriptului tău rămâne EXACT la fel ...
-</script>
+    // ===== EVENTS =====
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+      closeScanPopup();
+    });
+
+    chatToggle.addEventListener("click", () => chatWindow.classList.toggle("hidden"));
+    chatSend.addEventListener("click", handleChatSend);
+    chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleChatSend(); });
+
+    // ===== LOAD APP =====
+    async function loadApp() {
+      content.innerHTML = '<div style="text-align:center;padding:50px;"><div style="font-size:32px;margin-bottom:15px;">🎉</div><div>Se încarcă...</div></div>';
+      
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadApp");
+        const data = await response.json();
+        if (data.ok) {
+          appData = data.data;
+          
+          // Încarcă configurații avansate (filtre, formule, stiluri)
+          try {
+            const configResp = await fetch(BACKEND_URL + "?action=loadPageConfig");
+            const configData = await configResp.json();
+            if (configData.ok) {
+              appData.filters = configData.data.filters || [];
+              appData.formulas = configData.data.formulas || [];
+              appData.progressBars = configData.data.progressBars || [];
+              appData.tableSorts = configData.data.tableSorts || [];
+              appData.pageStyles = configData.data.pageStyles || {};
+            }
+          } catch(e) {}
+          
+          applyStyles();
+          renderNav();
+          
+          // Prima pagină
+          const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+          if (firstPage) navigateTo(firstPage);
+        }
+      } catch (e) {
+        content.innerHTML = '<div class="card"><div class="empty-state">Eroare. <a href="javascript:location.reload()">Reîncarcă</a></div></div>';
+      }
+    }
+
+    // ===== APPLY STYLES =====
+    function applyStyles() {
+      const s = appData.stiluri;
+      if (s.primary?.color) {
+        document.documentElement.style.setProperty('--primary', s.primary.color);
+        document.documentElement.style.setProperty('--primary-dark', shadeColor(s.primary.color, -20));
+      }
+      if (s.sidebar?.background) document.documentElement.style.setProperty('--card', s.sidebar.background);
+      if (s.text?.color) document.documentElement.style.setProperty('--text', s.text.color);
+      if (s.background?.color) document.documentElement.style.setProperty('--bg', s.background.color);
+      if (s.app?.font) document.body.style.fontFamily = s.app.font + ', sans-serif';
+      if (s.app?.title) {
+        document.getElementById("logoText").textContent = s.app.title;
+        document.title = s.app.title;
+      }
+      if (s.app?.logo) document.getElementById("logoIcon").textContent = s.app.logo;
+      
+      // Buton chat
+      if (s.chat?.button) {
+        document.getElementById("chatToggle").textContent = s.chat.button;
+      }
+    }
+
+    function shadeColor(color, percent) {
+      const num = parseInt(color.replace("#", ""), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+    }
+
+    // ===== RENDER NAV =====
+    function renderNav() {
+      let html = '';
+      
+      // Normal pages
+      const normalPages = appData.pagini.filter(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+      if (normalPages.length > 0) {
+        html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
+        normalPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+        });
+        html += '</div>';
+      }
+
+      // Admin pages
+      if (currentMode === "admin" || currentMode === "gm") {
+        const adminPages = appData.pagini.filter(p => p.vizibil && p.mod === "admin");
+        html += '<div class="nav-section"><div class="nav-section-title">Admin</div>';
+        adminPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+        });
+        html += '</div>';
+      }
+
+      // GM pages
+      if (currentMode === "gm") {
+        const gmPages = appData.pagini.filter(p => p.vizibil && p.mod === "gm");
+        html += '<div class="nav-section"><div class="nav-section-title">GM</div>';
+        gmPages.forEach(p => {
+          html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+        });
+        html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon">🧠</span><span>Creier AI</span></div>`;
+        html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon">✅</span><span>De verificat</span></div>`;
+        html += `<div class="nav-item" data-page-id="reguli-fundamentale"><span class="icon">🔒</span><span>Reguli Fundamentale</span></div>`;
+        html += `<div class="nav-item" data-page-id="conversatii"><span class="icon">💬</span><span>Conversații</span></div>`;
+        html += '</div>';
+      }
+
+      sidebarNav.innerHTML = html;
+
+      // Events
+      document.querySelectorAll(".nav-item").forEach(item => {
+        item.addEventListener("click", () => {
+          const pageId = item.dataset.pageId;
+          
+          if (pageId === "creier-ai") showCreierAI();
+          else if (pageId === "de-verificat") showDeVerificat();
+          else if (pageId === "reguli-fundamentale") showReguliFundamentale();
+          else if (pageId === "conversatii") showConversatii();
+          else {
+            const page = appData.pagini.find(p => String(p.id) === pageId);
+            if (page) navigateTo(page);
+          }
+          
+          document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          sidebar.classList.remove("open");
+          overlay.classList.remove("active");
+        });
+      });
+    }
+
+    // ===== NAVIGATE =====
+    function navigateTo(page) {
+      currentPage = page;
+      currentGMPage = null; // Reset GM page when navigating to normal page
+      pageTitle.textContent = page.nume;
+      
+      const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
+      const pageElements = (appData.elemente || []).filter(e => e.paginaId === page.id);
+      const pageFilters = (appData.filters || []).filter(f => f.pageName === page.nume);
+      const pageStyles = (appData.pageStyles || {})[page.nume] || {};
+      
+      // Aplică stiluri pagină
+      let pageStyleCSS = '';
+      if (pageStyles.background) pageStyleCSS += `background:${pageStyles.background};`;
+      if (pageStyles.darkMode === 'true') pageStyleCSS += 'background:#1f2937;color:#f9fafb;';
+      
+      let html = `<div class="welcome-card fade-in" style="${pageStyleCSS}"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
+      
+      // Afișează filtre dacă există
+      if (pageFilters.length > 0) {
+        html += '<div class="card fade-in"><div class="card-title">🔍 Filtre</div><div style="display:flex;flex-wrap:wrap;gap:10px;">';
+        pageFilters.forEach(filter => {
+          const options = filter.options ? filter.options.split(',') : [];
+          html += `<div style="flex:1;min-width:150px;">
+            <label style="font-size:12px;color:var(--text-soft);">${filter.filterName}</label>
+            <select class="chat-input" style="width:100%;padding:8px;margin-top:4px;" onchange="applyFilter('${filter.filterBy}', this.value)">
+              <option value="">Toate</option>
+              ${options.map(opt => `<option value="${opt.trim()}">${opt.trim()}</option>`).join('')}
+            </select>
+          </div>`;
+        });
+        html += '</div></div>';
+      }
+      
+      if (pageElements.length > 0) {
+        html += '<div class="card fade-in"><div class="card-title">Acțiuni</div><div>';
+        pageElements.forEach(el => { html += renderElement(el); });
+        html += '</div></div>';
+      }
+      
+      if (pageTables.length === 0 && pageElements.length === 0) {
+        html += '<div class="card fade-in"><div class="empty-state">Pagină goală</div></div>';
+      } else {
+        pageTables.forEach(table => {
+          // Arată din cache instant dacă există
+          const cachedData = cache.tables[table.numeTabel];
+          if (cachedData) {
+            html += `<div class="card fade-in" style="${pageStyleCSS}"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}">${renderAdvancedTable(cachedData, page.nume)}</div></div>`;
+          } else {
+            html += `<div class="card fade-in" style="${pageStyleCSS}"><div class="card-title">${table.numeTabel}</div><div id="table-${table.numeTabel}"><div class="skeleton" style="height:100px;"></div></div></div>`;
+          }
+        });
+      }
+      
+      content.innerHTML = html;
+      
+      // Încarcă/actualizează datele în background
+      pageTables.forEach(table => loadTableData(table));
+    }
+    
+    function renderAdvancedTable(data, pageName) {
+      if (!data || !data.rows || data.rows.length === 0) {
+        return '<div class="empty-state">Nicio înregistrare</div>';
+      }
+      
+      const progressBars = (appData.progressBars || []).filter(p => p.pageName === pageName);
+      const formulas = (appData.formulas || []).filter(f => f.pageName === pageName);
+      const sortConfig = (appData.tableSorts || []).find(s => s.pageName === pageName);
+      
+      // Sortare dacă e configurată
+      let rows = [...data.rows];
+      if (sortConfig) {
+        const sortIndex = data.headers.indexOf(sortConfig.sortBy);
+        if (sortIndex >= 0) {
+          rows.sort((a, b) => {
+            const valA = parseFloat(a[sortIndex]) || 0;
+            const valB = parseFloat(b[sortIndex]) || 0;
+            return sortConfig.order === 'asc' ? valA - valB : valB - valA;
+          });
+        }
+      }
+      
+      let html = '<table class="data-table"><thead><tr>';
+      data.headers.forEach(h => { html += `<th>${h}</th>`; });
+      html += '</tr></thead><tbody>';
+      
+      rows.forEach((row, rowIndex) => {
+        html += '<tr>';
+        row.forEach((cell, colIndex) => {
+          const colName = data.headers[colIndex];
+          
+          // Verifică dacă e coloană cu progress bar
+          const progressConfig = progressBars.find(p => p.column === colName);
+          if (progressConfig) {
+            const maxColIndex = data.headers.indexOf(progressConfig.maxColumn);
+            const maxVal = maxColIndex >= 0 ? parseFloat(row[maxColIndex]) || 100 : 100;
+            const percent = Math.min(100, Math.round((parseFloat(cell) || 0) / maxVal * 100));
+            html += `<td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+                  <div style="width:${percent}%;height:100%;background:${progressConfig.color || '#22c55e'};transition:width 0.3s;"></div>
+                </div>
+                <span style="font-size:12px;font-weight:600;">${percent}%</span>
+              </div>
+            </td>`;
+          }
+          // Verifică dacă e coloană Poziție pentru medalii
+          else if (colName === 'Pozitie' || colName === 'Poziție') {
+            const pos = parseInt(cell) || (rowIndex + 1);
+            const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
+            html += `<td style="font-size:${pos <= 3 ? '20px' : '14px'};">${medal}</td>`;
+          }
+          // Verifică dacă e coloană Total/Venit pentru formatare
+          else if (colName === 'Total' || colName === 'Venit' || colName === 'Pret' || colName === 'BaniGenerati') {
+            const val = parseFloat(cell) || 0;
+            html += `<td style="font-weight:600;color:#059669;">${val.toLocaleString('ro-RO')} lei</td>`;
+          }
+          // Verifică status pentru culori
+          else if (colName === 'Status') {
+            const statusColors = {
+              'confirmat': '#22c55e',
+              'în așteptare': '#f59e0b',
+              'anulat': '#ef4444'
+            };
+            const color = statusColors[cell?.toLowerCase()] || '#6b7280';
+            html += `<td><span style="padding:4px 8px;border-radius:4px;background:${color}20;color:${color};font-size:12px;font-weight:600;">${cell || ''}</span></td>`;
+          }
+          else {
+            html += `<td>${cell || ''}</td>`;
+          }
+        });
+        html += '</tr>';
+      });
+      
+      // Afișează total dacă e pagină de salarii
+      if (data.headers.includes('Total')) {
+        const totalIndex = data.headers.indexOf('Total');
+        const sum = rows.reduce((acc, row) => acc + (parseFloat(row[totalIndex]) || 0), 0);
+        html += `<tr style="background:#f0fdf4;font-weight:bold;">
+          <td colspan="${totalIndex}">TOTAL</td>
+          <td style="color:#059669;">${sum.toLocaleString('ro-RO')} lei</td>
+          ${totalIndex < data.headers.length - 1 ? `<td colspan="${data.headers.length - totalIndex - 1}"></td>` : ''}
+        </tr>`;
+      }
+      
+      html += '</tbody></table>';
+      return html;
+    }
+    
+    function renderTableHTML(data) {
+      return renderAdvancedTable(data, '');
+    }
+    
+    // Filtru activ
+    let activeFilters = {};
+    
+    function applyFilter(filterBy, value) {
+      if (value) {
+        activeFilters[filterBy] = value;
+      } else {
+        delete activeFilters[filterBy];
+      }
+      // Reîncarcă tabelul cu filtre
+      if (currentPage) {
+        const pageTables = appData.tabele.filter(t => t.paginaId === currentPage.id);
+        pageTables.forEach(table => loadTableData(table, activeFilters));
+      }
+    }
+
+    function renderElement(el) {
+      switch(el.tip) {
+        case 'buton': return `<button class="btn btn-primary" style="margin:5px;">${el.nume}</button>`;
+        case 'dropdown':
+          const opts = el.optiuni ? el.optiuni.split(',').map(o => `<option>${o.trim()}</option>`).join('') : '';
+          return `<div style="margin:10px 0;"><label style="display:block;margin-bottom:5px;">${el.nume}</label><select class="chat-input" style="width:200px;">${opts}</select></div>`;
+        case 'checkbox': return `<label style="display:flex;align-items:center;gap:8px;margin:10px 0;cursor:pointer;"><input type="checkbox"><span>${el.nume}</span></label>`;
+        default: return `<div style="margin:10px 0;"><label style="display:block;margin-bottom:5px;">${el.nume}</label><input type="text" class="chat-input" style="width:100%;"></div>`;
+      }
+    }
+
+    async function loadTableData(table) {
+      try {
+        const response = await fetch(BACKEND_URL + "?action=loadTable&table=" + table.numeTabel);
+        const data = await response.json();
+        const container = document.getElementById("table-" + table.numeTabel);
+        
+        if (data.ok) {
+          // Salvează în cache
+          cache.tables[table.numeTabel] = data.data;
+          
+          if (container) {
+            container.innerHTML = renderTableHTML(data.data);
+          }
+        }
+      } catch (e) {
+        const container = document.getElementById("table-" + table.numeTabel);
+        if (container) container.innerHTML = '<div class="empty-state">Eroare</div>';
+      }
+    }
+
+    // ===== GM PAGES =====
+    function showCreierAI() {
+      currentGMPage = "creier-ai";
+      currentPage = null;
+      pageTitle.textContent = "Creier AI";
+      
+      if (cache.cunostinte) {
+        renderCreierAI(cache.cunostinte);
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      }
+    }
+    
+    function renderCreierAI(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);"><h2>🧠 Creier AI</h2><p>Tot ce știe AI-ul</p></div>';
+      
+      if (data && data.length > 0) {
+        const grouped = {};
+        data.forEach(c => {
+          const cat = c.categorie || 'general';
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(c);
+        });
+        
+        for (const cat in grouped) {
+          html += `<div class="card fade-in"><div class="card-title">${cat.toUpperCase()}</div>`;
+          grouped[cat].forEach(c => {
+            html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`;
+          });
+          html += '</div>';
+        }
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">AI-ul nu știe nimic încă.<br><br>Învață-l din chat: <code>învață: [informație]</code></div></div>';
+      }
+      
+      content.innerHTML = html;
+    }
+
+    function showDeVerificat() {
+      currentGMPage = "de-verificat";
+      currentPage = null;
+      pageTitle.textContent = "De verificat";
+      
+      if (cache.deVerificat) {
+        renderDeVerificat(cache.deVerificat);
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      }
+    }
+    
+    function renderDeVerificat(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><h2>✅ De verificat</h2><p>Cunoștințe de la utilizatori</p></div>';
+      
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          html += `<div class="card fade-in">
+            <div style="margin-bottom:10px;"><strong>Sursa:</strong> ${item.sursa}</div>
+            <div style="margin-bottom:15px;">${item.informatie}</div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" onclick="verificaCunostinta('${item.id}', 'aproba')">✅ Aprobă</button>
+              <button class="btn" style="background:#ef4444;color:white;" onclick="verificaCunostinta('${item.id}', 'respinge')">❌ Respinge</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">Nimic de verificat! 🎉</div></div>';
+      }
+      
+      content.innerHTML = html;
+    }
+
+    async function verificaCunostinta(id, actiune) {
+      try {
+        const url = BACKEND_URL + "?action=verificaCunostinta&id=" + encodeURIComponent(id) + "&actiune=" + encodeURIComponent(actiune);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă de verificat
+          const verResp = await fetch(BACKEND_URL + "?action=loadDeVerificat");
+          const verData = await verResp.json();
+          if (verData.ok) {
+            cache.deVerificat = verData.data;
+            renderDeVerificat(cache.deVerificat);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut verifica"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    // ===== REGULI FUNDAMENTALE =====
+    function showReguliFundamentale() {
+      currentGMPage = "reguli";
+      currentPage = null;
+      pageTitle.textContent = "Reguli Fundamentale";
+      
+      if (cache.reguli) {
+        renderReguliFundamentale(cache.reguli);
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      }
+    }
+    
+    function renderReguliFundamentale(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><h2>🔒 Reguli Fundamentale</h2><p>Reguli pe care AI-ul le respectă MEREU</p></div>';
+      
+      html += '<div class="card fade-in"><div class="card-title">Adaugă Regulă Nouă</div>';
+      html += '<div style="display:flex;gap:10px;"><input type="text" id="regulaNoua" class="chat-input" style="flex:1;" placeholder="Ex: Întotdeauna salută clientul cu Bună ziua!">';
+      html += '<button class="btn btn-primary" onclick="adaugaRegula()">+ Adaugă</button></div></div>';
+      
+      html += '<div class="card fade-in"><div class="card-title">Reguli Active</div>';
+      
+      if (data && data.length > 0) {
+        data.forEach((r, idx) => {
+          html += `<div style="padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div><strong>#${idx + 1}</strong> &nbsp; "${r.regula}"</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" style="padding:5px 10px;font-size:12px;" onclick="editeazaRegula('${r.id}', '${r.regula.replace(/'/g, "\\'")}')">✏️</button>
+              <button class="btn" style="padding:5px 10px;font-size:12px;background:#ef4444;color:white;" onclick="stergeRegula('${r.id}')">🗑️</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="empty-state">Nicio regulă încă.<br>Adaugă prima regulă!</div>';
+      }
+      
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    async function adaugaRegula() {
+      const input = document.getElementById("regulaNoua");
+      const regula = input ? input.value.trim() : "";
+      if (!regula) return alert("Scrie o regulă!");
+      
+      try {
+        const url = BACKEND_URL + "?action=adaugaRegula&regula=" + encodeURIComponent(regula);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            if (input) input.value = "";
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut adăuga"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    async function editeazaRegula(id, regulaVeche) {
+      const regulaNoua = prompt("Editează regula:", regulaVeche);
+      if (!regulaNoua || regulaNoua === regulaVeche) return;
+      
+      try {
+        const url = BACKEND_URL + "?action=editeazaRegula&id=" + encodeURIComponent(id) + "&regula=" + encodeURIComponent(regulaNoua);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut edita"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    async function stergeRegula(id) {
+      if (!confirm("Sigur ștergi această regulă?")) return;
+      
+      try {
+        const url = BACKEND_URL + "?action=stergeRegula&id=" + encodeURIComponent(id);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă regulile
+          const regResp = await fetch(BACKEND_URL + "?action=loadReguli");
+          const regData = await regResp.json();
+          if (regData.ok) {
+            cache.reguli = regData.data;
+            renderReguliFundamentale(cache.reguli);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut șterge"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    // ===== CONVERSAȚII =====
+    function showConversatii() {
+      currentGMPage = "conversatii";
+      currentPage = null;
+      pageTitle.textContent = "Conversații";
+      
+      if (cache.conversatii) {
+        renderConversatii(cache.conversatii);
+      } else {
+        content.innerHTML = '<div class="card"><div class="empty-state">Nu s-au încărcat datele. Reîncarcă pagina.</div></div>';
+      }
+    }
+    
+    function renderConversatii(data) {
+      let html = '<div class="welcome-card fade-in" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><h2>💬 Conversații</h2><p>Tot ce a întrebat oricine</p></div>';
+      
+      if (data && data.length > 0) {
+        data.forEach((c, idx) => {
+          const timestamp = new Date(c.timestamp).toLocaleString('ro-RO');
+          const statusIcon = c.status === 'ok' ? '✅' : c.status === 'corectat' ? '📝' : '⏳';
+          const statusClass = c.status === 'ok' ? 'background:#d1fae5;' : c.status === 'corectat' ? 'background:#dbeafe;' : '';
+          
+          // Istoric corecții
+          let corectiiHtml = '';
+          if (c.corectii && c.corectii.length > 0) {
+            corectiiHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">';
+            corectiiHtml += '<div style="font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;">📜 Istoric modificări:</div>';
+            c.corectii.forEach((cor, corIdx) => {
+              const corTime = new Date(cor.timestamp).toLocaleString('ro-RO');
+              corectiiHtml += `<div style="padding:8px;background:rgba(0,0,0,0.03);border-radius:6px;margin-bottom:6px;font-size:13px;">
+                <span style="color:var(--text-soft);">#${corIdx + 1} • ${corTime}</span><br>
+                <span style="color:#059669;">→ "${cor.corectie}"</span>
+              </div>`;
+            });
+            corectiiHtml += '</div>';
+          }
+          
+          html += `<div class="card fade-in" style="${statusClass}">
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+              <strong>#${idx + 1}</strong>
+              <span style="color:var(--text-soft);font-size:12px;">${statusIcon} ${timestamp} | ${c.user} (${c.mod})</span>
+            </div>
+            <div style="margin-bottom:8px;"><strong>User:</strong> "${c.mesaj}"</div>
+            <div style="margin-bottom:12px;color:var(--text-soft);"><strong>AI:</strong> "${c.raspuns ? c.raspuns.substring(0, 200) : ''}${c.raspuns && c.raspuns.length > 200 ? '...' : ''}"</div>
+            ${corectiiHtml}
+            <div style="display:flex;gap:10px;margin-top:12px;">
+              ${c.status !== 'ok' ? `<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="marcheazaOK('${c.id}')">✅ OK</button>` : ''}
+              <button class="btn" style="padding:6px 12px;font-size:12px;background:#f59e0b;color:white;" onclick="corecteazaConversatie('${c.id}', '${c.mesaj.replace(/'/g, "\\'")}')">✏️ ${c.corectii && c.corectii.length > 0 ? 'Corectează din nou' : 'Corectează'}</button>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += '<div class="card fade-in"><div class="empty-state">Nicio conversație încă.</div></div>';
+      }
+      
+      content.innerHTML = html;
+    }
+
+    async function marcheazaOK(id) {
+      try {
+        const url = BACKEND_URL + "?action=marcheazaOK&id=" + encodeURIComponent(id);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          // Reîncarcă conversațiile
+          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
+          const convData = await convResp.json();
+          if (convData.ok) {
+            cache.conversatii = convData.data;
+            renderConversatii(cache.conversatii);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut marca"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    async function corecteazaConversatie(id, mesajOriginal) {
+      const corectie = prompt("Cum trebuia să răspundă AI-ul la:\n\"" + mesajOriginal + "\"");
+      if (!corectie) return;
+      
+      try {
+        const url = BACKEND_URL + "?action=corecteazaConversatie&id=" + encodeURIComponent(id) + "&corectie=" + encodeURIComponent(corectie);
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          alert("✅ AI-ul a învățat din corecție!");
+          // Reîncarcă conversațiile
+          const convResp = await fetch(BACKEND_URL + "?action=loadConversatii");
+          const convData = await convResp.json();
+          if (convData.ok) {
+            cache.conversatii = convData.data;
+            renderConversatii(cache.conversatii);
+          }
+        } else {
+          alert("⚠️ Eroare: " + (data.error || "Nu s-a putut corecta"));
+        }
+      } catch (e) { 
+        console.error(e);
+        alert("⚠️ Eroare conexiune");
+      }
+    }
+
+    // ===== MODE UI =====
+    function updateModeUI() { renderNav(); }
+
+    // ===== MODE COMMANDS =====
+    function handleModeCommands(text) {
+      const lower = text.toLowerCase().trim();
+
+      if (lower === "open mod andrei admin") {
+        const pass = prompt("🔐 Parola Admin:");
+        if (pass === ADMIN_PASSWORD) {
+          currentMode = "admin";
+          editMode = false;
+          updateModeUI();
+          pushMessage("ai", "✅ Mod <b>Admin</b> activat!<br><br>Poți face acțiuni directe (fără dovezi).<br><br>Pentru a edita structura: <code>deschide mod editare</code>");
+        } else {
+          pushMessage("ai", "❌ Parolă greșită!");
+        }
+        return true;
+      }
+
+      if (lower === "open mod andrei gm") {
+        const pass = prompt("🔐 Parola GM:");
+        if (pass === GM_PASSWORD) {
+          currentMode = "gm";
+          editMode = false;
+          updateModeUI();
+          pushMessage("ai", "✅ Mod <b>GM</b> activat!<br><br>Vezi în sidebar: Creier AI și De verificat.<br><br>Pentru a edita: <code>deschide mod editare</code>");
+        } else {
+          pushMessage("ai", "❌ Parolă greșită!");
+        }
+        return true;
+      }
+
+      if (lower === "deschide mod editare" || lower === "editare") {
+        if (currentMode === "admin" || currentMode === "gm") {
+          editMode = true;
+          pushMessage("ai", "✏️ <b>Mod editare activ!</b><br><br>" +
+            "<b>Învață:</b> <code>învață: Elsa costă 800 lei</code><br>" +
+            "<b>Pagini:</b> <code>adaugă pagină X în normal/admin/gm</code><br>" +
+            "<b>Tabele:</b> <code>adaugă tabel X cu Col1, Col2</code><br>" +
+            "<b>Scanări:</b> <code>adaugă scanare X cu Nume, Tel, Data</code><br>" +
+            "<b>Stiluri:</b> <code>culoare primară rosu</code><br><br>" +
+            "Când termini: <code>inchide mod editare</code>");
+        } else {
+          pushMessage("ai", "⚠️ Trebuie să fii în mod Admin sau GM.");
+        }
+        return true;
+      }
+
+      if (lower === "inchide mod editare" || lower === "gata") {
+        editMode = false;
+        pushMessage("ai", "✅ Mod editare închis. Vorbim normal!");
+        return true;
+      }
+
+      if (lower === "exit" || lower === "iesi") {
+        currentMode = "standard";
+        editMode = false;
+        updateModeUI();
+        pushMessage("ai", "👋 Ai ieșit din mod special.");
+        return true;
+      }
+
+      return false;
+    }
+
+    // ===== CHAT =====
+    function pushMessage(type, html) {
+      const div = document.createElement("div");
+      div.className = "chat-msg " + type;
+      div.innerHTML = html;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function handleChatSend() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      chatInput.value = "";
+      pushMessage("user", text);
+
+      if (handleModeCommands(text)) return;
+
+      // Check for scan request
+      const scanRequest = detectScanRequest(text);
+      if (scanRequest && currentMode === "standard") {
+        openScanPopup(scanRequest.nume, "Scanează " + scanRequest.nume);
+        pushMessage("ai", "📷 Încarcă documentul pentru a continua.");
+        return;
+      }
+
+      // Check edit commands without edit mode
+      const lower = text.toLowerCase();
+      const isEditCmd = lower.includes("adaugă") || lower.includes("adauga") || lower.includes("șterge") || lower.includes("culoare") || lower.includes("titlu");
+      
+      if (isEditCmd && (currentMode === "admin" || currentMode === "gm") && !editMode) {
+        pushMessage("ai", "⚠️ Pentru a modifica, activează mai întâi:<br><code>deschide mod editare</code>");
+        return;
+      }
+
+      pushMessage("ai", "⏳ Procesez...");
+
+      try {
+        let url = BACKEND_URL + "?action=chat&message=" + encodeURIComponent(text);
+        
+        if (currentMode === "gm") {
+          url += "&mode=gm&password=" + encodeURIComponent(GM_PASSWORD) + "&editMode=" + editMode;
+        } else if (currentMode === "admin") {
+          url += "&mode=admin&password=" + encodeURIComponent(ADMIN_PASSWORD);
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Remove loading
+        const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
+        const last = msgs[msgs.length - 1];
+        if (last?.textContent.includes("Procesez")) last.remove();
+
+        if (data.ok && data.reply) {
+          let reply = data.reply.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+          pushMessage("ai", reply);
+          
+          if (data.reload) setTimeout(() => loadApp(), 500);
+          if (data.requestUpload) openScanPopup(data.scanType, "Încarcă document");
+        } else {
+          pushMessage("ai", "⚠️ " + (data.error || "Eroare"));
+        }
+      } catch (e) {
+        const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
+        const last = msgs[msgs.length - 1];
+        if (last?.textContent.includes("Procesez")) last.remove();
+        pushMessage("ai", "⚠️ Eroare conexiune");
+      }
+    }
+
+    function detectScanRequest(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes("scanez") || lower.includes("notez") || lower.includes("încarcă") || lower.includes("vreau să")) {
+        const scans = appData.scanari || [];
+        for (const s of scans) {
+          if (lower.includes(s.nume.toLowerCase())) return s;
+        }
+        if (lower.includes("petrecere") || lower.includes("rezerv")) {
+          return { nume: "Petreceri", campuri: "Nume,Telefon,Data,Ora,Locatie" };
+        }
+      }
+      return null;
+    }
+
+    // ===== SCAN POPUP =====
+    function openScanPopup(scanType, title) {
+      currentScanType = scanType;
+      document.getElementById("scanPopupTitle").textContent = "📷 " + title;
+      scanPopup.classList.add("active");
+      overlay.classList.add("active");
+      uploadArea.style.display = "block";
+      scanStatus.style.display = "none";
+    }
+
+    function closeScanPopup() {
+      scanPopup.classList.remove("active");
+      overlay.classList.remove("active");
+    }
+
+    uploadArea.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
+
+    async function handleFileUpload(file) {
+      uploadArea.style.display = "none";
+      scanStatus.style.display = "block";
+      scanStatus.innerHTML = "⏳ Se scanează...";
+
+      try {
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "scanDocument", scanType: currentScanType, image: base64, fileName: file.name, mode: currentMode })
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          closeScanPopup();
+          pushMessage("ai", "✅ <b>Scanat și salvat!</b><br><br>" + data.message.replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'));
+          setTimeout(() => loadApp(), 500);
+        } else {
+          scanStatus.innerHTML = "❌ " + (data.error || "Eroare");
+        }
+      } catch (e) {
+        scanStatus.innerHTML = "❌ Eroare la încărcare";
+      }
+    }
+
+    // ===== INIT =====
+    loadApp();
+    pushMessage("ai", "Salut! 👋 Sunt AI-ul SuperParty. Cu ce te pot ajuta?");
+  </script>
+</body>
+</html>
