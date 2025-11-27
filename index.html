@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- Content Security Policy (CSP) Hints for Production -->
-  <!-- Uncomment for production deployment:
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://script.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com;">
-  -->
+  <!-- Content Security Policy - Allow Google Apps Script for backend -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://corsproxy.io; img-src 'self' data: https:;">
   
   <title>SuperParty - Sistem de Management AI pentru Evenimente</title>
   <meta name="description" content="SuperParty - Platformă inteligentă de management evenimente cu AI. Gestionează rezervări, personal, buget și operațiuni în timp real.">
@@ -893,8 +891,23 @@
     // ═══════════════════════════════════════════════════════════════
     function jsonpRequest(url, params = {}) {
         return new Promise((resolve, reject) => {
+            // Cleanup old script tags first
+            document.querySelectorAll('script[src*="' + url.split('/').slice(-3)[0] + '"]').forEach(s => {
+                if (s.parentNode && Date.now() - parseInt(s.dataset.created || 0) > 5000) {
+                    s.parentNode.removeChild(s);
+                }
+            });
+            
             const callbackName = 'jsonp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            console.log('🔄 JSONP Request:', params.action || 'unknown', 'callback:', callbackName);
+            
+            let responseSize = 0;
             window[callbackName] = function(data) {
+                responseSize = JSON.stringify(data).length;
+                console.log('✅ JSONP Success:', params.action || 'unknown', '- Response size:', responseSize, 'chars');
+                if (responseSize > 100000) {
+                  console.warn('⚠️ Large response! Consider pagination.');
+                }
                 delete window[callbackName];
                 if(script.parentNode) document.body.removeChild(script);
                 resolve(data);
@@ -902,19 +915,27 @@
             const queryParams = new URLSearchParams(params);
             queryParams.append('callback', callbackName);
             const script = document.createElement('script');
-            script.src = url + '?' + queryParams.toString();
-            script.onerror = () => { 
+            const fullUrl = url + '?' + queryParams.toString();
+            console.log('📍 Request URL length:', fullUrl.length, 'chars');
+            script.src = fullUrl;
+            script.dataset.created = Date.now();
+            script.onerror = (err) => { 
+                console.error('❌ JSONP Error:', params.action || 'unknown');
+                console.error('   URL length:', fullUrl.length);
+                console.error('   Error event:', err);
+                console.error('   Active scripts:', document.querySelectorAll('script[src*="exec"]').length);
                 delete window[callbackName]; 
                 if(script.parentNode) document.body.removeChild(script); 
                 reject(new Error('JSONP request failed')); 
             };
             setTimeout(() => { 
                 if (window[callbackName]) { 
+                    console.error('⏱️ JSONP Timeout:', params.action || 'unknown', '- waited 60s');
                     delete window[callbackName]; 
                     if (script.parentNode) document.body.removeChild(script); 
                     reject(new Error('Request timeout')); 
                 } 
-            }, 30000);
+            }, 60000);
             document.body.appendChild(script);
         });
     }
@@ -926,12 +947,36 @@
     const GM_PASSWORD = "SPgm2024#Secure!XyZ";
     const ADMIN_PASSWORD = "SPadmin2024#Pro!ABC";
 
+    // ===== DEFAULT APP DATA (embedded fallback) =====
+    const DEFAULT_APP_DATA = {
+      pagini: [
+        {id: 'home', nume: 'Acasă', icon: '🏠', vizibil: true, mod: 'all', ordine: 1},
+        {id: 'evenimente', nume: 'Evenimente', icon: '🎉', vizibil: true, mod: 'normal', ordine: 2},
+        {id: 'echipa', nume: 'Echipa', icon: '👥', vizibil: true, mod: 'normal', ordine: 3},
+        {id: 'cunostinte', nume: 'Cunoștințe AI', icon: '🧠', vizibil: true, mod: 'gm', ordine: 10},
+        {id: 'reguli', nume: 'Reguli', icon: '📜', vizibil: true, mod: 'gm', ordine: 11},
+        {id: 'conversatii', nume: 'Conversații', icon: '💭', vizibil: true, mod: 'gm', ordine: 12},
+        {id: 'users', nume: 'Utilizatori', icon: '👤', vizibil: true, mod: 'admin', ordine: 20}
+      ],
+      tabele: [],
+      elemente: [],
+      scanari: [],
+      stiluri: {
+        primaryColor: '#3b82f6',
+        secondaryColor: '#8b5cf6',
+        backgroundColor: '#f8fafc',
+        cardBackground: '#ffffff',
+        textColor: '#1e293b',
+        borderRadius: '12px'
+      }
+    };
+
     // ===== STATE =====
     let currentMode = "standard";
     let editMode = false;
     let currentPage = null;
     let currentGMPage = null;
-    let appData = { pagini: [], tabele: [], elemente: [], scanari: [], stiluri: {} };
+    let appData = JSON.parse(JSON.stringify(DEFAULT_APP_DATA)); // Deep copy
     let currentScanType = null;
     let currentGenResults = { seo: [], ads: [] };
     
@@ -1062,49 +1107,87 @@
     chatSend.addEventListener("click", handleChatSend);
     chatInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleChatSend(); });
 
-    // ===== LOAD APP =====
+    // ===== LOAD APP - Use XHR (fetch is blocked!) =====
     async function loadApp() {
       showWelcomePage();
       renderNav();
       updateHeaderRight();
       
-      try {
-        const [appResponse, configResponse] = await Promise.all([
-          jsonpRequest(BACKEND_URL, { action: "loadApp" }).catch(() => null),
-          jsonpRequest(BACKEND_URL, { action: "loadPageConfig" }).catch(() => null)
-        ]);
+      // Use embedded data immediately for fast load
+      console.log('✅ Using embedded app data:', appData.pagini.length, 'pages');
+      
+      // Try to load fresh data from backend using XHR (works better than fetch!)
+      setTimeout(async () => {
+        console.log('🔄 Background: Loading fresh data via XHR...');
         
-        if (appResponse) {
-          const data = appResponse;
-          if (data.ok && data.data) {
+        try {
+          const data = await xhrRequest(BACKEND_URL + '?action=loadApp');
+          
+          if (data && data.ok && data.data) {
             appData = data.data;
-          } else if (data.ok) {
-            // Backend răspunde ok dar fără date structurate
-            console.log("Backend status:", data.message || "OK", "Version:", data.version || "N/A");
+            console.log('✅ Backend data loaded via XHR:', appData.tabele?.length || 0, 'tables');
+            renderNav(); // Re-render with fresh data
+            showToast('✅ Data actualizate din backend!', 'success');
+          } else {
+            console.log('ℹ️ Backend response invalid, keeping embedded data');
           }
+        } catch (e) {
+          console.log('ℹ️ Backend unavailable, using embedded defaults:', e.message);
         }
-        
-        if (configResponse) {
-          const configData = configResponse;
-          if (configData.ok && configData.data) {
-            appData.filters = configData.data.filters ?? [];
-            appData.formulas = configData.data.formulas ?? [];
-            appData.progressBars = configData.data.progressBars ?? [];
-            appData.tableSorts = configData.data.tableSorts ?? [];
-            appData.pageStyles = configData.data.pageStyles ?? {};
+      }, 2000); // Wait 2s after page load
+      
+      applyStyles();
+      renderNav();
+      
+      if (appData.pagini && appData.pagini.length > 0) {
+        const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+        if (firstPage) navigateTo(firstPage);
+      }
+    }
+    
+    // XHR Request Helper (works better than fetch for Google Apps Script!)
+    function xhrRequest(url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              resolve(data);
+            } catch (e) {
+              reject(new Error('Invalid JSON response'));
+            }
+          } else {
+            reject(new Error('XHR Status: ' + xhr.status));
           }
+        };
+        xhr.onerror = function() {
+          reject(new Error('XHR Network Error'));
+        };
+        xhr.send();
+      });
+    }
+    
+    // Manual refresh function (can be called from UI)
+    async function refreshFromBackend() {
+      console.log('🔄 Manual refresh requested...');
+      showToast('🔄 Refreshing data from server...', 'info');
+      
+      try {
+        const data = await xhrRequest(BACKEND_URL + '?action=loadApp');
+        
+        if (data && data.ok && data.data) {
+          appData = data.data;
+          console.log('✅ Data refreshed:', appData.tabele?.length || 0, 'tables');
+          renderNav();
+          showToast('✅ Data refreshed successfully!', 'success');
+        } else {
+          showToast('⚠️ Server returned invalid data', 'warning');
         }
       } catch (e) {
-        // API error handling - background load failed
-        console.log("Background load error:", e);
-      } finally {
-        applyStyles();
-        renderNav();
-        
-        if (appData.pagini && appData.pagini.length > 0) {
-          const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
-          if (firstPage) navigateTo(firstPage);
-        }
+        console.error('❌ Refresh failed:', e);
+        showToast('❌ Failed to connect to server', 'error');
       }
     }
     
@@ -1118,7 +1201,7 @@
       `;
     }
 
-    // ===== UPDATE HEADER RIGHT - LOGOUT BUTTON =====
+    // ===== UPDATE HEADER RIGHT - LOGOUT BUTTON + REFRESH =====
     function updateHeaderRight() {
       var headerRight = document.getElementById("headerRight");
       if (!headerRight) return;
@@ -1127,6 +1210,17 @@
       if (isLoggedIn && currentUser) {
         var container = document.createElement("div");
         container.style.cssText = "display:flex;align-items:center;gap:15px";
+        
+        // Refresh button (for GM/Admin)
+        if (currentMode === "gm" || currentMode === "admin") {
+          var refreshBtn = document.createElement("button");
+          refreshBtn.className = "btn";
+          refreshBtn.style.cssText = "padding:8px 16px;background:var(--success);color:white";
+          refreshBtn.textContent = "🔄 Refresh Data";
+          refreshBtn.title = "Load fresh data from backend";
+          refreshBtn.onclick = function() { refreshFromBackend(); };
+          container.appendChild(refreshBtn);
+        }
         
         var userSpan = document.createElement("span");
         userSpan.style.cssText = "font-size:14px;color:var(--text-soft)";
@@ -4837,7 +4931,17 @@
     }
 
     // ===== INIT =====
-    loadApp();
+    // Wait for everything to be ready before loading app
+    if (document.readyState === 'complete') {
+      // Already loaded, start immediately
+      setTimeout(() => loadApp(), 100);
+    } else {
+      // Wait for load event
+      window.addEventListener('load', () => {
+        setTimeout(() => loadApp(), 100);
+      });
+    }
+    
     pushMessage("ai", "Salut! 👋 Sunt AI-ul SuperParty. Cu ce te pot ajuta?");
     
     // ===== AUTO-REFRESH (setInterval) =====
