@@ -1061,14 +1061,13 @@
       
       toastContainer.appendChild(toast);
       
-      const hideTimeout = setTimeout(() => {
+      // Auto-hide after duration
+      setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease-out reverse';
-        const removeTimeout = setTimeout(() => toast.remove(), 300);
-        // Store for cleanup
-        if (removeTimeout) clearTimeout(removeTimeout);
+        setTimeout(() => toast.remove(), 300);
       }, toastDuration);
       
-      return hideTimeout;
+      return toast;
     }
 
     function formatCost(cost) { return '$' + parseFloat(cost).toFixed(4); }
@@ -1124,10 +1123,22 @@
           const data = await xhrRequest(BACKEND_URL + '?action=loadApp');
           
           if (data && data.ok && data.data) {
-            appData = data.data;
-            console.log('✅ Backend data loaded via XHR:', appData.tabele?.length || 0, 'tables');
-            renderNav(); // Re-render with fresh data
-            showToast('✅ Data actualizate din backend!', 'success');
+            // Update appData but respect current mode visibility
+            const freshData = data.data;
+            
+            // Only update if in GM/Admin mode OR if user explicitly requested refresh
+            if (currentMode === "gm" || currentMode === "admin") {
+              appData = freshData;
+              console.log('✅ Backend data loaded via XHR:', appData.tabele?.length || 0, 'tables');
+              renderNav(); // Re-render with fresh data
+              showToast('✅ Data actualizate din backend!', 'success');
+            } else {
+              // For normal users, only update tabele/elemente, keep pagini filtered
+              appData.tabele = freshData.tabele || [];
+              appData.elemente = freshData.elemente || [];
+              appData.scanari = freshData.scanari || [];
+              console.log('✅ Tables updated via XHR:', appData.tabele.length, 'tables (pages kept filtered for normal mode)');
+            }
           } else {
             console.log('ℹ️ Backend response invalid, keeping embedded data');
           }
