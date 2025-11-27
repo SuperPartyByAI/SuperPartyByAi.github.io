@@ -1039,12 +1039,12 @@
         ]);
         
         if (appResponse) {
-          const data = await appResponse.json();
+          const data = appResponse;
           if (data.ok) appData = data.data;
         }
         
         if (configResponse) {
-          const configData = await configResponse.json();
+          const configData = configResponse;
           if (configData.ok) {
             appData.filters = configData.data.filters || [];
             appData.formulas = configData.data.formulas || [];
