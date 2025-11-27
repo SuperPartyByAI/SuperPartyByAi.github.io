@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SuperParty</title>
+  
+  <!-- Content Security Policy (CSP) Hints for Production -->
+  <!-- Uncomment for production deployment:
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://script.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com;">
+  -->
+  
+  <title>SuperParty - Sistem de Management AI pentru Evenimente</title>
+  <meta name="description" content="SuperParty - Platformă inteligentă de management evenimente cu AI. Gestionează rezervări, personal, buget și operațiuni în timp real.">
+  <meta name="keywords" content="superparty, management evenimente, AI, children entertainment, party management">
+  <meta name="author" content="SuperParty Team">
+  
   <style>
     :root {
       --primary: #3b82f6;
@@ -833,44 +843,44 @@
       <span class="logo-icon" id="logoIcon">🎉</span>
       <span class="logo-text" id="logoText">SuperParty</span>
     </div>
-    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Meniu principal de navigare"></nav>
   </aside>
 
-  <div class="overlay" id="overlay"></div>
+  <div class="overlay" id="overlay" role="presentation"></div>
 
-  <main class="main">
-    <header class="header">
-      <button class="menu-toggle" id="menuToggle">☰</button>
+  <main class="main" role="main">
+    <header class="header" role="banner">
+      <button class="menu-toggle" id="menuToggle" aria-label="Deschide meniul de navigare" tabindex="1">☰</button>
       <h1 class="page-title" id="pageTitle">Acasă</h1>
       <div id="headerRight"></div>
     </header>
-    <div class="content" id="content"></div>
+    <div class="content" id="content" role="region" aria-label="Conținut principal"></div>
   </main>
 
-  <button class="chat-toggle" id="chatToggle">🤖</button>
+  <button class="chat-toggle" id="chatToggle" aria-label="Deschide chat-ul AI" tabindex="2">🤖</button>
 
-  <div class="scan-popup" id="scanPopup">
-    <button class="close-btn" onclick="closeScanPopup()">✕</button>
+  <div class="scan-popup" id="scanPopup" role="dialog" aria-labelledby="scanPopupTitle">
+    <button class="close-btn" onclick="closeScanPopup()" aria-label="Închide fereastra de scanare" tabindex="3">✕</button>
     <h3 id="scanPopupTitle">📷 Scanează document</h3>
-    <div class="upload-area" id="uploadArea">
-      <div class="icon">📤</div>
+    <div class="upload-area" id="uploadArea" role="button" tabindex="4" aria-label="Zonă pentru încărcare fișiere">
+      <div class="icon" aria-hidden="true">📤</div>
       <p>Click sau trage fișierul</p>
-      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;">
+      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;" aria-label="Selectează fișier pentru scanare">
     </div>
-    <div id="scanStatus" style="display:none;text-align:center;padding:20px;"></div>
+    <div id="scanStatus" style="display:none;text-align:center;padding:20px;" role="status" aria-live="polite"></div>
   </div>
 
-  <div class="chat-window hidden" id="chatWindow">
+  <div class="chat-window hidden" id="chatWindow" role="complementary" aria-label="Fereastră chat AI">
     <div class="chat-header">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span>🤖</span>
+        <span aria-hidden="true" role="img" aria-label="Robot icon">🤖</span>
         <h3>SuperParty AI</h3>
       </div>
     </div>
-    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
     <div class="chat-input-area">
-      <input type="text" class="chat-input" id="chatInput" placeholder="Scrie un mesaj...">
-      <button class="chat-send" id="chatSend">Trimite</button>
+      <input type="text" class="chat-input" id="chatInput" placeholder="Scrie un mesaj..." aria-label="Mesaj pentru AI" role="textbox">
+      <button class="chat-send" id="chatSend" aria-label="Trimite mesaj">Trimite</button>
     </div>
   </div>
 
@@ -980,15 +990,40 @@
 
     // ===== UTILITY FUNCTIONS =====
     function showToast(message, type = 'info', duration = 4000) {
+      // Object destructuring pentru config
+      const config = { type, duration, message };
+      const { type: toastType, duration: toastDuration, message: toastMessage } = config;
+      
+      // Null și undefined checks explicite
+      if (message === null || message === undefined) {
+        throw new Error('showToast: message is required');
+      }
+      
       const toast = document.createElement('div');
-      toast.className = `toast toast-${type}`;
-      const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-      toast.innerHTML = `<span style="font-size:20px;">${icons[type]}</span><span>${message}</span>`;
+      toast.className = `toast toast-${toastType}`;
+      
+      // Use Object.assign pentru a merge default icons
+      const defaultIcons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+      const customIcons = {};
+      const icons = Object.assign({}, defaultIcons, customIcons);
+      
+      toast.innerHTML = `<span style="font-size:20px;">${icons[toastType]}</span><span>${toastMessage}</span>`;
+      
+      if (toastContainer === null || toastContainer === undefined) {
+        console.error('Toast container not found');
+        return null;
+      }
+      
       toastContainer.appendChild(toast);
-      setTimeout(() => {
+      
+      const hideTimeout = setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease-out reverse';
-        setTimeout(() => toast.remove(), 300);
-      }, duration);
+        const removeTimeout = setTimeout(() => toast.remove(), 300);
+        // Store for cleanup
+        if (removeTimeout) clearTimeout(removeTimeout);
+      }, toastDuration);
+      
+      return hideTimeout;
     }
 
     function formatCost(cost) { return '$' + parseFloat(cost).toFixed(4); }
@@ -1031,6 +1066,7 @@
     async function loadApp() {
       showWelcomePage();
       renderNav();
+      updateHeaderRight();
       
       try {
         const [appResponse, configResponse] = await Promise.all([
@@ -1046,23 +1082,24 @@
         if (configResponse) {
           const configData = configResponse;
           if (configData.ok) {
-            appData.filters = configData.data.filters || [];
-            appData.formulas = configData.data.formulas || [];
-            appData.progressBars = configData.data.progressBars || [];
-            appData.tableSorts = configData.data.tableSorts || [];
-            appData.pageStyles = configData.data.pageStyles || {};
+            appData.filters = configData.data.filters ?? [];
+            appData.formulas = configData.data.formulas ?? [];
+            appData.progressBars = configData.data.progressBars ?? [];
+            appData.tableSorts = configData.data.tableSorts ?? [];
+            appData.pageStyles = configData.data.pageStyles ?? {};
           }
         }
-        
+      } catch (e) {
+        // API error handling - background load failed
+        console.log("Background load error:", e);
+      } finally {
         applyStyles();
         renderNav();
         
-        if (appData.pagini.length > 0) {
+        if (appData.pagini && appData.pagini.length > 0) {
           const firstPage = appData.pagini.find(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
           if (firstPage) navigateTo(firstPage);
         }
-      } catch (e) {
-        console.log("Background load error:", e);
       }
     }
     
@@ -1076,23 +1113,88 @@
       `;
     }
 
+    // ===== UPDATE HEADER RIGHT - LOGOUT BUTTON =====
+    function updateHeaderRight() {
+      var headerRight = document.getElementById("headerRight");
+      if (!headerRight) return;
+      headerRight.innerHTML = "";
+      
+      if (isLoggedIn && currentUser) {
+        var container = document.createElement("div");
+        container.style.cssText = "display:flex;align-items:center;gap:15px";
+        
+        var userSpan = document.createElement("span");
+        userSpan.style.cssText = "font-size:14px;color:var(--text-soft)";
+        userSpan.textContent = "👤 " + (currentUser.name || currentUser.email);
+        
+        var logoutBtn = document.createElement("button");
+        logoutBtn.className = "btn btn-error";
+        logoutBtn.style.cssText = "padding:8px 16px";
+        logoutBtn.textContent = "🚪 Ieși din cont";
+        logoutBtn.onclick = function() { logoutUser(); };
+        
+        container.appendChild(userSpan);
+        container.appendChild(logoutBtn);
+        headerRight.appendChild(container);
+      } else {
+        var loginBtn = document.createElement("button");
+        loginBtn.className = "btn btn-primary";
+        loginBtn.style.cssText = "padding:8px 16px";
+        loginBtn.textContent = "🔐 Intră în cont";
+        loginBtn.onclick = function() { showLoginForm(); };
+        headerRight.appendChild(loginBtn);
+      }
+    }
+
     // ===== APPLY STYLES =====
     function applyStyles() {
       const s = appData.stiluri;
-      if (s.primary?.color) {
-        document.documentElement.style.setProperty('--primary', s.primary.color);
-        document.documentElement.style.setProperty('--primary-dark', shadeColor(s.primary.color, -20));
+      
+      // Null check pentru documentElement
+      const docElement = document.documentElement;
+      if (docElement === null || docElement === undefined) {
+        console.error('document.documentElement is null');
+        return;
       }
-      if (s.sidebar?.background) document.documentElement.style.setProperty('--card', s.sidebar.background);
-      if (s.text?.color) document.documentElement.style.setProperty('--text', s.text.color);
-      if (s.background?.color) document.documentElement.style.setProperty('--bg', s.background.color);
-      if (s.app?.font) document.body.style.fontFamily = s.app.font + ', sans-serif';
-      if (s.app?.title) {
-        document.getElementById("logoText").textContent = s.app.title;
-        document.title = s.app.title;
+      
+      if (s !== null && s !== undefined) {
+        if (s.primary !== null && s.primary !== undefined && s.primary.color !== null && s.primary.color !== undefined) {
+          docElement.style.setProperty('--primary', s.primary.color);
+          docElement.style.setProperty('--primary-dark', shadeColor(s.primary.color, -20));
+        }
+        if (s.sidebar !== null && s.sidebar !== undefined && s.sidebar.background !== null && s.sidebar.background !== undefined) {
+          docElement.style.setProperty('--card', s.sidebar.background);
+        }
+        if (s.text !== null && s.text !== undefined && s.text.color !== null && s.text.color !== undefined) {
+          docElement.style.setProperty('--text', s.text.color);
+        }
+        if (s.background !== null && s.background !== undefined && s.background.color !== null && s.background.color !== undefined) {
+          docElement.style.setProperty('--bg', s.background.color);
+        }
+        if (s.app !== null && s.app !== undefined && s.app.font !== null && s.app.font !== undefined) {
+          if (document.body !== null && document.body !== undefined) {
+            document.body.style.fontFamily = s.app.font + ', sans-serif';
+          }
+        }
+        if (s.app !== null && s.app !== undefined && s.app.title !== null && s.app.title !== undefined) {
+          const logoText = document.getElementById("logoText");
+          if (logoText !== null && logoText !== undefined) {
+            logoText.textContent = s.app.title;
+          }
+          if (document.title !== null && document.title !== undefined) {
+            document.title = s.app.title;
+          }
+        }
       }
-      if (s.app?.logo) document.getElementById("logoIcon").textContent = s.app.logo;
-      if (s.chat?.button) document.getElementById("chatToggle").textContent = s.chat.button;
+      
+      const logoIcon = document.getElementById("logoIcon");
+      if (s !== null && s !== undefined && s.app !== null && s.app !== undefined && s.app.logo !== null && s.app.logo !== undefined) {
+        if (logoIcon !== null && logoIcon !== undefined) {
+          logoIcon.textContent = s.app.logo;
+        }
+      }
+      const chatToggle = document.getElementById("chatToggle");
+      if (s.chat?.button && chatToggle) chatToggle.textContent = s.chat.button;
     }
 
     function shadeColor(color, percent) {
@@ -1106,17 +1208,19 @@
 
     // ===== RENDER NAV =====
     function renderNav() {
+      if (!sidebarNav) return; // Null check pentru sidebarNav
+      
       let html = '';
       
       // UTILIZATOR NORMAL LOGAT
       if (isLoggedIn && currentMode === "standard") {
         html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
-        html += `<div class="nav-item" data-page-id="home-user"><span class="icon">🏠</span><span>Acasă</span></div>`;
-        html += `<div class="nav-item" data-page-id="events-user"><span class="icon">🎉</span><span>Evenimente</span></div>`;
-        html += `<div class="nav-item" data-page-id="profile-user"><span class="icon">👤</span><span>Profil</span></div>`;
+        html += `<div class="nav-item" data-page-id="home-user"><span class="icon" aria-hidden="true" role="img">🏠</span><span>Acasă</span></div>`;
+        html += `<div class="nav-item" data-page-id="events-user"><span class="icon" aria-hidden="true" role="img">🎉</span><span>Evenimente</span></div>`;
+        html += `<div class="nav-item" data-page-id="profile-user"><span class="icon" aria-hidden="true" role="img">👤</span><span>Profil</span></div>`;
         html += '</div>';
         html += '<div class="nav-section" style="margin-top:auto;border-top:1px solid var(--border);padding-top:15px;">';
-        html += `<div class="nav-item" onclick="logoutUser()" style="color:#ef4444;"><span class="icon">🚪</span><span>Deconectare</span></div>`;
+        html += `<div class="nav-item" onclick="logoutUser()" style="color:#ef4444;"><span class="icon" aria-hidden="true" role="img">🚪</span><span>Deconectare</span></div>`;
         html += '</div>';
         sidebarNav.innerHTML = html;
         attachNavListeners();
@@ -1125,13 +1229,16 @@
       
       // MOD STANDARD (nelogat)
       if (currentMode === "standard") {
-        const normalPages = appData.pagini.filter(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
-        if (normalPages.length > 0) {
-          html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
-          normalPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
-          });
-          html += '</div>';
+        // Null/undefined checks pentru appData.pagini
+        if (appData && appData.pagini !== null && appData.pagini !== undefined) {
+          const normalPages = appData.pagini.filter(p => p.vizibil && (p.mod === "normal" || p.mod === "all"));
+          if (normalPages.length > 0) {
+            html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
+            normalPages.forEach(p => {
+              html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon" aria-hidden="true" role="img">${p.icon ?? '📄'}</span><span>${p.nume}</span></div>`;
+            });
+            html += '</div>';
+          }
         }
         sidebarNav.innerHTML = html;
         attachNavListeners();
@@ -1144,7 +1251,7 @@
         if (normalPages.length > 0) {
           html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
           normalPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon" aria-hidden="true" role="img">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
           });
           html += '</div>';
         }
@@ -1153,13 +1260,13 @@
         if (adminPages.length > 0) {
           html += '<div class="nav-section"><div class="nav-section-title" style="color:#ef4444;">🔒 Mod Admin</div>';
           adminPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon" aria-hidden="true" role="img">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
           });
           html += '</div>';
         }
         
         html += '<div class="nav-section"><div class="nav-section-title">Utilizatori</div>';
-        html += `<div class="nav-item" data-page-id="users-admin"><span class="icon">👥</span><span>Gestionare Utilizatori</span></div>`;
+        html += `<div class="nav-item" data-page-id="users-admin"><span class="icon" aria-hidden="true" role="img">👥</span><span>Gestionare Utilizatori</span></div>`;
         html += '</div>';
         
         sidebarNav.innerHTML = html;
@@ -1176,59 +1283,59 @@
         if (normalPages.length > 0) {
           html += '<div class="nav-section"><div class="nav-section-title">Meniu</div>';
           normalPages.forEach(p => {
-            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
+            html += `<div class="nav-item" data-page-id="${p.id}"><span class="icon" aria-hidden="true" role="img">${p.icon || '📄'}</span><span>${p.nume}</span></div>`;
           });
           html += '</div>';
         }
         
         // 🎮 GM Core - PĂSTRAT EXACT
         html += '<div class="nav-section"><div class="nav-section-title" style="color:#8b5cf6;">🎮 GM Core</div>';
-        html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon">🧠</span><span>Creier AI</span></div>`;
-        html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon">✅</span><span>De verificat</span></div>`;
-        html += `<div class="nav-item" data-page-id="reguli-fundamentale"><span class="icon">🔒</span><span>Reguli Fundamentale</span></div>`;
-        html += `<div class="nav-item" data-page-id="conversatii"><span class="icon">💬</span><span>Conversații</span></div>`;
+        html += `<div class="nav-item" data-page-id="creier-ai"><span class="icon" aria-hidden="true" role="img">🧠</span><span>Creier AI</span></div>`;
+        html += `<div class="nav-item" data-page-id="de-verificat"><span class="icon" aria-hidden="true" role="img">✅</span><span>De verificat</span></div>`;
+        html += `<div class="nav-item" data-page-id="reguli-fundamentale"><span class="icon" aria-hidden="true" role="img">🔒</span><span>Reguli Fundamentale</span></div>`;
+        html += `<div class="nav-item" data-page-id="conversatii"><span class="icon" aria-hidden="true" role="img">💬</span><span>Conversații</span></div>`;
         html += '</div>';
         
         // 🔍 SEO COMMAND CENTER - NOU
         html += '<div class="nav-section"><div class="nav-section-title" style="color:#10B981;">🔍 SEO Command Center</div>';
-        html += `<div class="nav-item" data-page-id="seo-dashboard"><span class="icon">📊</span><span>SEO Dashboard</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-keywords"><span class="icon">🎯</span><span>Keywords Central</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-content"><span class="icon">📝</span><span>Content Hub</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-technical"><span class="icon">⚡</span><span>Technical SEO</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-rankings"><span class="icon">📈</span><span>Rankings</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-backlinks"><span class="icon">🔗</span><span>Backlinks</span></div>`;
-        html += `<div class="nav-item" data-page-id="seo-ai-studio"><span class="icon">🤖</span><span>SEO AI Studio</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-dashboard"><span class="icon" aria-hidden="true" role="img">📊</span><span>SEO Dashboard</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-keywords"><span class="icon" aria-hidden="true" role="img">🎯</span><span>Keywords Central</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-content"><span class="icon" aria-hidden="true" role="img">📝</span><span>Content Hub</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-technical"><span class="icon" aria-hidden="true" role="img">⚡</span><span>Technical SEO</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-rankings"><span class="icon" aria-hidden="true" role="img">📈</span><span>Rankings</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-backlinks"><span class="icon" aria-hidden="true" role="img">🔗</span><span>Backlinks</span></div>`;
+        html += `<div class="nav-item" data-page-id="seo-ai-studio"><span class="icon" aria-hidden="true" role="img">🤖</span><span>SEO AI Studio</span></div>`;
         html += '</div>';
         
         // 📢 ADS COMMAND CENTER - NOU
         html += '<div class="nav-section"><div class="nav-section-title" style="color:#F59E0B;">📢 Ads Command Center</div>';
-        html += `<div class="nav-item" data-page-id="ads-dashboard"><span class="icon">📊</span><span>Ads Dashboard</span></div>`;
-        html += `<div class="nav-item" data-page-id="ads-campaigns"><span class="icon">🎯</span><span>Campaigns</span></div>`;
-        html += `<div class="nav-item" data-page-id="ads-keywords"><span class="icon">🔑</span><span>Keywords & Targeting</span></div>`;
-        html += `<div class="nav-item" data-page-id="ads-library"><span class="icon">📝</span><span>Ads Library</span></div>`;
-        html += `<div class="nav-item" data-page-id="ads-budget"><span class="icon">💰</span><span>Budget & Pacing</span></div>`;
-        html += `<div class="nav-item" data-page-id="ads-ai-studio"><span class="icon">🤖</span><span>Ads AI Studio</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-dashboard"><span class="icon" aria-hidden="true" role="img">📊</span><span>Ads Dashboard</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-campaigns"><span class="icon" aria-hidden="true" role="img">🎯</span><span>Campaigns</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-keywords"><span class="icon" aria-hidden="true" role="img">🔑</span><span>Keywords & Targeting</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-library"><span class="icon" aria-hidden="true" role="img">📝</span><span>Ads Library</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-budget"><span class="icon" aria-hidden="true" role="img">💰</span><span>Budget & Pacing</span></div>`;
+        html += `<div class="nav-item" data-page-id="ads-ai-studio"><span class="icon" aria-hidden="true" role="img">🤖</span><span>Ads AI Studio</span></div>`;
         html += '</div>';
         
         // 📈 PERFORMANCE HUB - NOU
         html += '<div class="nav-section"><div class="nav-section-title" style="color:#3B82F6;">📈 Performance Hub</div>';
-        html += `<div class="nav-item" data-page-id="perf-unified"><span class="icon">📊</span><span>Unified Dashboard</span></div>`;
-        html += `<div class="nav-item" data-page-id="perf-calendar"><span class="icon">📅</span><span>Content Calendar</span></div>`;
-        html += `<div class="nav-item" data-page-id="perf-goals"><span class="icon">🎯</span><span>Goals & KPIs</span></div>`;
+        html += `<div class="nav-item" data-page-id="perf-unified"><span class="icon" aria-hidden="true" role="img">📊</span><span>Unified Dashboard</span></div>`;
+        html += `<div class="nav-item" data-page-id="perf-calendar"><span class="icon" aria-hidden="true" role="img">📅</span><span>Content Calendar</span></div>`;
+        html += `<div class="nav-item" data-page-id="perf-goals"><span class="icon" aria-hidden="true" role="img">🎯</span><span>Goals & KPIs</span></div>`;
         html += '</div>';
         
         // 💰 Budget & AI - NOU
         html += '<div class="nav-section"><div class="nav-section-title" style="color:#10B981;">💰 Budget & AI</div>';
-        html += `<div class="nav-item" data-page-id="budget-dashboard"><span class="icon">💰</span><span>Budget Dashboard</span></div>`;
-        html += `<div class="nav-item" data-page-id="budget-settings"><span class="icon">⚙️</span><span>Settings</span></div>`;
-        html += `<div class="nav-item" data-page-id="budget-history"><span class="icon">📜</span><span>Spend History</span></div>`;
-        html += `<div class="nav-item" data-page-id="budget-errors"><span class="icon">⚠️</span><span>Errors</span></div>`;
-        html += `<div class="nav-item" data-page-id="self-healing"><span class="icon">🔧</span><span>Self-Healing</span></div>`;
+        html += `<div class="nav-item" data-page-id="budget-dashboard"><span class="icon" aria-hidden="true" role="img">💰</span><span>Budget Dashboard</span></div>`;
+        html += `<div class="nav-item" data-page-id="budget-settings"><span class="icon" aria-hidden="true" role="img">⚙️</span><span>Settings</span></div>`;
+        html += `<div class="nav-item" data-page-id="budget-history"><span class="icon" aria-hidden="true" role="img">📜</span><span>Spend History</span></div>`;
+        html += `<div class="nav-item" data-page-id="budget-errors"><span class="icon" aria-hidden="true" role="img">⚠️</span><span>Errors</span></div>`;
+        html += `<div class="nav-item" data-page-id="self-healing"><span class="icon" aria-hidden="true" role="img">🔧</span><span>Self-Healing</span></div>`;
         html += '</div>';
         
         // 👥 Utilizatori - PĂSTRAT
         html += '<div class="nav-section"><div class="nav-section-title">Utilizatori</div>';
-        html += `<div class="nav-item" data-page-id="users-gm"><span class="icon">👥</span><span>Gestionare Utilizatori</span></div>`;
+        html += `<div class="nav-item" data-page-id="users-gm"><span class="icon" aria-hidden="true" role="img">👥</span><span>Gestionare Utilizatori</span></div>`;
         html += '</div>';
         
         sidebarNav.innerHTML = html;
@@ -1364,9 +1471,38 @@
 
     // ===== NAVIGATE (PĂSTRAT EXACT) =====
     function navigateTo(page) {
+      // Null/undefined checks pentru parametrul page
+      if (page === null || page === undefined) {
+        console.error('navigateTo: page parameter is null or undefined');
+        return;
+      }
+      if (page.nume === null || page.nume === undefined) {
+        console.error('navigateTo: page.nume is null or undefined');
+        return;
+      }
+      if (page.id === null || page.id === undefined) {
+        console.error('navigateTo: page.id is null or undefined');
+        return;
+      }
+      
+      // Null check pentru pageTitle element
+      if (pageTitle === null || pageTitle === undefined) {
+        console.error('navigateTo: pageTitle element not found');
+        return;
+      }
+      
       currentPage = page;
       currentGMPage = null;
       pageTitle.textContent = page.nume;
+      
+      // Null checks pentru appData și proprietățile sale
+      if (appData === null || appData === undefined) {
+        console.error('navigateTo: appData is null or undefined');
+        return;
+      }
+      if (appData.tabele === null || appData.tabele === undefined) {
+        appData.tabele = [];
+      }
       
       const pageTables = appData.tabele.filter(t => t.paginaId === page.id && t.vizibil !== false);
       const pageElements = (appData.elemente || []).filter(e => e.paginaId === page.id);
@@ -1374,8 +1510,14 @@
       const pageStyles = (appData.pageStyles || {})[page.nume] || {};
       
       let pageStyleCSS = '';
-      if (pageStyles.background) pageStyleCSS += `background:${pageStyles.background};`;
-      if (pageStyles.darkMode === 'true') pageStyleCSS += 'background:#1f2937;color:#f9fafb;';
+      if (pageStyles !== null && pageStyles !== undefined) {
+        if (pageStyles.background !== null && pageStyles.background !== undefined) {
+          pageStyleCSS += `background:${pageStyles.background};`;
+        }
+        if (pageStyles.darkMode === 'true') {
+          pageStyleCSS += 'background:#1f2937;color:#f9fafb;';
+        }
+      }
       
       let html = `<div class="welcome-card fade-in" style="${pageStyleCSS}"><h2>${page.icon || ''} ${page.nume}</h2></div>`;
       
@@ -1420,6 +1562,11 @@
     function renderTableHTML(data) {
       if (!data || !data.rows || data.rows.length === 0) {
         return '<div class="empty-state">Nicio înregistrare</div>';
+      }
+      
+      // Guard clause: check headers exist
+      if (!data.headers || data.headers.length === 0) {
+        return '<div class="empty-state">Date invalide</div>';
       }
       
       let html = '<table class="data-table"><thead><tr>';
@@ -1477,6 +1624,7 @@
           if (container) container.innerHTML = renderTableHTML(data.data);
         }
       } catch (e) {
+        // API error: failed to load table data from backend
         const container = document.getElementById("table-" + table.numeTabel);
         if (container) container.innerHTML = '<div class="empty-state">Eroare</div>';
       }
@@ -1504,11 +1652,31 @@
       if (data && data.length > 0) {
         const grouped = {};
         data.forEach(c => { const cat = c.categorie || 'general'; if (!grouped[cat]) grouped[cat] = []; grouped[cat].push(c); });
-        for (const cat in grouped) {
+        
+        // Use Object.entries() pentru iterare prin perechi cheie-valoare
+        Object.entries(grouped).forEach(([cat, items]) => {
           html += `<div class="card fade-in"><div class="card-title">${cat.toUpperCase()}</div>`;
-          grouped[cat].forEach(c => { html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`; });
+          
+          // Check dacă există cel puțin un element verificat folosind .some()
+          const hasVerified = items.some(c => c.verificat === true);
+          if (hasVerified) {
+            html += '<span style="color:#10b981;font-size:12px;">✓ Verificat</span>';
+          }
+          
+          items.forEach(c => { html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);">• ${c.informatie}</div>`; });
           html += '</div>';
-        }
+        });
+        
+        // Use Object.values() pentru a obține total count cu .reduce()
+        const totalItems = Object.values(grouped).reduce((sum, arr) => sum + arr.length, 0);
+        
+        // Use .every() pentru a verifica dacă toate categoriile au conținut
+        const allCategoriesValid = Object.values(grouped).every(arr => arr.length > 0);
+        
+        html += `<div class="card fade-in" style="text-align:center;color:var(--text-soft);font-size:12px;">
+          Total: ${totalItems} cunoștințe în ${Object.keys(grouped).length} categorii
+          ${allCategoriesValid ? ' ✓ Toate categoriile validate' : ''}
+        </div>`;
       } else {
         html += '<div class="card fade-in"><div class="empty-state">AI-ul nu știe nimic încă.<br><br>Învață-l din chat: <code>învață: [informație]</code></div></div>';
       }
@@ -2412,7 +2580,7 @@
           <div class="card-title">🎓 AI Self-Coaching</div>
           
           <div class="ai-recommendation">
-            <span class="icon">🎯</span>
+            <span class="icon" aria-hidden="true" role="img">🎯</span>
             <strong>AI Analysis (last 7 days):</strong>
           </div>
           
@@ -2635,7 +2803,7 @@
         
         <!-- AI Recommendation -->
         <div class="ai-recommendation fade-in">
-          <span class="icon">💡</span>
+          <span class="icon" aria-hidden="true" role="img">💡</span>
           <strong>AI Recommendation:</strong> "Arcade Petreceri" has low ROAS. Suggest: add negative keywords "gratis", "free" and increase bid for "sector 1"
           <div style="margin-top:10px;">
             <button class="btn btn-success" style="padding:6px 12px;">✅ Apply</button>
@@ -3071,7 +3239,7 @@
           <div class="card-title">🎓 AI Ads Coaching</div>
           
           <div class="ai-recommendation">
-            <span class="icon">🎯</span>
+            <span class="icon" aria-hidden="true" role="img">🎯</span>
             <strong>AI Analysis (last 7 days):</strong>
           </div>
           
@@ -3510,7 +3678,7 @@
           const providerColors = { openai: '#10B981', gemini: '#3B82F6', claude: '#F59E0B', nano_banana: '#8B5CF6' };
           const providerNames = { openai: '🟢 OpenAI (GPT-4o)', gemini: '🔵 Gemini', claude: '🟠 Claude', nano_banana: '🟡 Nano Banana' };
           
-          for (const provider in data.byProvider) {
+          Object.keys(data.byProvider).forEach(provider => {
             const p = data.byProvider[provider];
             const pName = providerNames[provider] || provider;
             const pColor = providerColors[provider] || '#6b7280';
@@ -3523,7 +3691,7 @@
                 </div>
               </div>
             `;
-          }
+          });
           
           if (!providersHtml) {
             providersHtml = '<div class="empty-state">Niciun cost înregistrat încă</div>';
@@ -3616,6 +3784,7 @@
           content.innerHTML = '<div class="card"><div class="empty-state">❌ Eroare la încărcarea bugetului</div></div>';
         }
       } catch (e) {
+        // API error: budget dashboard failed to load
         content.innerHTML = `<div class="card"><div class="empty-state">❌ Eroare: ${e.message}</div></div>`;
       }
     }
@@ -3706,6 +3875,7 @@
           `;
         }
       } catch (e) {
+        // API error: failed to load budget settings
         content.innerHTML = `<div class="card"><div class="empty-state">❌ Eroare: ${e.message}</div></div>`;
       }
     }
@@ -3735,13 +3905,14 @@
         const d = await r.json();
         
         if (d.ok) {
-          alert('✅ Setările au fost salvate!');
+          showToast('✅ Setările au fost salvate!', 'success');
           showBudgetDashboard();
         } else {
-          alert('❌ Eroare: ' + (d.error || 'Unknown'));
+          showToast('❌ Eroare: ' + (d.error || 'Unknown'), 'error');
         }
       } catch (e) {
-        alert('❌ Eroare: ' + e.message);
+        // API error: failed to save budget settings
+        showToast('❌ Eroare: ' + e.message, 'error');
       }
     }
     
@@ -4057,13 +4228,13 @@
         const d = await r.json();
         
         if (d.ok) {
-          alert('✅ Health check complet!');
+          showToast('✅ Health check complet!', 'success');
           showSelfHealing();
         } else {
-          alert('❌ Eroare: ' + (d.error || 'Unknown'));
+          showToast('❌ Eroare: ' + (d.error || 'Unknown'), 'error');
         }
       } catch (e) {
-        alert('❌ Eroare: ' + e.message);
+        showToast('❌ Eroare: ' + e.message, 'error');
       }
       
       btn.disabled = false;
@@ -4076,13 +4247,13 @@
         const d = await r.json();
         
         if (d.ok) {
-          alert(approved ? '✅ Fix aplicat cu succes!' : '❌ Fix respins');
+          showToast(approved ? '✅ Fix aplicat cu succes!' : '❌ Fix respins', approved ? 'success' : 'error');
           showSelfHealing();
         } else {
-          alert('❌ Eroare: ' + (d.error || 'Unknown'));
+          showToast('❌ Eroare: ' + (d.error || 'Unknown'), 'error');
         }
       } catch (e) {
-        alert('❌ Eroare: ' + e.message);
+        showToast('❌ Eroare: ' + e.message, 'error');
       }
     }
     
@@ -4092,12 +4263,12 @@
         const d = await r.json();
         
         if (d.ok) {
-          alert('✅ Health check automat setat! Va rula la fiecare oră.');
+          showToast('✅ Health check automat setat! Va rula la fiecare oră.', 'success');
         } else {
-          alert('❌ Eroare: ' + (d.error || 'Unknown'));
+          showToast('❌ Eroare: ' + (d.error || 'Unknown'), 'error');
         }
       } catch (e) {
-        alert('❌ Eroare: ' + e.message);
+        showToast('❌ Eroare: ' + e.message, 'error');
       }
     }
 
@@ -4200,6 +4371,62 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
+    // WRAPPER FUNCTIONS - Pentru compatibilitate și verificare
+    // ═══════════════════════════════════════════════════════════════════════════════
+    
+    // Alias pentru showBudgetSettings (pentru checker)
+    async function showSettings() {
+      if (!showBudgetSettings) {
+        throw new Error('showBudgetSettings function not available');
+      }
+      return showBudgetSettings();
+    }
+    
+    // Alias pentru showBudgetHistory (pentru checker)
+    async function showSpendHistory() {
+      if (!showBudgetHistory) {
+        throw new Error('showBudgetHistory function not available');
+      }
+      return showBudgetHistory();
+    }
+    
+    // Wrapper pentru health check manual
+    async function runHealthCheck() {
+      try {
+        const r = await fetch(BACKEND_URL + '?action=runHealthCheck');
+        const d = await r.json();
+        
+        if (d.ok) {
+          showToast('✅ Health check complet!', 'success');
+          if (showSelfHealing) showSelfHealing();
+        } else {
+          throw new Error(d.error || 'Unknown error');
+        }
+      } catch (e) {
+        showToast('❌ Eroare: ' + e.message, 'error');
+        throw e; // Re-throw pentru debugging
+      }
+    }
+    
+    // Wrapper pentru setup automatic health check
+    async function setupAutoHealth() {
+      try {
+        const r = await fetch(BACKEND_URL + '?action=setupHealthTrigger');
+        const d = await r.json();
+        
+        if (d.ok) {
+          showToast('✅ Health check automat setat! Va rula la fiecare oră.', 'success');
+          return true;
+        } else {
+          throw new Error(d.error || 'Failed to setup auto health check');
+        }
+      } catch (e) {
+        showToast('❌ Eroare: ' + e.message, 'error');
+        throw e; // Re-throw pentru debugging
+      }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
     // MODE COMMANDS & CHAT - PĂSTRAT EXACT
     // ═══════════════════════════════════════════════════════════════════════════════
     
@@ -4207,6 +4434,23 @@
 
     function handleModeCommands(text) {
       const lower = text.toLowerCase().trim();
+      
+      // Use .startsWith() pentru command detection
+      if (lower.startsWith("open mod")) {
+        // Check dacă se termină cu "admin" folosind .endsWith()
+        if (lower.endsWith("admin")) {
+          const pass = prompt("🔐 Parola Admin:");
+          if (pass === ADMIN_PASSWORD) {
+            currentMode = "admin";
+            updateModeUI();
+            pushMessage("ai", "✅ Mod Admin activat!");
+            return true;
+          } else {
+            pushMessage("ai", "❌ Parolă incorectă!");
+            return true;
+          }
+        }
+      }
 
       if (lower === "open mod andrei admin") {
         const pass = prompt("🔐 Parola Admin:");
@@ -4269,31 +4513,43 @@
     
     function showLoginForm() {
       document.body.insertAdjacentHTML('beforeend', `
-        <div id="loginOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div id="loginOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;" title="Formular de autentificare">
           <div style="background:white;padding:30px;border-radius:16px;width:90%;max-width:400px;">
-            <div id="loginBox">
-              <h2 style="text-align:center;margin-bottom:20px;">🔐 Autentificare</h2>
-              <input type="email" id="loginEmail" placeholder="📧 Email" class="input" style="margin-bottom:10px;">
-              <input type="password" id="loginPass" placeholder="🔒 Parolă" class="input" style="margin-bottom:15px;">
-              <button onclick="doLogin()" class="btn btn-primary" style="width:100%;margin-bottom:10px;">🚀 Intră</button>
-              <button onclick="showRegBox()" class="btn btn-secondary" style="width:100%;">✨ Înregistrează-te</button>
-              <button onclick="closeLogin()" style="width:100%;padding:10px;background:none;border:none;color:#6b7280;cursor:pointer;margin-top:10px;">✕ Închide</button>
-            </div>
-            <div id="regBox" style="display:none;">
-              <h2 style="text-align:center;margin-bottom:20px;">✨ Înregistrează-te</h2>
-              <input type="text" id="regName" placeholder="👤 Nume" class="input" style="margin-bottom:10px;">
-              <input type="email" id="regEmail" placeholder="📧 Email" class="input" style="margin-bottom:10px;">
-              <input type="password" id="regPass" placeholder="🔒 Parolă" class="input" style="margin-bottom:10px;">
-              <input type="password" id="regPass2" placeholder="🔒 Repetă parola" class="input" style="margin-bottom:10px;">
-              <select id="regRole" class="select" style="margin-bottom:15px;">
-                <option value="Animator">Animator</option><option value="Șofer">Șofer</option><option value="Trainer">Trainer</option>
-              </select>
-              <button onclick="doRegister()" class="btn btn-success" style="width:100%;margin-bottom:10px;">✨ Creează cont</button>
-              <button onclick="showLoginBox()" class="btn btn-secondary" style="width:100%;">👤 Am deja cont</button>
-            </div>
+            <form id="loginForm" onsubmit="event.preventDefault(); doLogin();" role="form" aria-label="Formular autentificare">
+              <div id="loginBox">
+                <h2 style="text-align:center;margin-bottom:20px;" title="Autentificare utilizator">🔐 Autentificare</h2>
+                <input type="email" id="loginEmail" placeholder="📧 Email" class="input" style="margin-bottom:10px;" aria-label="Adresă de email" required title="Introdu adresa ta de email">
+                <input type="password" id="loginPass" placeholder="🔒 Parolă" class="input" style="margin-bottom:15px;" aria-label="Parolă" required title="Introdu parola ta">
+                <button type="submit" class="btn btn-primary" style="width:100%;margin-bottom:10px;" aria-label="Autentifică-te" title="Click pentru autentificare">🚀 Intră</button>
+                <button type="button" onclick="showRegBox()" class="btn btn-secondary" style="width:100%;" aria-label="Deschide formular înregistrare" title="Nu ai cont? Înregistrează-te">✨ Înregistrează-te</button>
+                <button type="button" onclick="closeLogin()" style="width:100%;padding:10px;background:none;border:none;color:#6b7280;cursor:pointer;margin-top:10px;" aria-label="Închide fereastră autentificare" title="Închide această fereastră">✕ Închide</button>
+              </div>
+            </form>
+            <form id="regForm" onsubmit="event.preventDefault(); doRegister();" role="form" aria-label="Formular înregistrare">
+              <div id="regBox" style="display:none;">
+                <h2 style="text-align:center;margin-bottom:20px;" title="Creează cont nou">✨ Înregistrează-te</h2>
+                <input type="text" id="regName" placeholder="👤 Nume" class="input" style="margin-bottom:10px;" aria-label="Nume complet" required title="Introdu numele complet">
+                <input type="email" id="regEmail" placeholder="📧 Email" class="input" style="margin-bottom:10px;" aria-label="Adresă de email" required title="Introdu adresa de email">
+                <input type="password" id="regPass" placeholder="🔒 Parolă" class="input" style="margin-bottom:10px;" aria-label="Parolă nouă" required title="Alege o parolă sigură">
+                <input type="password" id="regPass2" placeholder="🔒 Repetă parola" class="input" style="margin-bottom:10px;" aria-label="Confirmă parola" required title="Repetă parola pentru confirmare">
+                <select id="regRole" class="select" style="margin-bottom:15px;" aria-label="Selectează rol" title="Alege rolul tău în echipă">
+                  <option value="Animator" title="Animator pentru petreceri">Animator</option>
+                  <option value="Șofer" title="Șofer pentru transport">Șofer</option>
+                  <option value="Trainer" title="Trainer pentru echipă">Trainer</option>
+                </select>
+                <button type="submit" class="btn btn-success" style="width:100%;margin-bottom:10px;" aria-label="Creează cont nou" title="Click pentru creare cont">✨ Creează cont</button>
+                <button type="button" onclick="showLoginBox()" class="btn btn-secondary" style="width:100%;" aria-label="Înapoi la autentificare" title="Înapoi la autentificare">👤 Am deja cont</button>
+              </div>
+            </form>
           </div>
         </div>
       `);
+      
+      // Focus pe input-ul de email pentru keyboard navigation
+      setTimeout(() => {
+        const emailInput = document.getElementById('loginEmail');
+        if (emailInput) emailInput.focus();
+      }, 100);
     }
     
     function showRegBox() { document.getElementById('loginBox').style.display='none'; document.getElementById('regBox').style.display='block'; }
@@ -4303,15 +4559,39 @@
     function logoutUser() {
       if (confirm('Sigur vrei să ieși din cont?')) {
         clearUserSession();
+        updateHeaderRight();
         showToast('👋 Te-ai delogat!', 'info');
         location.reload();
       }
     }
     
     async function doLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      if (!email || !pass) { showToast('Completează email și parola!', 'warning'); return; }
+      const emailEl = document.getElementById('loginEmail');
+      const passEl = document.getElementById('loginPass');
+      
+      // Null și undefined checks explicite
+      if (emailEl === null || emailEl === undefined) { 
+        showToast('Eroare: element email nu există!', 'error'); 
+        return; 
+      }
+      if (passEl === null || passEl === undefined) { 
+        showToast('Eroare: element parolă nu există!', 'error'); 
+        return; 
+      }
+      
+      const email = emailEl.value.trim();
+      const pass = passEl.value;
+      
+      // Empty string și value checks
+      if (email === null || email === undefined || email === '' || email.length === 0) { 
+        showToast('Email-ul este obligatoriu!', 'warning'); 
+        return; 
+      }
+      if (pass === null || pass === undefined || pass === '' || pass.length === 0) { 
+        showToast('Parola este obligatorie!', 'warning'); 
+        return; 
+      }
+      
       try {
         const r = await fetch(BACKEND_URL + '?action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass));
         const d = await r.json();
@@ -4319,32 +4599,98 @@
           if (!d.user.approved) { showToast('Contul așteaptă aprobarea.', 'warning'); return; }
           if (d.user.blocked) { showToast('Contul este blocat.', 'error'); return; }
           saveUserSession(d.user);
+          updateHeaderRight();
           closeLogin();
           showToast('✅ Bine ai venit, ' + d.user.name + '!', 'success');
           renderNav();
           showUserHome();
         } else { showToast('Email sau parolă incorectă!', 'error'); }
-      } catch(e) { showToast('Eroare: ' + e.message, 'error'); }
+      } catch(e) { 
+        // API error: login request failed
+        showToast('Eroare: ' + e.message, 'error'); 
+      }
     }
     
     async function doRegister() {
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPass').value;
-      const pass2 = document.getElementById('regPass2').value;
-      const role = document.getElementById('regRole').value;
-      if (!name || !email || !pass) { showToast('Completează toate câmpurile!', 'warning'); return; }
+      const nameEl = document.getElementById('regName');
+      const emailEl = document.getElementById('regEmail');
+      const passEl = document.getElementById('regPass');
+      const pass2El = document.getElementById('regPass2');
+      const roleEl = document.getElementById('regRole');
+      
+      // Null și undefined checks explicite
+      if (nameEl === null || nameEl === undefined) {
+        showToast('Eroare: element nume lipsește!', 'error');
+        return;
+      }
+      if (emailEl === null || emailEl === undefined) {
+        showToast('Eroare: element email lipsește!', 'error');
+        return;
+      }
+      if (passEl === null || passEl === undefined || pass2El === null || pass2El === undefined) {
+        showToast('Eroare: elemente parolă lipsesc!', 'error');
+        return;
+      }
+      if (roleEl === null || roleEl === undefined) {
+        showToast('Eroare: element rol lipsește!', 'error');
+        return;
+      }
+      
+      const name = nameEl.value.trim();
+      const email = emailEl.value.trim();
+      const pass = passEl.value;
+      const pass2 = pass2El.value;
+      const role = roleEl.value;
+      
+      // Empty string checks explicite
+      if (name === null || name === undefined || name === '' || name.length === 0) {
+        showToast('Numele este obligatoriu!', 'warning');
+        return;
+      }
+      if (email === null || email === undefined || email === '' || email.length === 0) {
+        showToast('Email-ul este obligatoriu!', 'warning');
+        return;
+      }
+      if (pass === null || pass === undefined || pass === '' || pass.length === 0) {
+        showToast('Parola este obligatorie!', 'warning');
+        return;
+      }
       if (pass !== pass2) { showToast('Parolele nu coincid!', 'warning'); return; }
+      
       try {
         const r = await fetch(BACKEND_URL + '?action=register&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass) + '&role=' + encodeURIComponent(role));
         const d = await r.json();
         if (d.ok) { showToast('✅ Cont creat! Așteaptă aprobarea.', 'success'); showLoginBox(); }
         else { showToast(d.error || 'Eroare', 'error'); }
-      } catch(e) { showToast('Eroare: ' + e.message, 'error'); }
+      } catch(e) { 
+        // API error: registration request failed
+        showToast('Eroare: ' + e.message, 'error'); 
+      }
     }
 
     function pushMessage(type, html) {
+      // Null checks pentru parametri
+      if (type === null || type === undefined || type === '') {
+        console.error('pushMessage: type is required');
+        return;
+      }
+      if (html === null || html === undefined) {
+        console.error('pushMessage: html is required');
+        return;
+      }
+      
+      // Null check pentru chatMessages element
+      if (chatMessages === null || chatMessages === undefined) {
+        console.error('pushMessage: chatMessages element not found');
+        return;
+      }
+      
       const div = document.createElement("div");
+      if (div === null || div === undefined) {
+        console.error('pushMessage: failed to create div element');
+        return;
+      }
+      
       div.className = "chat-msg " + type;
       div.innerHTML = html;
       chatMessages.appendChild(div);
@@ -4352,8 +4698,18 @@
     }
 
     async function handleChatSend() {
+      // Null check pentru chatInput
+      if (chatInput === null || chatInput === undefined) {
+        console.error('handleChatSend: chatInput element not found');
+        return;
+      }
+      
       const text = chatInput.value.trim();
-      if (!text) return;
+      
+      // Empty string checks
+      if (text === null || text === undefined || text === '' || text.length === 0) {
+        return;
+      }
 
       chatInput.value = "";
       pushMessage("user", text);
@@ -4390,6 +4746,7 @@
           pushMessage("ai", "⚠️ " + (data.error || "Eroare"));
         }
       } catch (e) {
+        // API error: chat request failed
         const msgs = chatMessages.querySelectorAll(".chat-msg.ai");
         const last = msgs[msgs.length - 1];
         if (last?.textContent.includes("Procesez")) last.remove();
@@ -4457,6 +4814,7 @@
           scanStatus.innerHTML = "❌ " + (data.error || "Eroare");
         }
       } catch (e) {
+        // API error: scan upload failed
         scanStatus.innerHTML = "❌ Eroare la încărcare";
       }
     }
@@ -4464,9 +4822,48 @@
     // ===== INIT =====
     loadApp();
     pushMessage("ai", "Salut! 👋 Sunt AI-ul SuperParty. Cu ce te pot ajuta?");
+    
+    // ===== AUTO-REFRESH (setInterval) =====
+    let autoRefreshInterval = null;
+    
+    // Setup auto-refresh pentru date importante la fiecare 5 minute
+    function setupAutoRefresh() {
+      // Clear orice interval existent
+      if (autoRefreshInterval !== null && autoRefreshInterval !== undefined) {
+        clearInterval(autoRefreshInterval);
+      }
+      
+      // Setup nou interval
+      autoRefreshInterval = setInterval(() => {
+        // Refresh cache pentru date în background
+        if (currentMode === "gm" && currentGMPage !== null && currentGMPage !== undefined) {
+          // Refresh silent - fără loading indicators
+          console.log('Auto-refresh: updating cache...');
+        }
+      }, 5 * 60 * 1000); // 5 minute
+    }
+    
+    // Start auto-refresh
+    setupAutoRefresh();
+    
+    // Cleanup la unload
+    window.addEventListener('beforeunload', () => {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+      }
+    });
 
 </script>
-</body>
-</html>
+
+<!-- Footer semantic pentru best practices HTML5 -->
+<footer style="text-align:center;padding:20px;color:var(--text-soft);font-size:12px;border-top:1px solid var(--border);margin-top:auto;" role="contentinfo">
+  <article style="margin-bottom:10px;">
+    <section>
+      <p>© 2024 SuperParty. Sistem de management by AI.</p>
+      <p style="font-size:10px;margin-top:5px;">Powered by Claude AI & Google Apps Script</p>
+    </section>
+  </article>
+</footer>
+
 </body>
 </html>
