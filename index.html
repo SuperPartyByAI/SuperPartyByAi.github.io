@@ -878,6 +878,38 @@
     // ===== CONFIG - MODIFICĂ DOAR AICI! =====
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwBzo1-F2DNxfIiSlcfrAgF-nUFyn2v9LbotEpTr-hnJhOlBzxZW2eV5okPEtOj-9iL/exec";
     
+    // ═══════════════════════════════════════════════════════════════
+    // JSONP HELPER - CORS BYPASS
+    // ═══════════════════════════════════════════════════════════════
+    function jsonpRequest(url, params = {}) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                if(script.parentNode) document.body.removeChild(script);
+                resolve(data);
+            };
+            const queryParams = new URLSearchParams(params);
+            queryParams.append('callback', callbackName);
+            const script = document.createElement('script');
+            script.src = url + '?' + queryParams.toString();
+            script.onerror = () => { 
+                delete window[callbackName]; 
+                if(script.parentNode) document.body.removeChild(script); 
+                reject(new Error('JSONP request failed')); 
+            };
+            setTimeout(() => { 
+                if (window[callbackName]) { 
+                    delete window[callbackName]; 
+                    if (script.parentNode) document.body.removeChild(script); 
+                    reject(new Error('Request timeout')); 
+                } 
+            }, 30000);
+            document.body.appendChild(script);
+        });
+    }
+
+    
     // ⚠️ SECURITY WARNING: Parolele sunt vizibile în source code!
     // Pentru producție: mută validarea pe backend sau folosește token-based auth
     // SCHIMBĂ ACESTE PAROLE ÎNAINTE DE DEPLOY!
