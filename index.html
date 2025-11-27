@@ -4593,8 +4593,13 @@
       }
       
       try {
-        const r = await fetch(BACKEND_URL + '?action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass));
-        const d = await r.json();
+        // FOLOSIM JSONP în loc de fetch pentru a bypassa CORS
+        const d = await jsonpRequest(BACKEND_URL, {
+          action: 'login',
+          email: email,
+          password: pass
+        });
+        
         if (d.ok && d.user) {
           if (!d.user.approved) { showToast('Contul așteaptă aprobarea.', 'warning'); return; }
           if (d.user.blocked) { showToast('Contul este blocat.', 'error'); return; }
@@ -4658,8 +4663,15 @@
       if (pass !== pass2) { showToast('Parolele nu coincid!', 'warning'); return; }
       
       try {
-        const r = await fetch(BACKEND_URL + '?action=register&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass) + '&role=' + encodeURIComponent(role));
-        const d = await r.json();
+        // FOLOSIM JSONP în loc de fetch pentru a bypassa CORS
+        const d = await jsonpRequest(BACKEND_URL, {
+          action: 'register',
+          name: name,
+          email: email,
+          password: pass,
+          role: role
+        });
+        
         if (d.ok) { showToast('✅ Cont creat! Așteaptă aprobarea.', 'success'); showLoginBox(); }
         else { showToast(d.error || 'Eroare', 'error'); }
       } catch(e) { 
