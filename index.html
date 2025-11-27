@@ -1034,8 +1034,8 @@
       
       try {
         const [appResponse, configResponse] = await Promise.all([
-          fetch(BACKEND_URL + "?action=loadApp").catch(() => null),
-          fetch(BACKEND_URL + "?action=loadPageConfig").catch(() => null)
+          jsonpRequest(BACKEND_URL, { action: "loadApp" }).catch(() => null),
+          jsonpRequest(BACKEND_URL, { action: "loadPageConfig" }).catch(() => null)
         ]);
         
         if (appResponse) {
