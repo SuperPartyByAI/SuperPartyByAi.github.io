@@ -105,6 +105,7 @@
             text-align: center;
             font-weight: 600;
             font-size: 18px;
+            cursor: pointer;
         }
 
         .chat-messages {
@@ -180,6 +181,11 @@
             transform: scale(1.05);
         }
 
+        .chat-send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -253,17 +259,17 @@
         </div>
         <div class="chat-input-container">
             <input type="text" class="chat-input" id="chatInput" placeholder="Scrie mesajul tău..." onkeypress="handleKeyPress(event)">
-            <button class="chat-send-btn" onclick="sendMessage()">Trimite</button>
+            <button class="chat-send-btn" id="sendButton" onclick="sendMessage()">Trimite</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // CONFIGURARE API - URL NOU ACTUALIZAT
+        // CONFIGURARE API - BACKEND NOU (Chat_Client.gs)
         // ==========================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzI5SCyfCDwYsvjno_vE2FQhVlHqBsFch9BYXJgKv2ZwZz3bFK3NzjjK4YgCqaSwUf8/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw1IeVp5YxDBpv_gA_aJbwJCoE0_20tNU6L6bUv4pyrONZvvhecrRA-b-z_g9iyaQSm/exec';
         const LOGIN_TRIGGER = 'intra in mod logare';
-        let conversationId = null;
+        let conversationId = '';
 
         // ==========================================
         // CHAT FUNCTIONS
@@ -276,6 +282,7 @@
 
         async function sendMessage() {
             const input = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
             const message = input.value.trim();
 
             if (!message) return;
@@ -284,7 +291,10 @@
             addMessage(message, 'user');
             input.value = '';
 
-            // Check pentru comandă specială
+            // Disable button
+            sendButton.disabled = true;
+
+            // Check pentru comandă specială (pentru operatori)
             if (message.toLowerCase() === LOGIN_TRIGGER) {
                 setTimeout(() => {
                     addMessage('🔐 Redirecționare către aplicația de management...', 'bot');
@@ -292,6 +302,7 @@
                         window.location.href = 'app.html';
                     }, 1000);
                 }, 500);
+                sendButton.disabled = false;
                 return;
             }
 
@@ -299,13 +310,13 @@
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message bot';
             typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = '<div class="message-bubble">AI scrie...</div>';
+            typingDiv.innerHTML = '<div class="message-bubble">Scriu...</div>';
             document.getElementById('chatMessages').appendChild(typingDiv);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
 
             try {
-                // Trimite la Apps Script pentru procesare cu Creier AI + V2
-                const response = await fetch(`${API_URL}?action=chatAI&message=${encodeURIComponent(message)}&conversationId=${conversationId || ''}`);
+                // Trimite la Chat_Client.gs
+                const response = await fetch(`${API_URL}?action=chat&message=${encodeURIComponent(message)}&conversationId=${conversationId}`);
                 const data = await response.json();
 
                 // Șterge typing indicator
@@ -329,8 +340,12 @@
                 const typing = document.getElementById('typingIndicator');
                 if (typing) typing.remove();
                 
-                addMessage('Ne pare rău, nu pot răspunde momentan. Te rugăm să ne contactezi la 0792864811! 📞', 'bot');
+                addMessage('Nu pot comunica cu serverul momentan. Te rugăm să ne contactezi la 0792864811! 📞', 'bot');
             }
+
+            // Re-enable button
+            sendButton.disabled = false;
+            input.focus();
         }
 
         function addMessage(text, type) {
@@ -360,6 +375,11 @@
                 clickCount = 0;
             }
         });
+
+        // Focus input on load
+        window.onload = function() {
+            document.getElementById('chatInput').focus();
+        };
     </script>
 </body>
 </html>
