@@ -12,43 +12,329 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-right: 2px solid rgba(248, 113, 113, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+        .sidebar-header {
+            padding: 30px 20px;
             text-align: center;
+            border-bottom: 1px solid rgba(248, 113, 113, 0.2);
         }
 
-        .header h1 {
-            font-size: 28px;
+        .sidebar-logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
         }
 
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
+        .sidebar-menu {
+            padding: 20px 0;
         }
 
-        .content {
-            padding: 40px 30px;
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            border-left-color: #f87171;
+        }
+
+        .menu-item.active {
+            background: rgba(248, 113, 113, 0.15);
+            color: #fff;
+            border-left-color: #ef4444;
+        }
+
+        .menu-item .icon {
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* FILTERS */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #f87171;
+        }
+
+        /* CARDS */
+        .event-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .event-card:hover {
+            border-color: #f87171;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(248, 113, 113, 0.2);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .event-id {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .event-badge {
+            padding: 6px 12px;
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 20px;
+            font-size: 11px;
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .event-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .event-detail .icon {
+            font-size: 16px;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(248, 113, 113, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(100, 116, 139, 0.3);
+            color: #cbd5e1;
+            border: 1px solid rgba(100, 116, 139, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(100, 116, 139, 0.5);
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .no-events .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #f87171;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #f87171;
         }
 
         .form-group {
@@ -58,626 +344,412 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: #cbd5e1;
             font-weight: 600;
             font-size: 14px;
         }
 
+        .form-group select,
         .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(248, 113, 113, 0.3);
             border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s;
+            color: #fff;
+            font-size: 14px;
         }
 
+        .form-group select:focus,
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .toggle-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .toggle-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .toggle-link a:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .error-message.active {
-            display: block;
-        }
-
-        .success-message {
-            background: #efe;
-            color: #3c3;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .success-message.active {
-            display: block;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Dashboard */
-        .dashboard-container {
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .dashboard-header h2 {
-            color: #2c3e50;
-            font-size: 24px;
-        }
-
-        .logout-btn {
-            padding: 10px 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .stat-card h3 {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .number {
-            color: #2c3e50;
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .tab:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .events-list {
-            display: none;
-        }
-
-        .events-list.active {
-            display: block;
-        }
-
-        .event-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .event-card h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-
-        .event-detail {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin: 5px 0;
-        }
-
-        .event-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn-accept {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-accept:hover {
-            background: #229954;
-        }
-
-        .btn-refuse {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-refuse:hover {
-            background: #c0392b;
-        }
-
-        .btn-allocate {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-allocate:hover {
-            background: #5568d3;
-        }
-
-        .no-events {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-            background: white;
-            border-radius: 12px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-        }
-
-        .loading:after {
-            content: '...';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .tab {
-                text-align: center;
-            }
+            border-color: #f87171;
         }
     </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
-    <div class="container screen active" id="loginScreen">
-        <div class="header">
-            <h1>🎭 SuperParty</h1>
-            <p>Portal Operatori</p>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎉 SuperParty</div>
+            <div style="font-size: 12px; color: #94a3b8;">by <span style="color: #f87171;">AI</span> ✨</div>
         </div>
-        <div class="content">
-            <div class="error-message" id="loginError"></div>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required placeholder="operator@superparty.ro">
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginPassword">Parolă</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
-                </div>
-                
-                <button type="submit" class="btn" id="loginBtn">Autentificare</button>
-            </form>
-            
-            <div class="toggle-link">
-                Nu ai cont? <a href="#" onclick="showRegister(); return false;">Înregistrează-te</a>
+
+        <div class="sidebar-menu">
+            <div class="menu-item active" onclick="showPage('home')">
+                <span class="icon">🏠</span>
+                <span>Acasă</span>
             </div>
+            <div class="menu-item" onclick="showPage('noteaza')">
+                <span class="icon">➕</span>
+                <span style="color: #10b981;">Notează Eveniment</span>
+            </div>
+            <div class="menu-item" onclick="showPage('nealocate')">
+                <span class="icon">📋</span>
+                <span>Petreceri Nealocate</span>
+            </div>
+            <div class="menu-item" onclick="showPage('petreceri-mele')">
+                <span class="icon">🎊</span>
+                <span>Ce Petreceri Am</span>
+            </div>
+            <div class="menu-item" onclick="showPage('total')">
+                <span class="icon">📈</span>
+                <span>Total Petreceri</span>
+            </div>
+            <div class="menu-item" onclick="showPage('soferi')">
+                <span class="icon">🚗</span>
+                <span>Evenimente cu Șoferi</span>
+            </div>
+            <div class="menu-item" onclick="showPage('factura')">
+                <span class="icon">🧾</span>
+                <span>Cu Factură</span>
+            </div>
+            <div class="menu-item" onclick="showPage('echipa')">
+                <span class="icon">👥</span>
+                <span>Echipa</span>
+            </div>
+            <div class="menu-item" onclick="showPage('inventar')">
+                <span class="icon">📦</span>
+                <span>Inventar</span>
+            </div>
+            <div class="menu-item" onclick="showPage('piniata')">
+                <span class="icon">🎯</span>
+                <span>Piniata</span>
+            </div>
+        </div>
+
+        <button class="logout-btn" onclick="handleLogout()">🚪 Deconectare</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- PAGE: HOME -->
+        <div class="page active" id="page-home">
+            <div class="page-header">
+                <h1>👋 Bine ai venit!</h1>
+                <p>Selectează o opțiune din meniul lateral</p>
+            </div>
+        </div>
+
+        <!-- PAGE: PETRECERI NEALOCATE -->
+        <div class="page" id="page-nealocate">
+            <div class="page-header">
+                <h1>📋 Petreceri Nealocate</h1>
+                <p>Evenimente care așteaptă alocare</p>
+            </div>
+
+            <div id="events-nealocate">
+                <div class="loading">Se încarcă evenimente...</div>
+            </div>
+        </div>
+
+        <!-- PAGE: CE PETRECERI AM -->
+        <div class="page" id="page-petreceri-mele">
+            <div class="page-header">
+                <h1>🎊 Ce Petreceri Am</h1>
+                <p>Evenimente alocate și notate de tine</p>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Ce cod ai:</label>
+                    <select class="filter-select" id="filter-cod-ai" onchange="filterPetreceriMele()">
+                        <option value="">Toate</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Cine noteaza:</label>
+                    <select class="filter-select" id="filter-cine-noteaza" onchange="filterPetreceriMele()">
+                        <option value="">Toate</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="events-petreceri-mele">
+                <div class="loading">Se încarcă evenimente...</div>
+            </div>
+        </div>
+
+        <!-- PAGE: TOTAL PETRECERI -->
+        <div class="page" id="page-total">
+            <div class="page-header">
+                <h1>📈 Total Petreceri</h1>
+                <p>Toate evenimentele din sistem</p>
+            </div>
+
+            <div id="events-total">
+                <div class="loading">Se încarcă evenimente...</div>
+            </div>
+        </div>
+
+        <!-- PAGE: NOTEAZĂ EVENIMENT -->
+        <div class="page" id="page-noteaza">
+            <div class="page-header">
+                <h1>➕ Notează Eveniment Nou</h1>
+                <p>Completează detaliile evenimentului</p>
+            </div>
+
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">Formular în dezvoltare...</p>
+        </div>
+
+        <!-- OTHER PAGES PLACEHOLDER -->
+        <div class="page" id="page-soferi">
+            <div class="page-header">
+                <h1>🚗 Evenimente cu Șoferi</h1>
+            </div>
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+        </div>
+
+        <div class="page" id="page-factura">
+            <div class="page-header">
+                <h1>🧾 Cu Factură</h1>
+            </div>
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+        </div>
+
+        <div class="page" id="page-echipa">
+            <div class="page-header">
+                <h1>👥 Echipa</h1>
+            </div>
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+        </div>
+
+        <div class="page" id="page-inventar">
+            <div class="page-header">
+                <h1>📦 Inventar</h1>
+            </div>
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+        </div>
+
+        <div class="page" id="page-piniata">
+            <div class="page-header">
+                <h1>🎯 Piniata</h1>
+            </div>
+            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
         </div>
     </div>
 
-    <!-- REGISTER SCREEN -->
-    <div class="container screen" id="registerScreen">
-        <div class="header">
-            <h1>🎭 SuperParty</h1>
-            <p>Creare Cont Operator</p>
-        </div>
-        <div class="content">
-            <div class="error-message" id="registerError"></div>
-            <div class="success-message" id="registerSuccess"></div>
-            
-            <form id="registerForm" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="registerName">Nume Complet</label>
-                    <input type="text" id="registerName" required placeholder="Ion Popescu">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" required placeholder="operator@superparty.ro">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerPassword">Parolă</label>
-                    <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerCode">Cod Operator</label>
-                    <input type="text" id="registerCode" required placeholder="OP001">
-                </div>
-                
-                <button type="submit" class="btn" id="registerBtn">Creare Cont</button>
-            </form>
-            
-            <div class="toggle-link">
-                Ai deja cont? <a href="#" onclick="showLogin(); return false;">Autentifică-te</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- DASHBOARD SCREEN -->
-    <div class="screen" id="dashboardScreen">
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <div>
-                    <h2>👋 Bun venit, <span id="userName"></span>!</h2>
-                    <p style="color: #7f8c8d; margin-top: 5px;">Cod: <span id="userCode"></span></p>
-                </div>
-                <button class="logout-btn" onclick="handleLogout()">Deconectare</button>
+    <!-- MODAL: ALOCARE EVENIMENT -->
+    <div class="modal" id="modal-alocare">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎯 Alocă Eveniment</h2>
+                <button class="modal-close" onclick="closeModal('modal-alocare')">×</button>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Evenimente Nealocate</h3>
-                    <div class="number" id="statNealocate">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>În Așteptare</h3>
-                    <div class="number" id="statPending">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Acceptate</h3>
-                    <div class="number" id="statAccepted">0</div>
-                </div>
+            <div class="form-group">
+                <label>Ce cod ai:</label>
+                <select id="modal-select-cod">
+                    <option value="">Selectează cod...</option>
+                </select>
             </div>
 
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('nealocate')">📋 Nealocate</div>
-                <div class="tab" onclick="switchTab('pending')">⏳ În Așteptare</div>
-                <div class="tab" onclick="switchTab('accepted')">✅ Acceptate</div>
-            </div>
-
-            <div class="events-list active" id="eventsNealocate">
-                <div class="loading">Se încarcă evenimente</div>
-            </div>
-
-            <div class="events-list" id="eventsPending">
-                <div class="loading">Se încarcă evenimente</div>
-            </div>
-
-            <div class="events-list" id="eventsAccepted">
-                <div class="loading">Se încarcă evenimente</div>
-            </div>
+            <button class="btn btn-primary" onclick="saveAlocare()" style="width: 100%; margin-top: 10px;">
+                ✅ Alocă Eveniment
+            </button>
         </div>
     </div>
 
     <script>
-        // ==========================================
         // CONFIGURARE
-        // ==========================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbw6k3g_-ezj3q00ej2VI96-SQjQSsmKz2Sm2qOawcGgOhCNeJQWNcUju0DURfKlT0s4/exec';
         
-        let currentUser = null;
+        let currentEventId = null;
+        let allEvents = [];
 
-        // ==========================================
-        // SCREEN MANAGEMENT
-        // ==========================================
-        function showLogin() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('loginScreen').classList.add('active');
-            document.getElementById('loginError').classList.remove('active');
+        // SHOW PAGE
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            event.target.closest('.menu-item').classList.add('active');
+
+            if (pageId === 'nealocate') loadNealocate();
+            if (pageId === 'petreceri-mele') loadPetreceriMele();
+            if (pageId === 'total') loadTotalPetreceri();
         }
 
-        function showRegister() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('registerScreen').classList.add('active');
-            document.getElementById('registerError').classList.remove('active');
-            document.getElementById('registerSuccess').classList.remove('active');
-        }
+        // LOAD EVENIMENTE NEALOCATE
+        async function loadNealocate() {
+            const container = document.getElementById('events-nealocate');
+            container.innerHTML = '<div class="loading">Se încarcă...</div>';
 
-        function showDashboard() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('dashboardScreen').classList.add('active');
-            
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userCode').textContent = currentUser.code;
-            
-            loadDashboard();
-        }
-
-        // ==========================================
-        // LOGIN
-        // ==========================================
-        async function handleLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('loginError');
-            
-            btn.disabled = true;
-            btn.textContent = 'Se autentifică...';
-            errorDiv.classList.remove('active');
-            
             try {
-                const response = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                const response = await fetch(`${API_URL}?action=getUserEvents&type=nealocate`);
                 const data = await response.json();
-                
-                if (data.ok) {
-                    currentUser = data.user;
-                    showDashboard();
-                } else {
-                    errorDiv.textContent = data.message || 'Eroare la autentificare';
-                    errorDiv.classList.add('active');
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
-                errorDiv.classList.add('active');
-            }
-            
-            btn.disabled = false;
-            btn.textContent = 'Autentificare';
-        }
 
-        // ==========================================
-        // REGISTER
-        // ==========================================
-        async function handleRegister(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const code = document.getElementById('registerCode').value;
-            const btn = document.getElementById('registerBtn');
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
-            
-            btn.disabled = true;
-            btn.textContent = 'Se creează contul...';
-            errorDiv.classList.remove('active');
-            successDiv.classList.remove('active');
-            
-            try {
-                const response = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&code=${encodeURIComponent(code)}`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    successDiv.textContent = 'Cont creat cu succes! Vei fi redirecționat către login...';
-                    successDiv.classList.add('active');
-                    
-                    document.getElementById('registerForm').reset();
-                    
-                    setTimeout(() => {
-                        showLogin();
-                        document.getElementById('loginEmail').value = email;
-                    }, 2000);
-                } else {
-                    errorDiv.textContent = data.message || 'Eroare la creare cont';
-                    errorDiv.classList.add('active');
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
-                errorDiv.classList.add('active');
-            }
-            
-            btn.disabled = false;
-            btn.textContent = 'Creare Cont';
-        }
-
-        // ==========================================
-        // LOGOUT
-        // ==========================================
-        function handleLogout() {
-            if (confirm('Sigur vrei să te deconectezi?')) {
-                currentUser = null;
-                showLogin();
-            }
-        }
-
-        // ==========================================
-        // DASHBOARD
-        // ==========================================
-        async function loadDashboard() {
-            await Promise.all([
-                loadEvents('nealocate'),
-                loadEvents('pending'),
-                loadEvents('accepted')
-            ]);
-            
-            // Auto-refresh every 30 seconds
-            setTimeout(loadDashboard, 30000);
-        }
-
-        async function loadEvents(type) {
-            const container = document.getElementById(`events${type.charAt(0).toUpperCase() + type.slice(1)}`);
-            
-            try {
-                const response = await fetch(`${API_URL}?action=getUserEvents&type=${type}&userCode=${currentUser.code}`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    const events = data.events || [];
-                    
-                    // Update stats
-                    document.getElementById(`stat${type.charAt(0).toUpperCase() + type.slice(1)}`).textContent = events.length;
-                    
-                    // Render events
-                    if (events.length === 0) {
-                        container.innerHTML = '<div class="no-events">Nu există evenimente în această categorie</div>';
+                if (data.ok && data.events) {
+                    if (data.events.length === 0) {
+                        container.innerHTML = '<div class="no-events"><div class="icon">📋</div><p>Nu există evenimente nealocate</p></div>';
                     } else {
-                        container.innerHTML = events.map(event => renderEventCard(event, type)).join('');
+                        container.innerHTML = data.events.map(renderEventCard).join('');
                     }
                 } else {
-                    container.innerHTML = '<div class="no-events">Eroare la încărcarea evenimentelor</div>';
+                    container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
                 }
             } catch (error) {
-                container.innerHTML = '<div class="no-events">Nu pot comunica cu serverul</div>';
+                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
             }
         }
 
-        function renderEventCard(event, type) {
+        // LOAD PETRECERI MELE
+        async function loadPetreceriMele() {
+            const container = document.getElementById('events-petreceri-mele');
+            container.innerHTML = '<div class="loading">Se încarcă...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getUserEvents&type=all`);
+                const data = await response.json();
+
+                if (data.ok && data.events) {
+                    allEvents = data.events;
+                    
+                    // Populare filtre
+                    const coduri = [...new Set(data.events.filter(e => e.ce_cod_ai).map(e => e.ce_cod_ai))];
+                    const notatori = [...new Set(data.events.filter(e => e.cine_noteaza).map(e => e.cine_noteaza))];
+                    
+                    const filterCod = document.getElementById('filter-cod-ai');
+                    const filterNoteaza = document.getElementById('filter-cine-noteaza');
+                    
+                    filterCod.innerHTML = '<option value="">Toate</option>' + coduri.map(c => `<option value="${c}">${c}</option>`).join('');
+                    filterNoteaza.innerHTML = '<option value="">Toate</option>' + notatori.map(n => `<option value="${n}">${n}</option>`).join('');
+                    
+                    filterPetreceriMele();
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
+            }
+        }
+
+        // FILTER PETRECERI MELE
+        function filterPetreceriMele() {
+            const codFilter = document.getElementById('filter-cod-ai').value;
+            const notFilter = document.getElementById('filter-cine-noteaza').value;
+            const container = document.getElementById('events-petreceri-mele');
+
+            let filtered = allEvents;
+
+            if (codFilter) {
+                filtered = filtered.filter(e => e.ce_cod_ai === codFilter);
+            }
+
+            if (notFilter) {
+                filtered = filtered.filter(e => e.cine_noteaza === notFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-events"><div class="icon">🎊</div><p>Nu există evenimente cu aceste filtre</p></div>';
+            } else {
+                container.innerHTML = filtered.map(renderEventCard).join('');
+            }
+        }
+
+        // LOAD TOTAL PETRECERI
+        async function loadTotalPetreceri() {
+            const container = document.getElementById('events-total');
+            container.innerHTML = '<div class="loading">Se încarcă...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getUserEvents&type=all`);
+                const data = await response.json();
+
+                if (data.ok && data.events) {
+                    if (data.events.length === 0) {
+                        container.innerHTML = '<div class="no-events"><div class="icon">📈</div><p>Nu există evenimente</p></div>';
+                    } else {
+                        container.innerHTML = data.events.map(renderEventCard).join('');
+                    }
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
+            }
+        }
+
+        // RENDER EVENT CARD
+        function renderEventCard(event) {
+            const hasAllocation = event.ce_cod_ai;
+            
             return `
-                <div class="event-card">
-                    <h4>📅 ${event.personaj || 'Eveniment'} - ${event.data || ''}</h4>
-                    <div class="event-detail">🕐 Oră: ${event.ora || 'N/A'}</div>
-                    <div class="event-detail">⏱️ Durată: ${event.durata || 'N/A'}</div>
-                    <div class="event-detail">📍 Adresă: ${event.adresa || 'N/A'}</div>
-                    <div class="event-detail">🎭 Personaj: ${event.personaj || 'N/A'}</div>
-                    ${event.alte_detalii ? `<div class="event-detail">📝 ${event.alte_detalii}</div>` : ''}
-                    <div class="event-actions">
-                        ${type === 'nealocate' ? `<button class="btn-small btn-allocate" onclick="allocateEvent('${event.id}')">Alocă-mi</button>` : ''}
-                        ${type === 'pending' ? `
-                            <button class="btn-small btn-accept" onclick="acceptEvent('${event.id}')">Acceptă</button>
-                            <button class="btn-small btn-refuse" onclick="refuseEvent('${event.id}')">Refuză</button>
-                        ` : ''}
+                <div class="event-card" onclick="${!hasAllocation ? `openAlocareModal('${event.id}')` : ''}">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.personaj || 'Eveniment'}</div>
+                            <div class="event-id">ID: ${event.id || event.cod || 'N/A'}</div>
+                        </div>
+                        ${hasAllocation ? `<div class="event-badge">Alocat: ${event.ce_cod_ai}</div>` : '<div class="event-badge">Nealocate</div>'}
                     </div>
+                    
+                    <div class="event-details">
+                        <div class="event-detail">
+                            <span class="icon">📅</span>
+                            <span>${event.data || 'N/A'}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="icon">🕐</span>
+                            <span>${event.ora || 'N/A'}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="icon">📍</span>
+                            <span>${event.adresa || 'N/A'}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="icon">👤</span>
+                            <span>Notat: ${event.cine_noteaza || 'N/A'}</span>
+                        </div>
+                    </div>
+                    
+                    ${!hasAllocation ? '<div class="event-actions"><button class="btn btn-primary" onclick="event.stopPropagation(); openAlocareModal(\'' + event.id + '\')">🎯 Alocă</button></div>' : ''}
                 </div>
             `;
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.events-list').forEach(e => e.classList.remove('active'));
+        // OPEN MODAL ALOCARE
+        function openAlocareModal(eventId) {
+            currentEventId = eventId;
             
-            event.target.classList.add('active');
-            document.getElementById(`events${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+            // Generare coduri A1-Z50, Atrainer-Ztrainer
+            const coduri = [];
+            for (let letter = 65; letter <= 90; letter++) {
+                const l = String.fromCharCode(letter);
+                coduri.push(`${l}trainer`);
+                for (let num = 1; num <= 50; num++) {
+                    coduri.push(`${l}${num}`);
+                }
+            }
+            
+            const select = document.getElementById('modal-select-cod');
+            select.innerHTML = '<option value="">Selectează cod...</option>' + coduri.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            document.getElementById('modal-alocare').classList.add('active');
         }
 
-        // ==========================================
-        // EVENT ACTIONS
-        // ==========================================
-        async function allocateEvent(eventId) {
-            if (!confirm('Alocați acest eveniment?')) return;
+        // CLOSE MODAL
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // SAVE ALOCARE
+        async function saveAlocare() {
+            const cod = document.getElementById('modal-select-cod').value;
             
+            if (!cod) {
+                alert('Selectează un cod!');
+                return;
+            }
+
             try {
-                const response = await fetch(`${API_URL}?action=allocateEvent&eventId=${eventId}&code=${currentUser.code}`);
+                const response = await fetch(`${API_URL}?action=allocateEvent&eventId=${currentEventId}&code=${cod}`);
                 const data = await response.json();
-                
+
                 if (data.ok) {
-                    alert('Eveniment alocat! Aveți 5 minute să acceptați.');
-                    loadDashboard();
+                    alert('Eveniment alocat!');
+                    closeModal('modal-alocare');
+                    loadNealocate();
                 } else {
                     alert(data.message || 'Eroare la alocare');
                 }
@@ -686,48 +758,17 @@
             }
         }
 
-        async function acceptEvent(eventId) {
-            if (!confirm('Acceptați acest eveniment?')) return;
-            
-            try {
-                const response = await fetch(`${API_URL}?action=acceptEvent&eventId=${eventId}`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    alert('Eveniment acceptat cu succes!');
-                    loadDashboard();
-                } else {
-                    alert(data.message || 'Eroare la acceptare');
-                }
-            } catch (error) {
-                alert('Nu pot comunica cu serverul');
+        // LOGOUT
+        function handleLogout() {
+            if (confirm('Sigur vrei să te deconectezi?')) {
+                window.location.reload();
             }
         }
 
-        async function refuseEvent(eventId) {
-            if (!confirm('Refuzați acest eveniment? Va reveni la nealocate.')) return;
-            
-            try {
-                const response = await fetch(`${API_URL}?action=refuseEvent&eventId=${eventId}`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    alert('Eveniment refuzat');
-                    loadDashboard();
-                } else {
-                    alert(data.message || 'Eroare la refuzare');
-                }
-            } catch (error) {
-                alert('Nu pot comunica cu serverul');
-            }
-        }
-
-        // Check timeouts every 30 seconds
-        setInterval(async () => {
-            if (currentUser) {
-                await fetch(`${API_URL}?action=checkTimeouts`);
-            }
-        }, 30000);
+        // AUTO-LOAD
+        window.onload = function() {
+            loadNealocate();
+        };
     </script>
 </body>
 </html>
