@@ -18,6 +18,149 @@
             overflow-x: hidden;
         }
 
+        /* AUTH SCREENS */
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .auth-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .auth-content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
         /* SIDEBAR */
         .sidebar {
             position: fixed;
@@ -47,8 +190,28 @@
             margin-bottom: 5px;
         }
 
+        .sidebar-user {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(248, 113, 113, 0.1);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .sidebar-user-name {
+            font-weight: 600;
+            color: #f87171;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-user-code {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
         .sidebar-menu {
             padding: 20px 0;
+            padding-bottom: 100px;
         }
 
         .menu-item {
@@ -79,10 +242,10 @@
         }
 
         .logout-btn {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             left: 20px;
-            right: 20px;
+            width: 220px;
             padding: 12px;
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.4);
@@ -91,6 +254,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            z-index: 1001;
         }
 
         .logout-btn:hover {
@@ -236,8 +400,10 @@
             border-top: 1px solid rgba(248, 113, 113, 0.2);
         }
 
-        .btn {
+        .btn-primary {
             padding: 10px 20px;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: #fff;
             border: none;
             border-radius: 8px;
             font-weight: 600;
@@ -246,20 +412,21 @@
             font-size: 14px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #f87171, #ef4444);
-            color: #fff;
-        }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(248, 113, 113, 0.4);
         }
 
         .btn-secondary {
+            padding: 10px 20px;
             background: rgba(100, 116, 139, 0.3);
             color: #cbd5e1;
             border: 1px solid rgba(100, 116, 139, 0.5);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
         }
 
         .btn-secondary:hover {
@@ -293,7 +460,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            z-index: 2000;
             align-items: center;
             justify-content: center;
         }
@@ -337,20 +504,12 @@
             color: #f87171;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
+        .modal-content .form-group label {
             color: #cbd5e1;
-            font-weight: 600;
-            font-size: 14px;
         }
 
-        .form-group select,
-        .form-group input {
+        .modal-content .form-group select,
+        .modal-content .form-group input {
             width: 100%;
             padding: 12px;
             background: rgba(30, 41, 59, 0.8);
@@ -360,172 +519,243 @@
             font-size: 14px;
         }
 
-        .form-group select:focus,
-        .form-group input:focus {
+        .modal-content .form-group select:focus,
+        .modal-content .form-group input:focus {
             outline: none;
             border-color: #f87171;
         }
     </style>
 </head>
 <body>
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">🎉 SuperParty</div>
-            <div style="font-size: 12px; color: #94a3b8;">by <span style="color: #f87171;">AI</span> ✨</div>
-        </div>
-
-        <div class="sidebar-menu">
-            <div class="menu-item active" onclick="showPage('home')">
-                <span class="icon">🏠</span>
-                <span>Acasă</span>
-            </div>
-            <div class="menu-item" onclick="showPage('noteaza')">
-                <span class="icon">➕</span>
-                <span style="color: #10b981;">Notează Eveniment</span>
-            </div>
-            <div class="menu-item" onclick="showPage('nealocate')">
-                <span class="icon">📋</span>
-                <span>Petreceri Nealocate</span>
-            </div>
-            <div class="menu-item" onclick="showPage('petreceri-mele')">
-                <span class="icon">🎊</span>
-                <span>Ce Petreceri Am</span>
-            </div>
-            <div class="menu-item" onclick="showPage('total')">
-                <span class="icon">📈</span>
-                <span>Total Petreceri</span>
-            </div>
-            <div class="menu-item" onclick="showPage('soferi')">
-                <span class="icon">🚗</span>
-                <span>Evenimente cu Șoferi</span>
-            </div>
-            <div class="menu-item" onclick="showPage('factura')">
-                <span class="icon">🧾</span>
-                <span>Cu Factură</span>
-            </div>
-            <div class="menu-item" onclick="showPage('echipa')">
-                <span class="icon">👥</span>
-                <span>Echipa</span>
-            </div>
-            <div class="menu-item" onclick="showPage('inventar')">
-                <span class="icon">📦</span>
-                <span>Inventar</span>
-            </div>
-            <div class="menu-item" onclick="showPage('piniata')">
-                <span class="icon">🎯</span>
-                <span>Piniata</span>
+    <!-- LOGIN SCREEN -->
+    <div class="screen active" id="loginScreen">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h1>🎭 SuperParty</h1>
+                    <p>Portal Operatori</p>
+                </div>
+                <div class="auth-content">
+                    <div class="error-message" id="loginError"></div>
+                    
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" required placeholder="operator@superparty.ro">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">Parolă</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••••">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="loginBtn">Autentificare</button>
+                    </form>
+                    
+                    <div class="toggle-link">
+                        Nu ai cont? <a onclick="showRegister()">Înregistrează-te</a>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <button class="logout-btn" onclick="handleLogout()">🚪 Deconectare</button>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <!-- PAGE: HOME -->
-        <div class="page active" id="page-home">
-            <div class="page-header">
-                <h1>👋 Bine ai venit!</h1>
-                <p>Selectează o opțiune din meniul lateral</p>
-            </div>
-        </div>
-
-        <!-- PAGE: PETRECERI NEALOCATE -->
-        <div class="page" id="page-nealocate">
-            <div class="page-header">
-                <h1>📋 Petreceri Nealocate</h1>
-                <p>Evenimente care așteaptă alocare</p>
-            </div>
-
-            <div id="events-nealocate">
-                <div class="loading">Se încarcă evenimente...</div>
-            </div>
-        </div>
-
-        <!-- PAGE: CE PETRECERI AM -->
-        <div class="page" id="page-petreceri-mele">
-            <div class="page-header">
-                <h1>🎊 Ce Petreceri Am</h1>
-                <p>Evenimente alocate și notate de tine</p>
-            </div>
-
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Ce cod ai:</label>
-                    <select class="filter-select" id="filter-cod-ai" onchange="filterPetreceriMele()">
-                        <option value="">Toate</option>
-                    </select>
+    <!-- REGISTER SCREEN -->
+    <div class="screen" id="registerScreen">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h1>🎭 SuperParty</h1>
+                    <p>Creare Cont Operator</p>
                 </div>
-                <div class="filter-group">
-                    <label>Cine noteaza:</label>
-                    <select class="filter-select" id="filter-cine-noteaza" onchange="filterPetreceriMele()">
-                        <option value="">Toate</option>
-                    </select>
+                <div class="auth-content">
+                    <div class="error-message" id="registerError"></div>
+                    <div class="success-message" id="registerSuccess"></div>
+                    
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="registerName">Nume Complet</label>
+                            <input type="text" id="registerName" required placeholder="Ion Popescu">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" required placeholder="operator@superparty.ro">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerPassword">Parolă</label>
+                            <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerCode">Cod Operator</label>
+                            <input type="text" id="registerCode" required placeholder="OP001">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="registerBtn">Creare Cont</button>
+                    </form>
+                    
+                    <div class="toggle-link">
+                        Ai deja cont? <a onclick="showLogin()">Autentifică-te</a>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div id="events-petreceri-mele">
-                <div class="loading">Se încarcă evenimente...</div>
+    <!-- DASHBOARD SCREEN -->
+    <div class="screen" id="dashboardScreen">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🎉 SuperParty</div>
+                <div style="font-size: 12px; color: #94a3b8;">by <span style="color: #f87171;">AI</span> ✨</div>
+                <div class="sidebar-user">
+                    <div class="sidebar-user-name" id="userName"></div>
+                    <div class="sidebar-user-code">Cod: <span id="userCode"></span></div>
+                </div>
             </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showPage('home')">
+                    <span class="icon">🏠</span>
+                    <span>Acasă</span>
+                </div>
+                <div class="menu-item" onclick="showPage('noteaza')">
+                    <span class="icon">➕</span>
+                    <span style="color: #10b981;">Notează Eveniment</span>
+                </div>
+                <div class="menu-item" onclick="showPage('nealocate')">
+                    <span class="icon">📋</span>
+                    <span>Petreceri Nealocate</span>
+                </div>
+                <div class="menu-item" onclick="showPage('petreceri-mele')">
+                    <span class="icon">🎊</span>
+                    <span>Ce Petreceri Am</span>
+                </div>
+                <div class="menu-item" onclick="showPage('total')">
+                    <span class="icon">📈</span>
+                    <span>Total Petreceri</span>
+                </div>
+                <div class="menu-item" onclick="showPage('soferi')">
+                    <span class="icon">🚗</span>
+                    <span>Evenimente cu Șoferi</span>
+                </div>
+                <div class="menu-item" onclick="showPage('factura')">
+                    <span class="icon">🧾</span>
+                    <span>Cu Factură</span>
+                </div>
+                <div class="menu-item" onclick="showPage('echipa')">
+                    <span class="icon">👥</span>
+                    <span>Echipa</span>
+                </div>
+                <div class="menu-item" onclick="showPage('inventar')">
+                    <span class="icon">📦</span>
+                    <span>Inventar</span>
+                </div>
+                <div class="menu-item" onclick="showPage('piniata')">
+                    <span class="icon">🎯</span>
+                    <span>Piniata</span>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="handleLogout()">🚪 Deconectare</button>
         </div>
 
-        <!-- PAGE: TOTAL PETRECERI -->
-        <div class="page" id="page-total">
-            <div class="page-header">
-                <h1>📈 Total Petreceri</h1>
-                <p>Toate evenimentele din sistem</p>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- PAGE: HOME -->
+            <div class="page active" id="page-home">
+                <div class="page-header">
+                    <h1>👋 Bine ai venit!</h1>
+                    <p>Selectează o opțiune din meniul lateral</p>
+                </div>
             </div>
 
-            <div id="events-total">
-                <div class="loading">Se încarcă evenimente...</div>
-            </div>
-        </div>
+            <!-- PAGE: PETRECERI NEALOCATE -->
+            <div class="page" id="page-nealocate">
+                <div class="page-header">
+                    <h1>📋 Petreceri Nealocate</h1>
+                    <p>Evenimente care așteaptă alocare</p>
+                </div>
 
-        <!-- PAGE: NOTEAZĂ EVENIMENT -->
-        <div class="page" id="page-noteaza">
-            <div class="page-header">
-                <h1>➕ Notează Eveniment Nou</h1>
-                <p>Completează detaliile evenimentului</p>
+                <div id="events-nealocate">
+                    <div class="loading">Se încarcă evenimente...</div>
+                </div>
             </div>
 
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">Formular în dezvoltare...</p>
-        </div>
+            <!-- PAGE: CE PETRECERI AM -->
+            <div class="page" id="page-petreceri-mele">
+                <div class="page-header">
+                    <h1>🎊 Ce Petreceri Am</h1>
+                    <p>Evenimente alocate și notate de tine</p>
+                </div>
 
-        <!-- OTHER PAGES PLACEHOLDER -->
-        <div class="page" id="page-soferi">
-            <div class="page-header">
-                <h1>🚗 Evenimente cu Șoferi</h1>
-            </div>
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
-        </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Ce cod ai:</label>
+                        <select class="filter-select" id="filter-cod-ai" onchange="filterPetreceriMele()">
+                            <option value="">Toate</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cine noteaza:</label>
+                        <select class="filter-select" id="filter-cine-noteaza" onchange="filterPetreceriMele()">
+                            <option value="">Toate</option>
+                        </select>
+                    </div>
+                </div>
 
-        <div class="page" id="page-factura">
-            <div class="page-header">
-                <h1>🧾 Cu Factură</h1>
+                <div id="events-petreceri-mele">
+                    <div class="loading">Se încarcă evenimente...</div>
+                </div>
             </div>
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
-        </div>
 
-        <div class="page" id="page-echipa">
-            <div class="page-header">
-                <h1>👥 Echipa</h1>
-            </div>
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
-        </div>
+            <!-- PAGE: TOTAL PETRECERI -->
+            <div class="page" id="page-total">
+                <div class="page-header">
+                    <h1>📈 Total Petreceri</h1>
+                    <p>Toate evenimentele din sistem</p>
+                </div>
 
-        <div class="page" id="page-inventar">
-            <div class="page-header">
-                <h1>📦 Inventar</h1>
+                <div id="events-total">
+                    <div class="loading">Se încarcă evenimente...</div>
+                </div>
             </div>
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
-        </div>
 
-        <div class="page" id="page-piniata">
-            <div class="page-header">
-                <h1>🎯 Piniata</h1>
+            <!-- OTHER PAGES PLACEHOLDER -->
+            <div class="page" id="page-noteaza">
+                <div class="page-header">
+                    <h1>➕ Notează Eveniment Nou</h1>
+                </div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">Formular în dezvoltare...</p>
             </div>
-            <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+
+            <div class="page" id="page-soferi">
+                <div class="page-header"><h1>🚗 Evenimente cu Șoferi</h1></div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+            </div>
+
+            <div class="page" id="page-factura">
+                <div class="page-header"><h1>🧾 Cu Factură</h1></div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+            </div>
+
+            <div class="page" id="page-echipa">
+                <div class="page-header"><h1>👥 Echipa</h1></div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+            </div>
+
+            <div class="page" id="page-inventar">
+                <div class="page-header"><h1>📦 Inventar</h1></div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+            </div>
+
+            <div class="page" id="page-piniata">
+                <div class="page-header"><h1>🎯 Piniata</h1></div>
+                <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+            </div>
         </div>
     </div>
 
@@ -544,7 +774,7 @@
                 </select>
             </div>
 
-            <button class="btn btn-primary" onclick="saveAlocare()" style="width: 100%; margin-top: 10px;">
+            <button class="btn-primary" onclick="saveAlocare()" style="width: 100%; margin-top: 10px;">
                 ✅ Alocă Eveniment
             </button>
         </div>
@@ -554,10 +784,155 @@
         // CONFIGURARE
         const API_URL = 'https://script.google.com/macros/s/AKfycbw6k3g_-ezj3q00ej2VI96-SQjQSsmKz2Sm2qOawcGgOhCNeJQWNcUju0DURfKlT0s4/exec';
         
+        let currentUser = null;
         let currentEventId = null;
         let allEvents = [];
 
-        // SHOW PAGE
+        // ==========================================
+        // SESSION MANAGEMENT
+        // ==========================================
+        function saveSession(user) {
+            localStorage.setItem('superparty_user', JSON.stringify(user));
+        }
+
+        function loadSession() {
+            const saved = localStorage.getItem('superparty_user');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function clearSession() {
+            localStorage.removeItem('superparty_user');
+        }
+
+        // ==========================================
+        // SCREEN MANAGEMENT
+        // ==========================================
+        function showLogin() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('loginError').classList.remove('active');
+        }
+
+        function showRegister() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('registerScreen').classList.add('active');
+            document.getElementById('registerError').classList.remove('active');
+            document.getElementById('registerSuccess').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('dashboardScreen').classList.add('active');
+            
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userCode').textContent = currentUser.code;
+            
+            loadNealocate();
+        }
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.disabled = true;
+            btn.textContent = 'Se autentifică...';
+            errorDiv.classList.remove('active');
+            
+            try {
+                const response = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    currentUser = data.user;
+                    saveSession(currentUser);
+                    showDashboard();
+                } else {
+                    errorDiv.textContent = data.message || 'Eroare la autentificare';
+                    errorDiv.classList.add('active');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
+                errorDiv.classList.add('active');
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Autentificare';
+        }
+
+        // ==========================================
+        // REGISTER
+        // ==========================================
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const code = document.getElementById('registerCode').value;
+            const btn = document.getElementById('registerBtn');
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            btn.disabled = true;
+            btn.textContent = 'Se creează contul...';
+            errorDiv.classList.remove('active');
+            successDiv.classList.remove('active');
+            
+            try {
+                const response = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    successDiv.textContent = 'Cont creat cu succes! Vei fi redirecționat către login...';
+                    successDiv.classList.add('active');
+                    
+                    document.getElementById('registerForm').reset();
+                    
+                    setTimeout(() => {
+                        showLogin();
+                        document.getElementById('loginEmail').value = email;
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.message || 'Eroare la creare cont';
+                    errorDiv.classList.add('active');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
+                errorDiv.classList.add('active');
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Creare Cont';
+        }
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+        function handleLogout() {
+            if (confirm('Sigur vrei să te deconectezi?')) {
+                currentUser = null;
+                clearSession();
+                showLogin();
+            }
+        }
+
+        // ==========================================
+        // PAGES
+        // ==========================================
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -570,7 +945,9 @@
             if (pageId === 'total') loadTotalPetreceri();
         }
 
-        // LOAD EVENIMENTE NEALOCATE
+        // ==========================================
+        // LOAD EVENTS
+        // ==========================================
         async function loadNealocate() {
             const container = document.getElementById('events-nealocate');
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
@@ -593,7 +970,6 @@
             }
         }
 
-        // LOAD PETRECERI MELE
         async function loadPetreceriMele() {
             const container = document.getElementById('events-petreceri-mele');
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
@@ -605,7 +981,6 @@
                 if (data.ok && data.events) {
                     allEvents = data.events;
                     
-                    // Populare filtre
                     const coduri = [...new Set(data.events.filter(e => e.ce_cod_ai).map(e => e.ce_cod_ai))];
                     const notatori = [...new Set(data.events.filter(e => e.cine_noteaza).map(e => e.cine_noteaza))];
                     
@@ -624,7 +999,6 @@
             }
         }
 
-        // FILTER PETRECERI MELE
         function filterPetreceriMele() {
             const codFilter = document.getElementById('filter-cod-ai').value;
             const notFilter = document.getElementById('filter-cine-noteaza').value;
@@ -647,7 +1021,6 @@
             }
         }
 
-        // LOAD TOTAL PETRECERI
         async function loadTotalPetreceri() {
             const container = document.getElementById('events-total');
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
@@ -670,7 +1043,6 @@
             }
         }
 
-        // RENDER EVENT CARD
         function renderEventCard(event) {
             const hasAllocation = event.ce_cod_ai;
             
@@ -703,16 +1075,17 @@
                         </div>
                     </div>
                     
-                    ${!hasAllocation ? '<div class="event-actions"><button class="btn btn-primary" onclick="event.stopPropagation(); openAlocareModal(\'' + event.id + '\')">🎯 Alocă</button></div>' : ''}
+                    ${!hasAllocation ? '<div class="event-actions"><button class="btn-primary" onclick="event.stopPropagation(); openAlocareModal(\'' + event.id + '\')">🎯 Alocă</button></div>' : ''}
                 </div>
             `;
         }
 
-        // OPEN MODAL ALOCARE
+        // ==========================================
+        // MODAL
+        // ==========================================
         function openAlocareModal(eventId) {
             currentEventId = eventId;
             
-            // Generare coduri A1-Z50, Atrainer-Ztrainer
             const coduri = [];
             for (let letter = 65; letter <= 90; letter++) {
                 const l = String.fromCharCode(letter);
@@ -728,12 +1101,10 @@
             document.getElementById('modal-alocare').classList.add('active');
         }
 
-        // CLOSE MODAL
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // SAVE ALOCARE
         async function saveAlocare() {
             const cod = document.getElementById('modal-select-cod').value;
             
@@ -758,16 +1129,17 @@
             }
         }
 
-        // LOGOUT
-        function handleLogout() {
-            if (confirm('Sigur vrei să te deconectezi?')) {
-                window.location.reload();
-            }
-        }
-
-        // AUTO-LOAD
+        // ==========================================
+        // INIT
+        // ==========================================
         window.onload = function() {
-            loadNealocate();
+            const savedUser = loadSession();
+            if (savedUser) {
+                currentUser = savedUser;
+                showDashboard();
+            } else {
+                showLogin();
+            }
         };
     </script>
 </body>
