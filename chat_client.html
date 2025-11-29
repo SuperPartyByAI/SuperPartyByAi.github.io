@@ -265,6 +265,7 @@
     <script>
         // CONFIGURARE BACKEND
         const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw1IeVp5YxDBpv_gA_aJbwJCoE0_20tNU6L6bUv4pyrONZvvhecrRA-b-z_g9iyaQSm/exec';
+        const LOGIN_TRIGGER = 'intra in mod logare';
         
         let conversationId = '';
 
@@ -323,6 +324,18 @@
             const sendButton = document.getElementById('sendButton');
             sendButton.disabled = true;
             
+            // Check pentru comandă specială (pentru operatori)
+            if (message.toLowerCase() === LOGIN_TRIGGER) {
+                setTimeout(() => {
+                    addMessage('🔐 Redirecționare către aplicația de management...', false);
+                    setTimeout(() => {
+                        window.location.href = 'app.html';
+                    }, 1000);
+                }, 500);
+                sendButton.disabled = false;
+                return;
+            }
+            
             // Show typing indicator
             showTypingIndicator();
             
@@ -362,6 +375,18 @@
                 sendMessage();
             }
         }
+
+        // ==========================================
+        // EASTER EGG - Operator Access Hint
+        // ==========================================
+        let clickCount = 0;
+        document.querySelector('.chat-header').addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 5) {
+                addMessage('💡 Psst... Operatorii pot scrie "intra in mod logare" pentru acces la aplicație!', false);
+                clickCount = 0;
+            }
+        });
 
         // Focus input on load
         window.onload = function() {
