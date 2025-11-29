@@ -259,9 +259,11 @@
 
     <script>
         // ==========================================
-        // CHAT AI CONFIGURATION
+        // CONFIGURARE API
         // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbze5uAacB7E9qVst7n0NLxP6o2ltcy-3soXfSP7ay3TSnEZaEnZeslf_flez1st0EVL/exec';
         const LOGIN_TRIGGER = 'intra in mod logare';
+        let conversationId = null;
 
         // ==========================================
         // CHAT FUNCTIONS
@@ -272,7 +274,7 @@
             }
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
 
@@ -293,11 +295,42 @@
                 return;
             }
 
-            // Răspuns AI simulat
-            setTimeout(() => {
-                const response = generateAIResponse(message);
-                addMessage(response, 'bot');
-            }, 1000);
+            // Arată typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="message-bubble">AI scrie...</div>';
+            document.getElementById('chatMessages').appendChild(typingDiv);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            try {
+                // Trimite la Apps Script pentru procesare cu Creier AI + V2
+                const response = await fetch(`${API_URL}?action=chatAI&message=${encodeURIComponent(message)}&conversationId=${conversationId || ''}`);
+                const data = await response.json();
+
+                // Șterge typing indicator
+                const typing = document.getElementById('typingIndicator');
+                if (typing) typing.remove();
+
+                if (data.ok && data.response) {
+                    // Salvează conversation ID pentru context
+                    if (data.conversationId) {
+                        conversationId = data.conversationId;
+                    }
+                    
+                    addMessage(data.response, 'bot');
+                } else {
+                    addMessage('Ne pare rău, am întâmpinat o problemă. Te rugăm să ne contactezi direct la 0792864811! 📞', 'bot');
+                }
+            } catch (error) {
+                console.error('Eroare chat:', error);
+                
+                // Șterge typing indicator
+                const typing = document.getElementById('typingIndicator');
+                if (typing) typing.remove();
+                
+                addMessage('Ne pare rău, nu pot răspunde momentan. Te rugăm să ne contactezi la 0792864811! 📞', 'bot');
+            }
         }
 
         function addMessage(text, type) {
@@ -307,41 +340,13 @@
             
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.textContent = text;
+            bubble.innerHTML = text.replace(/\n/g, '<br>');
             
             messageDiv.appendChild(bubble);
             messagesContainer.appendChild(messageDiv);
             
             // Scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function generateAIResponse(message) {
-            const lowerMessage = message.toLowerCase();
-
-            // Răspunsuri simple bazate pe cuvinte cheie
-            if (lowerMessage.includes('pret') || lowerMessage.includes('cost') || lowerMessage.includes('tarif')) {
-                return 'Avem mai multe pachete disponibile! Pachetul Basic începe de la 350 RON și include un personaj animat pentru 2 ore. Pentru detalii complete și o ofertă personalizată, te rog să ne contactezi la 0792864811! 📞';
-            }
-
-            if (lowerMessage.includes('personaj') || lowerMessage.includes('spider') || lowerMessage.includes('elsa')) {
-                return 'Avem peste 30 de personaje animate disponibile: Spider-Man, Elsa, Iron Man, Batman, Supergirl, Paw Patrol și multe altele! 🦸‍♂️ Ce personaj preferat are micuțul/micuța? 🎭';
-            }
-
-            if (lowerMessage.includes('arcade') || lowerMessage.includes('joc')) {
-                return 'Oferim console arcade moderne cu peste 100 de jocuri! Copiii se vor distra de minune! 🎮 Vrei să adaugi arcade la pachetul tău?';
-            }
-
-            if (lowerMessage.includes('rezerv') || lowerMessage.includes('programare')) {
-                return 'Perfect! Pentru a face o rezervare, te rog să ne suni la 0792864811 sau să ne scrii pe WhatsApp. Echipa noastră îți va pregăti o ofertă personalizată! 📞✨';
-            }
-
-            if (lowerMessage.includes('contact') || lowerMessage.includes('telefon')) {
-                return 'Ne poți contacta la:\n📞 Telefon: 0792864811\n📧 Email: contact@superparty.ro\n📍 Servicii în toată România!';
-            }
-
-            // Răspuns generic
-            return 'Mulțumim pentru întrebare! 😊 Pentru informații detaliate și personalizate, te rog să ne contactezi la 0792864811. Echipa noastră îți va răspunde imediat! 📞';
         }
 
         // ==========================================
