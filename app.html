@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty - Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        #sidebar.admin-mode {
+            background: #c0392b;
+        }
+
+        #sidebar.gm-mode {
+            background: #8e44ad;
+        }
+
+        #sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* CONTENT AREA */
+        #content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #ecf0f1;
+        }
+
+        /* LOGIN SCREEN */
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* MESSAGES */
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .message.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .message.info {
+            background: #3498db;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* USER INFO */
+        .user-info {
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* LOGOUT BUTTON */
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 1000;
+                height: 100vh;
+            }
+
+            #sidebar.open {
+                left: 0;
+            }
+
+            #content {
+                margin-left: 0;
+            }
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // ==========================================
+        // CONFIGURARE
+        // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbze5uAacB7E9qVst7n0NLxP6o2ltcy-3soXfSP7ay3TSnEZaEnZeslf_flez1st0EVL/exec';
+        
+        // Parole pentru moduri speciale
+        const GM_PASSWORD = 'Andrei209512!0728242214';
+        const ADMIN_PASSWORD = 'Adminandrei209512!';
+
+        // State global
+        let currentUser = null;
+        let currentMode = 'normal'; // normal, admin, gm
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        function checkAuth() {
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+        function showLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-container">
+                    <h1>🎉 SuperParty Management</h1>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Parolă</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <div id="loginMessage"></div>
+                </div>
+            `;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                const data = await response.json();
+
+                if (data.ok && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showDashboard();
+                } else {
+                    showMessage(data.message || 'Eroare la autentificare', 'error', 'loginMessage');
+                }
+            } catch (error) {
+                console.error('Eroare login:', error);
+                showMessage('Eroare de conexiune', 'error', 'loginMessage');
+            }
+        }
+
+        // ==========================================
+        // DASHBOARD
+        // ==========================================
+        function showDashboard() {
+            document.getElementById('app').innerHTML = `
+                <div id="sidebar">
+                    <h2>SuperParty</h2>
+                    <div class="user-info">
+                        <p><strong>${currentUser.name}</strong></p>
+                        <p>${currentUser.email}</p>
+                        <p>Cod: <strong>${currentUser.code || 'N/A'}</strong></p>
+                    </div>
+                    <div id="menuItems"></div>
+                    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+                </div>
+                <div id="content">
+                    <div class="loading">Se încarcă...</div>
+                </div>
+            `;
+
+            loadMenu();
+            showUserEvents(); // Default view
+        }
+
+        function loadMenu() {
+            const menuContainer = document.getElementById('menuItems');
+            
+            let menuHTML = `
+                <div class="menu-item active" onclick="showUserEvents()">
+                    🎉 Evenimente Operatori
+                </div>
+            `;
+
+            // Meniu ADMIN
+            if (currentMode === 'admin') {
+                menuHTML += `
+                    <div class="menu-item" onclick="showAdminPanel()">
+                        👥 Gestionare Useri
+                    </div>
+                    <div class="menu-item" onclick="showAdminSettings()">
+                        ⚙️ Setări Admin
+                    </div>
+                `;
+            }
+
+            // Meniu GM
+            if (currentMode === 'gm') {
+                menuHTML += `
+                    <div class="menu-item" onclick="showGMDashboard()">
+                        📊 GM Dashboard
+                    </div>
+                    <div class="menu-item" onclick="showGMAnalytics()">
+                        📈 Analytics
+                    </div>
+                    <div class="menu-item" onclick="showGMSettings()">
+                        🔧 GM Settings
+                    </div>
+                `;
+            }
+
+            menuHTML += `
+                <div class="menu-item" onclick="promptAdminMode()">
+                    🔐 Mod Admin
+                </div>
+                <div class="menu-item" onclick="promptGMMode()">
+                    👑 Mod GM
+                </div>
+            `;
+
+            menuContainer.innerHTML = menuHTML;
+
+            // Update sidebar color
+            const sidebar = document.getElementById('sidebar');
+            sidebar.className = currentMode === 'admin' ? 'admin-mode' : currentMode === 'gm' ? 'gm-mode' : '';
+        }
+
+        // ==========================================
+        // MODE SWITCHING
+        // ==========================================
+        function promptAdminMode() {
+            const password = prompt('🔐 Introdu parola ADMIN:');
+            if (password === ADMIN_PASSWORD) {
+                currentMode = 'admin';
+                loadMenu();
+                showMessage('Mod ADMIN activat! ✅', 'success');
+            } else if (password) {
+                showMessage('Parolă greșită! ❌', 'error');
+            }
+        }
+
+        function promptGMMode() {
+            const password = prompt('👑 Introdu parola GM:');
+            if (password === GM_PASSWORD) {
+                currentMode = 'gm';
+                loadMenu();
+                showMessage('Mod GM activat! ✅', 'success');
+            } else if (password) {
+                showMessage('Parolă greșită! ❌', 'error');
+            }
+        }
+
+        // ==========================================
+        // EVENIMENTE OPERATORI (CODUL PRINCIPAL)
+        // ==========================================
+        function showUserEvents() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            if (!user.email || !user.code) {
+                showMessage('Trebuie să fii logat și să ai un cod alocat pentru a vedea evenimentele.', 'error');
+                return;
+            }
+
+            const content = `
+                <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                    <h1 style="margin-bottom: 30px; color: #2c3e50;">🎉 Evenimente Operatori</h1>
+                    
+                    <!-- SECȚIUNEA 1: EVENIMENTE NEALOCATE -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0; color: #e74c3c;">📋 Evenimente Nealocate</h2>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <label style="font-weight: 500;">Cine a notat:</label>
+                                <select id="filterCineNoteazaNealocate" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                                    <option value="">Toate</option>
+                                </select>
+                                <button onclick="loadEventeNealocate()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div id="eventeNealocateList" style="display: grid; gap: 15px;">
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>Se încarcă evenimentele...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECȚIUNEA 2: AȘTEAPTĂ ACCEPTUL -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0; color: #f39c12;">⏰ Așteaptă Acceptul</h2>
+                            <button onclick="loadAsteaptaAcceptul()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                        <div id="asteaptaAcceptulList" style="display: grid; gap: 15px;">
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>Se încarcă evenimentele...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECȚIUNEA 3: ÎN CE PETRECERI AM -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0; color: #27ae60;">✅ În Ce Petreceri Am</h2>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <label style="font-weight: 500;">Ce cod ai:</label>
+                                <select id="filterCeCodAi" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                                    <option value="">Toate</option>
+                                </select>
+                                <label style="font-weight: 500;">Cine notează:</label>
+                                <select id="filterCineNoteaza" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                                    <option value="">Toate</option>
+                                </select>
+                                <button onclick="loadInCePetreceriAm()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div id="inCePetreceriAmList" style="display: grid; gap: 15px;">
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>Se încarcă evenimentele...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL PENTRU ALOCARE -->
+                <div id="allocateModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h2 style="margin-top: 0;">Alocare Eveniment</h2>
+                        <div id="allocateModalContent"></div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button onclick="closeAllocateModal()" style="flex: 1; padding: 12px; background: #95a5a6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                                Anulează
+                            </button>
+                            <button onclick="saveAllocation()" style="flex: 1; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                                💾 Salvează Alocarea
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = content;
+
+            populateCodeFilters();
+            loadEventeNealocate();
+            loadAsteaptaAcceptul();
+            loadInCePetreceriAm();
+            startTimeoutChecker();
+        }
+
+        // ==========================================
+        // FUNCȚII AUXILIARE EVENIMENTE
+        // ==========================================
+        let timeoutCheckerInterval = null;
+        let currentAllocatingEventId = null;
+        let allAcceptedEvents = [];
+
+        function populateCodeFilters() {
+            const codes = [];
+            
+            for (let i = 65; i <= 90; i++) {
+                codes.push(String.fromCharCode(i) + '-trainer');
+            }
+            
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                for (let num = 1; num <= 50; num++) {
+                    codes.push(letter + num);
+                }
+            }
+
+            const filterNealocate = document.getElementById('filterCineNoteazaNealocate');
+            if (filterNealocate) {
+                codes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = code;
+                    filterNealocate.appendChild(option);
+                });
+                filterNealocate.addEventListener('change', loadEventeNealocate);
+            }
+
+            const filterCeCodAi = document.getElementById('filterCeCodAi');
+            if (filterCeCodAi) {
+                codes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = code;
+                    filterCeCodAi.appendChild(option);
+                });
+                filterCeCodAi.addEventListener('change', applyInCePetreceriAmFilters);
+            }
+
+            const filterCineNoteaza = document.getElementById('filterCineNoteaza');
+            if (filterCineNoteaza) {
+                codes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = code;
+                    filterCineNoteaza.appendChild(option);
+                });
+                filterCineNoteaza.addEventListener('change', applyInCePetreceriAmFilters);
+            }
+        }
+
+        function loadEventeNealocate() {
+            const filterValue = document.getElementById('filterCineNoteazaNealocate')?.value || '';
+            
+            fetch(`${API_URL}?action=getUserEvents&type=nealocate&filter=${encodeURIComponent(filterValue)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('eventeNealocateList');
+                    
+                    if (!data.ok || !data.events || data.events.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>✨ Nu există evenimente nealocate</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = data.events.map(event => `
+                        <div onclick="openAllocateModal('${event.id}')" 
+                             style="padding: 20px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white;"
+                             onmouseover="this.style.borderColor='#3498db'; this.style.boxShadow='0 4px 12px rgba(52,152,219,0.2)';"
+                             onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <div>
+                                    <h3 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 18px;">
+                                        ${event.cod || event.id}
+                                    </h3>
+                                    <div style="color: #7f8c8d; font-size: 14px;">
+                                        Sub-cod: <strong>${event.subcod || 'N/A'}</strong>
+                                    </div>
+                                </div>
+                                <div style="background: #e74c3c; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                    NEALOCAT
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; gap: 8px; margin-top: 12px;">
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="color: #7f8c8d; min-width: 120px;">📅 Data & Ora:</span>
+                                    <strong>${event.data || 'N/A'} - ${event.ora || 'N/A'}</strong>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="color: #7f8c8d; min-width: 120px;">⏱️ Durată:</span>
+                                    <strong>${event.durata || 'N/A'} ore</strong>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="color: #7f8c8d; min-width: 120px;">📍 Adresă:</span>
+                                    <strong>${event.adresa || 'N/A'}</strong>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="color: #7f8c8d; min-width: 120px;">🎭 Personaj:</span>
+                                    <strong>${event.personaj || 'N/A'}</strong>
+                                </div>
+                                ${event.alte_detalii ? `
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">📝 Detalii:</span>
+                                        <span>${event.alte_detalii}</span>
+                                    </div>
+                                ` : ''}
+                                <div style="display: flex; gap: 8px;">
+                                    <span style="color: #7f8c8d; min-width: 120px;">👤 Notat de:</span>
+                                    <strong style="color: #3498db;">${event.cine_noteaza || 'N/A'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Eroare la încărcarea evenimentelor nealocate:', error);
+                    showMessage('Eroare la încărcarea evenimentelor', 'error');
+                });
+        }
+
+        function loadAsteaptaAcceptul() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            fetch(`${API_URL}?action=getUserEvents&type=pending&userCode=${encodeURIComponent(user.code)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('asteaptaAcceptulList');
+                    
+                    if (!data.ok || !data.events || data.events.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>✨ Nu ai evenimente în așteptare</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = data.events.map(event => {
+                        const timeLeft = calculateTimeLeft(event.timestamp_alocare);
+                        const isExpired = timeLeft.expired;
+                        
+                        return `
+                            <div style="padding: 20px; border: 2px solid ${isExpired ? '#e74c3c' : '#f39c12'}; border-radius: 8px; background: ${isExpired ? '#ffe6e6' : 'white'};">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                    <div>
+                                        <h3 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 18px;">
+                                            ${event.cod || event.id}
+                                        </h3>
+                                        <div style="color: #7f8c8d; font-size: 14px;">
+                                            Sub-cod: <strong>${event.subcod || 'N/A'}</strong>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="background: #f39c12; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 8px;">
+                                            ÎN AȘTEPTARE
+                                        </div>
+                                        <div id="timer-${event.id}" style="font-size: 16px; font-weight: 600; color: ${isExpired ? '#e74c3c' : '#f39c12'};">
+                                            ${isExpired ? '⏰ EXPIRAT' : `⏰ ${timeLeft.minutes}:${timeLeft.seconds.toString().padStart(2, '0')}`}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; gap: 8px; margin-bottom: 15px;">
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">📅 Data & Ora:</span>
+                                        <strong>${event.data || 'N/A'} - ${event.ora || 'N/A'}</strong>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">⏱️ Durată:</span>
+                                        <strong>${event.durata || 'N/A'} ore</strong>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">📍 Adresă:</span>
+                                        <strong>${event.adresa || 'N/A'}</strong>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">🎭 Personaj:</span>
+                                        <strong>${event.personaj || 'N/A'}</strong>
+                                    </div>
+                                    ${event.alte_detalii ? `
+                                        <div style="display: flex; gap: 8px;">
+                                            <span style="color: #7f8c8d; min-width: 120px;">📝 Detalii:</span>
+                                            <span>${event.alte_detalii}</span>
+                                        </div>
+                                    ` : ''}
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">👤 Notat de:</span>
+                                        <strong style="color: #3498db;">${event.cine_noteaza || 'N/A'}</strong>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="color: #7f8c8d; min-width: 120px;">🎯 Alocat la:</span>
+                                        <strong style="color: #27ae60;">${event.ce_cod_ai || 'N/A'}</strong>
+                                    </div>
+                                </div>
+
+                                ${isExpired ? `
+                                    <div style="background: #e74c3c; color: white; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
+                                        ⚠️ Alocarea a expirat - se va reseta automat
+                                    </div>
+                                ` : ''}
+                                
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="acceptEventAllocation('${event.id}')" 
+                                            ${isExpired ? 'disabled' : ''}
+                                            style="flex: 1; padding: 12px; background: ${isExpired ? '#95a5a6' : '#27ae60'}; color: white; border: none; border-radius: 6px; cursor: ${isExpired ? 'not-allowed' : 'pointer'}; font-size: 16px; font-weight: 600;">
+                                        ✅ Acceptă
+                                    </button>
+                                    <button onclick="refuseEventAllocation('${event.id}')" 
+                                            style="flex: 1; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                                        ❌ Refuză
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    data.events.forEach(event => {
+                        startCountdown(event.id, event.timestamp_alocare);
+                    });
+                })
+                .catch(error => {
+                    console.error('Eroare la încărcarea evenimentelor în așteptare:', error);
+                    showMessage('Eroare la încărcarea evenimentelor', 'error');
+                });
+        }
+
+        function loadInCePetreceriAm() {
+            fetch(`${API_URL}?action=getUserEvents&type=accepted`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.ok || !data.events) {
+                        document.getElementById('inCePetreceriAmList').innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                                <p>Eroare la încărcarea evenimentelor</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    allAcceptedEvents = data.events;
+                    applyInCePetreceriAmFilters();
+                })
+                .catch(error => {
+                    console.error('Eroare la încărcarea evenimentelor acceptate:', error);
+                    showMessage('Eroare la încărcarea evenimentelor', 'error');
+                });
+        }
+
+        function applyInCePetreceriAmFilters() {
+            const filterCeCodAi = document.getElementById('filterCeCodAi')?.value || '';
+            const filterCineNoteaza = document.getElementById('filterCineNoteaza')?.value || '';
+            const container = document.getElementById('inCePetreceriAmList');
+
+            let filteredEvents = [...allAcceptedEvents];
+
+            if (filterCeCodAi) {
+                filteredEvents = filteredEvents.filter(event => event.ce_cod_ai === filterCeCodAi);
+            }
+
+            if (filterCineNoteaza) {
+                filteredEvents = filteredEvents.filter(event => event.cine_noteaza === filterCineNoteaza);
+            }
+
+            if (filteredEvents.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #95a5a6;">
+                        <p>✨ Nu există evenimente acceptate cu aceste filtre</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredEvents.map(event => `
+                <div style="padding: 20px; border: 2px solid #27ae60; border-radius: 8px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <h3 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 18px;">
+                                ${event.cod || event.id}
+                            </h3>
+                            <div style="color: #7f8c8d; font-size: 14px;">
+                                Sub-cod: <strong>${event.subcod || 'N/A'}</strong>
+                            </div>
+                        </div>
+                        <div style="background: #27ae60; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                            ✅ ACCEPTAT
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; gap: 8px;">
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">📅 Data & Ora:</span>
+                            <strong>${event.data || 'N/A'} - ${event.ora || 'N/A'}</strong>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">⏱️ Durată:</span>
+                            <strong>${event.durata || 'N/A'} ore</strong>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">📍 Adresă:</span>
+                            <strong>${event.adresa || 'N/A'}</strong>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">🎭 Personaj:</span>
+                            <strong>${event.personaj || 'N/A'}</strong>
+                        </div>
+                        ${event.alte_detalii ? `
+                            <div style="display: flex; gap: 8px;">
+                                <span style="color: #7f8c8d; min-width: 120px;">📝 Detalii:</span>
+                                <span>${event.alte_detalii}</span>
+                            </div>
+                        ` : ''}
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">👤 Notat de:</span>
+                            <strong style="color: #3498db;">${event.cine_noteaza || 'N/A'}</strong>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <span style="color: #7f8c8d; min-width: 120px;">🎯 Alocat la:</span>
+                            <strong style="color: #27ae60;">${event.ce_cod_ai || 'N/A'}</strong>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAllocateModal(eventId) {
+            currentAllocatingEventId = eventId;
+            
+            fetch(`${API_URL}?action=getEventDetails&eventId=${encodeURIComponent(eventId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.ok || !data.event) {
+                        showMessage('Eroare la încărcarea detaliilor evenimentului', 'error');
+                        return;
+                    }
+
+                    const event = data.event;
+                    const modal = document.getElementById('allocateModal');
+                    const content = document.getElementById('allocateModalContent');
+
+                    const codes = [];
+                    for (let i = 65; i <= 90; i++) {
+                        codes.push(String.fromCharCode(i) + '-trainer');
+                    }
+                    for (let i = 65; i <= 90; i++) {
+                        const letter = String.fromCharCode(i);
+                        for (let num = 1; num <= 50; num++) {
+                            codes.push(letter + num);
+                        }
+                    }
+
+                    content.innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 15px;">${event.cod || event.id}</h3>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <div style="display: grid; gap: 10px;">
+                                    <div><strong>📅 Data & Ora:</strong> ${event.data || 'N/A'} - ${event.ora || 'N/A'}</div>
+                                    <div><strong>⏱️ Durată:</strong> ${event.durata || 'N/A'} ore</div>
+                                    <div><strong>📍 Adresă:</strong> ${event.adresa || 'N/A'}</div>
+                                    <div><strong>🎭 Personaj:</strong> ${event.personaj || 'N/A'}</div>
+                                    ${event.alte_detalii ? `<div><strong>📝 Detalii:</strong> ${event.alte_detalii}</div>` : ''}
+                                    <div><strong>👤 Notat de:</strong> <span style="color: #3498db;">${event.cine_noteaza || 'N/A'}</span></div>
+                                    <div><strong>🏷️ Sub-cod:</strong> ${event.subcod || 'N/A'}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2c3e50;">
+                                    Alocă la codul:
+                                </label>
+                                <select id="selectAllocateCode" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px;">
+                                    <option value="">-- Selectează un cod --</option>
+                                    ${codes.map(code => `<option value="${code}">${code}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    `;
+
+                    modal.style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Eroare la încărcarea detaliilor:', error);
+                    showMessage('Eroare la încărcarea detaliilor evenimentului', 'error');
+                });
+        }
+
+        function closeAllocateModal() {
+            document.getElementById('allocateModal').style.display = 'none';
+            currentAllocatingEventId = null;
+        }
+
+        function saveAllocation() {
+            const selectedCode = document.getElementById('selectAllocateCode')?.value;
+            
+            if (!selectedCode) {
+                showMessage('Te rog selectează un cod pentru alocare', 'error');
+                return;
+            }
+
+            if (!currentAllocatingEventId) {
+                showMessage('Eroare: ID eveniment lipsă', 'error');
+                return;
+            }
+
+            allocateEventToCode(currentAllocatingEventId, selectedCode);
+        }
+
+        function allocateEventToCode(eventId, code) {
+            fetch(`${API_URL}?action=allocateEvent&eventId=${encodeURIComponent(eventId)}&code=${encodeURIComponent(code)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        showMessage('Eveniment alocat cu succes! ✅', 'success');
+                        closeAllocateModal();
+                        loadEventeNealocate();
+                        loadAsteaptaAcceptul();
+                    } else {
+                        showMessage(data.message || 'Eroare la alocarea evenimentului', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Eroare la alocare:', error);
+                    showMessage('Eroare la alocarea evenimentului', 'error');
+                });
+        }
+
+        function acceptEventAllocation(eventId) {
+            if (!confirm('Confirmi acceptarea acestui eveniment?')) {
+                return;
+            }
+
+            fetch(`${API_URL}?action=acceptEvent&eventId=${encodeURIComponent(eventId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        showMessage('Eveniment acceptat cu succes! ✅', 'success');
+                        loadAsteaptaAcceptul();
+                        loadInCePetreceriAm();
+                    } else {
+                        showMessage(data.message || 'Eroare la acceptarea evenimentului', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Eroare la acceptare:', error);
+                    showMessage('Eroare la acceptarea evenimentului', 'error');
+                });
+        }
+
+        function refuseEventAllocation(eventId) {
+            if (!confirm('Confirmi refuzarea acestui eveniment? El va reveni la Evenimente Nealocate.')) {
+                return;
+            }
+
+            fetch(`${API_URL}?action=refuseEvent&eventId=${encodeURIComponent(eventId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        showMessage('Eveniment refuzat - revine la Evenimente Nealocate', 'info');
+                        loadAsteaptaAcceptul();
+                        loadEventeNealocate();
+                    } else {
+                        showMessage(data.message || 'Eroare la refuzarea evenimentului', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Eroare la refuzare:', error);
+                    showMessage('Eroare la refuzarea evenimentului', 'error');
+                });
+        }
+
+        function calculateTimeLeft(timestamp) {
+            const now = new Date().getTime();
+            const allocated = new Date(timestamp).getTime();
+            const fiveMinutes = 5 * 60 * 1000;
+            const expireTime = allocated + fiveMinutes;
+            const diff = expireTime - now;
+
+            if (diff <= 0) {
+                return { expired: true, minutes: 0, seconds: 0 };
+            }
+
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+
+            return { expired: false, minutes, seconds };
+        }
+
+        function startCountdown(eventId, timestamp) {
+            const timerId = `timer-${eventId}`;
+            
+            const interval = setInterval(() => {
+                const timerElement = document.getElementById(timerId);
+                if (!timerElement) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const timeLeft = calculateTimeLeft(timestamp);
+                
+                if (timeLeft.expired) {
+                    timerElement.textContent = '⏰ EXPIRAT';
+                    timerElement.style.color = '#e74c3c';
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        loadAsteaptaAcceptul();
+                        loadEventeNealocate();
+                    }, 2000);
+                } else {
+                    timerElement.textContent = `⏰ ${timeLeft.minutes}:${timeLeft.seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function startTimeoutChecker() {
+            if (timeoutCheckerInterval) {
+                clearInterval(timeoutCheckerInterval);
+            }
+
+            timeoutCheckerInterval = setInterval(() => {
+                fetch(`${API_URL}?action=checkTimeouts`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok && data.expired > 0) {
+                            console.log(`${data.expired} evenimente au expirat și au fost resetate`);
+                            loadAsteaptaAcceptul();
+                            loadEventeNealocate();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Eroare la verificarea timeout-urilor:', error);
+                    });
+            }, 10000);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (timeoutCheckerInterval) {
+                clearInterval(timeoutCheckerInterval);
+            }
+        });
+
+        // ==========================================
+        // ADMIN PANELS (PLACEHOLDER)
+        // ==========================================
+        function showAdminPanel() {
+            document.getElementById('content').innerHTML = `
+                <div style="padding: 30px;">
+                    <h1>👥 Gestionare Useri - ADMIN</h1>
+                    <p>Funcționalitate în dezvoltare...</p>
+                </div>
+            `;
+        }
+
+        function showAdminSettings() {
+            document.getElementById('content').innerHTML = `
+                <div style="padding: 30px;">
+                    <h1>⚙️ Setări Admin</h1>
+                    <p>Funcționalitate în dezvoltare...</p>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // GM PANELS (PLACEHOLDER)
+        // ==========================================
+        function showGMDashboard() {
+            document.getElementById('content').innerHTML = `
+                <div style="padding: 30px;">
+                    <h1>📊 GM Dashboard</h1>
+                    <p>Funcționalitate în dezvoltare...</p>
+                </div>
+            `;
+        }
+
+        function showGMAnalytics() {
+            document.getElementById('content').innerHTML = `
+                <div style="padding: 30px;">
+                    <h1>📈 GM Analytics</h1>
+                    <p>Funcționalitate în dezvoltare...</p>
+                </div>
+            `;
+        }
+
+        function showGMSettings() {
+            document.getElementById('content').innerHTML = `
+                <div style="padding: 30px;">
+                    <h1>🔧 GM Settings</h1>
+                    <p>Funcționalitate în dezvoltare...</p>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function showMessage(text, type, containerId = 'content') {
+            const container = document.getElementById(containerId);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            
+            if (containerId === 'content') {
+                container.insertBefore(messageDiv, container.firstChild);
+            } else {
+                container.innerHTML = '';
+                container.appendChild(messageDiv);
+            }
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Confirmi delogarea?')) {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                currentMode = 'normal';
+                showLogin();
+            }
+        }
+    </script>
+</body>
+</html>
