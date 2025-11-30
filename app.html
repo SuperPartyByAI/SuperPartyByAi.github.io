@@ -524,6 +524,160 @@
             outline: none;
             border-color: #f87171;
         }
+
+        /* CHAT WIDGET */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 2000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-window-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-window-header h3 {
+            font-size: 18px;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .chat-close:hover {
+            opacity: 1;
+        }
+
+        .chat-window-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .chat-message.user {
+            text-align: right;
+        }
+
+        .chat-message.bot {
+            text-align: left;
+        }
+
+        .chat-bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.bot .chat-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-window-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-window-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+        }
+
+        .chat-window-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-send {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chat-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .chat-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -541,12 +695,12 @@
                     <form id="loginForm" onsubmit="handleLogin(event)">
                         <div class="form-group">
                             <label for="loginEmail">Email</label>
-                            <input type="email" id="loginEmail" required placeholder="operator@superparty.ro">
+                            <input type="email" id="loginEmail" required placeholder="operator@superparty.ro" autocomplete="email">
                         </div>
                         
                         <div class="form-group">
                             <label for="loginPassword">Parolă</label>
-                            <input type="password" id="loginPassword" required placeholder="••••••••">
+                            <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
                         </div>
                         
                         <button type="submit" class="btn" id="loginBtn">Autentificare</button>
@@ -575,17 +729,17 @@
                     <form id="registerForm" onsubmit="handleRegister(event)">
                         <div class="form-group">
                             <label for="registerName">Nume Complet</label>
-                            <input type="text" id="registerName" required placeholder="Ion Popescu">
+                            <input type="text" id="registerName" required placeholder="Ion Popescu" autocomplete="name">
                         </div>
                         
                         <div class="form-group">
                             <label for="registerEmail">Email</label>
-                            <input type="email" id="registerEmail" required placeholder="operator@superparty.ro">
+                            <input type="email" id="registerEmail" required placeholder="operator@superparty.ro" autocomplete="email">
                         </div>
                         
                         <div class="form-group">
                             <label for="registerPassword">Parolă</label>
-                            <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+                            <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6" autocomplete="new-password">
                         </div>
                         
                         <div class="form-group">
@@ -780,6 +934,31 @@
         </div>
     </div>
 
+    <!-- CHAT WIDGET (only visible in dashboard) -->
+    <div class="chat-widget" id="chatWidget" style="display: none;">
+        <button class="chat-button" onclick="toggleChat()" id="chatButton">💬</button>
+        
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-window-header">
+                <h3>🤖 SuperParty AI</h3>
+                <button class="chat-close" onclick="toggleChat()">×</button>
+            </div>
+            
+            <div class="chat-window-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="chat-bubble">
+                        Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-window-input">
+                <input type="text" id="chatInput" placeholder="Scrie mesajul tău..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">Trimite</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // CONFIGURARE
         const API_URL = 'https://script.google.com/macros/s/AKfycbw6k3g_-ezj3q00ej2VI96-SQjQSsmKz2Sm2qOawcGgOhCNeJQWNcUju0DURfKlT0s4/exec';
@@ -833,6 +1012,9 @@
             
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('userCode').textContent = currentUser.code;
+            
+            // Show chat widget
+            document.getElementById('chatWidget').style.display = 'block';
             
             loadNealocate();
         }
@@ -926,7 +1108,7 @@
             if (confirm('Sigur vrei să te deconectezi?')) {
                 currentUser = null;
                 clearSession();
-                showLogin();
+                location.reload(); // Force reload to login screen
             }
         }
 
@@ -1127,6 +1309,63 @@
             } catch (error) {
                 alert('Nu pot comunica cu serverul');
             }
+        }
+
+        // ==========================================
+        // CHAT WIDGET
+        // ==========================================
+        const CHAT_API_URL = 'https://script.google.com/macros/s/AKfycbw1IeVp5YxDBpv_gA_aJbwJCoE0_20tNU6L6bUv4pyrONZvvhecrRA-b-z_g9iyaQSm/exec';
+        let chatConversationId = '';
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('active');
+        }
+
+        function addChatMessage(text, isUser) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble';
+            bubble.textContent = text;
+            
+            messageDiv.appendChild(bubble);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, true);
+            input.value = '';
+            
+            const sendBtn = document.getElementById('chatSendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Trimite...';
+            
+            try {
+                const response = await fetch(`${CHAT_API_URL}?action=chat&message=${encodeURIComponent(message)}&conversationId=${chatConversationId}`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    addChatMessage(data.response, false);
+                    chatConversationId = data.conversationId || '';
+                } else {
+                    addChatMessage('Ne pare rău, a apărut o eroare.', false);
+                }
+            } catch (error) {
+                addChatMessage('Nu pot comunica cu serverul.', false);
+            }
+            
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Trimite';
+            input.focus();
         }
 
         // ==========================================
