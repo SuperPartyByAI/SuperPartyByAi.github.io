@@ -265,11 +265,45 @@
 
     <script>
         // ==========================================
-        // CONFIGURARE API - BACKEND NOU (Chat_Client.gs)
+        // CONFIGURARE API - URL NOU + JSONP
         // ==========================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw1IeVp5YxDBpv_gA_aJbwJCoE0_20tNU6L6bUv4pyrONZvvhecrRA-b-z_g9iyaQSm/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzBn05lJvebaWaJJ91tzka4fWDweCEWFOkfB3SuppbUtpGEy00LA7ljo-AUEGEImGEI/exec';
         const LOGIN_TRIGGER = 'intra in mod logare';
         let conversationId = '';
+
+        /**
+         * JSONP API CALL - Universal function to bypass CORS
+         */
+        function apiCall(action, params, callback) {
+            const callbackName = 'jsonpCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            window[callbackName] = function(data) {
+                console.log(`✅ JSONP [${action}]:`, data);
+                delete window[callbackName];
+                const scripts = document.querySelectorAll(`script[data-callback="${callbackName}"]`);
+                scripts.forEach(s => s.remove());
+                if (callback) callback(data);
+            };
+            
+            const queryParams = new URLSearchParams({
+                action: action,
+                callback: callbackName,
+                _: Date.now(),
+                ...params
+            });
+            
+            const script = document.createElement('script');
+            script.setAttribute('data-callback', callbackName);
+            script.src = `${API_URL}?${queryParams.toString()}`;
+            
+            script.onerror = function() {
+                console.error(`❌ JSONP [${action}] failed`);
+                delete window[callbackName];
+                if (callback) callback({ success: false, error: 'Network error' });
+            };
+            
+            document.body.appendChild(script);
+        }
 
         // ==========================================
         // CHAT FUNCTIONS
@@ -280,7 +314,7 @@
             }
         }
 
-        async function sendMessage() {
+        function sendMessage() {
             const input = document.getElementById('chatInput');
             const sendButton = document.getElementById('sendButton');
             const message = input.value.trim();
@@ -314,16 +348,13 @@
             document.getElementById('chatMessages').appendChild(typingDiv);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
 
-            try {
-                // Trimite la Chat_Client.gs
-                const response = await fetch(`${API_URL}?action=chat&message=${encodeURIComponent(message)}&conversationId=${conversationId}`);
-                const data = await response.json();
-
+            // Trimite la Chat_Client.gs folosind JSONP
+            apiCall('chat', { message: message, conversationId: conversationId }, function(data) {
                 // Șterge typing indicator
                 const typing = document.getElementById('typingIndicator');
                 if (typing) typing.remove();
 
-                if (data.ok && data.response) {
+                if (data.success && data.response) {
                     // Salvează conversation ID pentru context
                     if (data.conversationId) {
                         conversationId = data.conversationId;
@@ -333,19 +364,11 @@
                 } else {
                     addMessage('Ne pare rău, am întâmpinat o problemă. Te rugăm să ne contactezi direct la 0792864811! 📞', 'bot');
                 }
-            } catch (error) {
-                console.error('Eroare chat:', error);
-                
-                // Șterge typing indicator
-                const typing = document.getElementById('typingIndicator');
-                if (typing) typing.remove();
-                
-                addMessage('Nu pot comunica cu serverul momentan. Te rugăm să ne contactezi la 0792864811! 📞', 'bot');
-            }
 
-            // Re-enable button
-            sendButton.disabled = false;
-            input.focus();
+                // Re-enable button
+                sendButton.disabled = false;
+                input.focus();
+            });
         }
 
         function addMessage(text, type) {
