@@ -891,8 +891,8 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="registerCode">Cod Operator</label>
-                            <input type="text" id="registerCode" required placeholder="OP001">
+                            <label for="registerConfirmPassword">Confirmă Parola</label>
+                            <input type="password" id="registerConfirmPassword" required placeholder="••••••••" minlength="6" autocomplete="new-password">
                         </div>
                         
                         <button type="submit" class="btn" id="registerBtn">Creare Cont</button>
@@ -1313,7 +1313,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-            const code = document.getElementById('registerCode').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
             const btn = document.getElementById('registerBtn');
             const errorDiv = document.getElementById('registerError');
             const successDiv = document.getElementById('registerSuccess');
@@ -1323,12 +1323,21 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             errorDiv.classList.remove('active');
             successDiv.classList.remove('active');
             
+            // Validare parolă
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Parolele nu coincid!';
+                errorDiv.classList.add('active');
+                btn.disabled = false;
+                btn.textContent = 'Creare Cont';
+                return;
+            }
+            
             try {
-                const response = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&code=${encodeURIComponent(code)}`);
+                const response = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}`);
                 const data = await response.json();
                 
                 if (data.ok) {
-                    successDiv.textContent = 'Cont creat cu succes! Vei fi redirecționat către login...';
+                    successDiv.textContent = 'Cont creat cu succes! Așteaptă aprobarea adminului pentru a te loga...';
                     successDiv.classList.add('active');
                     
                     document.getElementById('registerForm').reset();
@@ -1336,7 +1345,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     setTimeout(() => {
                         showLogin();
                         document.getElementById('loginEmail').value = email;
-                    }, 2000);
+                    }, 3000);
                 } else {
                     errorDiv.textContent = data.message || 'Eroare la creare cont';
                     errorDiv.classList.add('active');
@@ -1560,9 +1569,12 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 <div class="page" id="page-admin-users">
                     <div class="page-header">
                         <h1>👥 Gestionare Utilizatori</h1>
-                        <p>Aprobă/Blochează utilizatori (LIMITAT)</p>
+                        <p>Aprobă useri și atribuie coduri</p>
                     </div>
-                    <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
+                    
+                    <div id="pending-users-container">
+                        <div class="loading">Se încarcă useri neaprobați...</div>
+                    </div>
                 </div>
             `;
         }
@@ -1765,6 +1777,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 if (pageId === 'nealocate') loadNealocate();
                 if (pageId === 'petreceri-mele') loadPetreceriMele();
                 if (pageId === 'total') loadTotalPetreceri();
+                if (pageId === 'admin-users') loadPendingUsers();
             }
         }
 
@@ -2033,6 +2046,101 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             sendBtn.disabled = false;
             sendBtn.textContent = 'Trimite';
             input.focus();
+        }
+
+        // ==========================================
+        // USER MANAGEMENT (ADMIN)
+        // ==========================================
+        async function loadPendingUsers() {
+            const container = document.getElementById('pending-users-container');
+            if (!container) return;
+            
+            container.innerHTML = '<div class="loading">Se încarcă useri neaprobați...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getPendingUsers`);
+                const data = await response.json();
+
+                if (data.ok && data.users) {
+                    if (data.users.length === 0) {
+                        container.innerHTML = '<div class="no-events"><div class="icon">✅</div><p>Nu există useri care așteaptă aprobare</p></div>';
+                    } else {
+                        // Generate all codes
+                        const allCodes = [];
+                        for (let letter = 65; letter <= 90; letter++) {
+                            const l = String.fromCharCode(letter);
+                            allCodes.push(`${l}trainer`);
+                            for (let num = 1; num <= 50; num++) {
+                                allCodes.push(`${l}${num}`);
+                            }
+                        }
+                        
+                        let html = '<table class="data-table"><thead><tr><th>Nume</th><th>Email</th><th>Data Înregistrare</th><th>Cod</th><th>Acțiune</th></tr></thead><tbody>';
+                        
+                        data.users.forEach(user => {
+                            const safeId = user.id.replace(/'/g, "\\'");
+                            html += `
+                                <tr>
+                                    <td>${user.name}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.created ? new Date(user.created).toLocaleDateString('ro-RO') : 'N/A'}</td>
+                                    <td>
+                                        <select id="code-${user.id}" class="filter-select" style="min-width: 150px;">
+                                            <option value="">Selectează cod...</option>
+                                            ${allCodes.map(code => `<option value="${code}">${code}</option>`).join('')}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn-primary" onclick="approveUserWithCode('${safeId}')">
+                                            ✅ Atribuie + Aprobă
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += '</tbody></table>';
+                        container.innerHTML = html;
+                    }
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare: ' + (data.message || 'Unknown error') + '</p></div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
+            }
+        }
+
+        async function approveUserWithCode(userId) {
+            const codeSelect = document.getElementById(`code-${userId}`);
+            if (!codeSelect) {
+                alert('Eroare: Nu pot găsi dropdown-ul pentru cod');
+                return;
+            }
+            
+            const code = codeSelect.value;
+            
+            if (!code) {
+                alert('Te rugăm să selectezi un cod!');
+                return;
+            }
+            
+            if (!confirm(`Sigur vrei să atribuiești codul "${code}" și să aprobi acest user?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}?action=approveUser&userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+
+                if (data.ok) {
+                    alert('✅ User aprobat și cod atribuit cu succes!');
+                    loadPendingUsers(); // Reload list
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('❌ Nu pot comunica cu serverul');
+            }
         }
 
         // ==========================================
