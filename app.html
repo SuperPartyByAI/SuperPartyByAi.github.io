@@ -1313,9 +1313,11 @@
                     <div class="chat-bubble">
 Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
 
-💡 Comenzi speciale:
-• "open mod andrei admin" - Activează modul Admin
-• "open mod andrei gm" - Activează modul GM
+Întreabă-mă despre:
+• Personaje disponibile
+• Prețuri și pachete
+• Programări evenimente
+• Orice altceva!
                     </div>
                 </div>
             </div>
@@ -2495,7 +2497,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             sendBtn.textContent = 'Trimite...';
             
             apiCall('chat', { message, conversationId: chatConversationId }, function(data) {
-                if (data.ok) {
+                if (data.success && data.response) {  // ✅ CORECT! Verifică data.success
                     addChatMessage(data.response, false);
                     chatConversationId = data.conversationId || '';
                 } else {
