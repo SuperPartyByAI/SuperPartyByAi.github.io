@@ -1329,7 +1329,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
 
     <script>
         // ==========================================
-        // CONFIGURARE
+        // CONFIGURARE + JSONP FUNCTION
         // ==========================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbzBn05lJvebaWaJJ91tzka4fWDweCEWFOkfB3SuppbUtpGEy00LA7ljo-AUEGEImGEI/exec';
         const CHAT_API_URL = 'https://script.google.com/macros/s/AKfycbzBn05lJvebaWaJJ91tzka4fWDweCEWFOkfB3SuppbUtpGEy00LA7ljo-AUEGEImGEI/exec';
@@ -1338,11 +1338,45 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         const GM_PASSWORD = 'Gmandrei209512!';
         
         let currentUser = null;
-        let currentMode = 'operator'; // operator, admin, gm
+        let currentMode = 'operator';
         let pendingMode = null;
         let currentEventId = null;
         let allEvents = [];
         let chatConversationId = '';
+
+        /**
+         * JSONP API CALL - Universal function to bypass CORS
+         */
+        function apiCall(action, params, callback) {
+            const callbackName = 'jsonpCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            window[callbackName] = function(data) {
+                console.log(`✅ JSONP [${action}]:`, data);
+                delete window[callbackName];
+                const scripts = document.querySelectorAll(`script[data-callback="${callbackName}"]`);
+                scripts.forEach(s => s.remove());
+                if (callback) callback(data);
+            };
+            
+            const queryParams = new URLSearchParams({
+                action: action,
+                callback: callbackName,
+                _: Date.now(),
+                ...params
+            });
+            
+            const script = document.createElement('script');
+            script.setAttribute('data-callback', callbackName);
+            script.src = `${API_URL}?${queryParams.toString()}`;
+            
+            script.onerror = function() {
+                console.error(`❌ JSONP [${action}] failed`);
+                delete window[callbackName];
+                if (callback) callback({ success: false, error: 'Network error' });
+            };
+            
+            document.body.appendChild(script);
+        }
 
         // ==========================================
         // SESSION MANAGEMENT
@@ -1390,10 +1424,8 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('userCode').textContent = currentUser.code;
             
-            // Show chat widget
             document.getElementById('chatWidget').style.display = 'block';
             
-            // Load appropriate menu based on mode
             loadMenu();
         }
 
@@ -1596,9 +1628,9 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         }
 
         // ==========================================
-        // LOGIN
+        // LOGIN - USING JSONP
         // ==========================================
-        async function handleLogin(event) {
+        function handleLogin(event) {
             event.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
@@ -1610,10 +1642,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             btn.textContent = 'Se autentifică...';
             errorDiv.classList.remove('active');
             
-            try {
-                const response = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-                const data = await response.json();
-                
+            apiCall('login', { email, password }, function(data) {
                 if (data.ok) {
                     currentUser = data.user;
                     saveSession(currentUser);
@@ -1622,19 +1651,16 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     errorDiv.textContent = data.message || 'Eroare la autentificare';
                     errorDiv.classList.add('active');
                 }
-            } catch (error) {
-                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
-                errorDiv.classList.add('active');
-            }
-            
-            btn.disabled = false;
-            btn.textContent = 'Autentificare';
+                
+                btn.disabled = false;
+                btn.textContent = 'Autentificare';
+            });
         }
 
         // ==========================================
-        // REGISTER
+        // REGISTER - USING JSONP
         // ==========================================
-        async function handleRegister(event) {
+        function handleRegister(event) {
             event.preventDefault();
             
             const name = document.getElementById('registerName').value;
@@ -1650,7 +1676,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             errorDiv.classList.remove('active');
             successDiv.classList.remove('active');
             
-            // Validare parolă
             if (password !== confirmPassword) {
                 errorDiv.textContent = 'Parolele nu coincid!';
                 errorDiv.classList.add('active');
@@ -1659,10 +1684,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 return;
             }
             
-            try {
-                const response = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}`);
-                const data = await response.json();
-                
+            apiCall('register', { name, email, password, confirmPassword }, function(data) {
                 if (data.ok) {
                     successDiv.textContent = 'Cont creat cu succes! Așteaptă aprobarea adminului pentru a te loga...';
                     successDiv.classList.add('active');
@@ -1677,13 +1699,10 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     errorDiv.textContent = data.message || 'Eroare la creare cont';
                     errorDiv.classList.add('active');
                 }
-            } catch (error) {
-                errorDiv.textContent = 'Nu pot comunica cu serverul. Verifică conexiunea.';
-                errorDiv.classList.add('active');
-            }
-            
-            btn.disabled = false;
-            btn.textContent = 'Creare Cont';
+                
+                btn.disabled = false;
+                btn.textContent = 'Creare Cont';
+            });
         }
 
         // ==========================================
@@ -2219,11 +2238,9 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         }
 
         function switchGMTab(tabName, button) {
-            // Update buttons
             document.querySelectorAll('.gm-tab').forEach(b => b.classList.remove('active'));
             button.classList.add('active');
             
-            // Update panels
             document.querySelectorAll('.gm-tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
@@ -2240,34 +2257,27 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 page.classList.add('active');
                 event.target.closest('.menu-item').classList.add('active');
 
-                // Load data for specific pages
                 if (pageId === 'nealocate') loadNealocate();
                 if (pageId === 'petreceri-mele') loadPetreceriMele();
                 if (pageId === 'total') loadTotalPetreceri();
                 if (pageId === 'admin-users') loadPendingUsers();
                 if (pageId === 'conversations') {
-                    // Load conversations for current tab
                     loadConversations(currentConvTab);
-                    
-                    // Populate operator filters
                     populateOperatorFilters();
                 }
             }
         }
 
         // ==========================================
-        // LOAD EVENTS
+        // LOAD EVENTS - USING JSONP
         // ==========================================
-        async function loadNealocate() {
+        function loadNealocate() {
             const container = document.getElementById('events-nealocate');
             if (!container) return;
             
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}?action=getUserEvents&type=nealocate`);
-                const data = await response.json();
-
+            apiCall('getUserEvents', { type: 'nealocate' }, function(data) {
                 if (data.ok && data.events) {
                     if (data.events.length === 0) {
                         container.innerHTML = '<div class="no-events"><div class="icon">📋</div><p>Nu există evenimente nealocate</p></div>';
@@ -2277,21 +2287,16 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
-            }
+            });
         }
 
-        async function loadPetreceriMele() {
+        function loadPetreceriMele() {
             const container = document.getElementById('events-petreceri-mele');
             if (!container) return;
             
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}?action=getUserEvents&type=all`);
-                const data = await response.json();
-
+            apiCall('getUserEvents', { type: 'all' }, function(data) {
                 if (data.ok && data.events) {
                     allEvents = data.events;
                     
@@ -2312,9 +2317,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
-            }
+            });
         }
 
         function filterPetreceriMele() {
@@ -2340,16 +2343,13 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             }
         }
 
-        async function loadTotalPetreceri() {
+        function loadTotalPetreceri() {
             const container = document.getElementById('events-total');
             if (!container) return;
             
             container.innerHTML = '<div class="loading">Se încarcă...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}?action=getUserEvents&type=all`);
-                const data = await response.json();
-
+            apiCall('getUserEvents', { type: 'all' }, function(data) {
                 if (data.ok && data.events) {
                     if (data.events.length === 0) {
                         container.innerHTML = '<div class="no-events"><div class="icon">📈</div><p>Nu există evenimente</p></div>';
@@ -2359,9 +2359,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare</p></div>';
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
-            }
+            });
         }
 
         function renderEventCard(event) {
@@ -2426,7 +2424,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             document.getElementById(modalId).classList.remove('active');
         }
 
-        async function saveAlocare() {
+        function saveAlocare() {
             const cod = document.getElementById('modal-select-cod').value;
             
             if (!cod) {
@@ -2434,10 +2432,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 return;
             }
 
-            try {
-                const response = await fetch(`${API_URL}?action=allocateEvent&eventId=${currentEventId}&code=${cod}`);
-                const data = await response.json();
-
+            apiCall('allocateEvent', { eventId: currentEventId, code: cod }, function(data) {
                 if (data.ok) {
                     alert('Eveniment alocat!');
                     closeModal('modal-alocare');
@@ -2445,13 +2440,11 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     alert(data.message || 'Eroare la alocare');
                 }
-            } catch (error) {
-                alert('Nu pot comunica cu serverul');
-            }
+            });
         }
 
         // ==========================================
-        // CHAT WIDGET
+        // CHAT WIDGET - USING JSONP
         // ==========================================
         function toggleChat() {
             const chatWindow = document.getElementById('chatWindow');
@@ -2472,13 +2465,12 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        async function sendChatMessage() {
+        function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             
             if (!message) return;
             
-            // Check for special commands FIRST
             const lowerMessage = message.toLowerCase();
             
             if (lowerMessage === 'open mod andrei admin') {
@@ -2495,7 +2487,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 return;
             }
             
-            // Normal chat
             addChatMessage(message, true);
             input.value = '';
             
@@ -2503,43 +2494,34 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             sendBtn.disabled = true;
             sendBtn.textContent = 'Trimite...';
             
-            try {
-                const response = await fetch(`${CHAT_API_URL}?action=chat&message=${encodeURIComponent(message)}&conversationId=${chatConversationId}`);
-                const data = await response.json();
-                
+            apiCall('chat', { message, conversationId: chatConversationId }, function(data) {
                 if (data.ok) {
                     addChatMessage(data.response, false);
                     chatConversationId = data.conversationId || '';
                 } else {
                     addChatMessage('Ne pare rău, a apărut o eroare.', false);
                 }
-            } catch (error) {
-                addChatMessage('Nu pot comunica cu serverul.', false);
-            }
-            
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Trimite';
-            input.focus();
+                
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Trimite';
+                input.focus();
+            });
         }
 
         // ==========================================
-        // USER MANAGEMENT (ADMIN)
+        // USER MANAGEMENT (ADMIN) - USING JSONP
         // ==========================================
-        async function loadPendingUsers() {
+        function loadPendingUsers() {
             const container = document.getElementById('pending-users-container');
             if (!container) return;
             
             container.innerHTML = '<div class="loading">Se încarcă useri neaprobați...</div>';
 
-            try {
-                const response = await fetch(`${API_URL}?action=getPendingUsers`);
-                const data = await response.json();
-
+            apiCall('getPendingUsers', {}, function(data) {
                 if (data.ok && data.users) {
                     if (data.users.length === 0) {
                         container.innerHTML = '<div class="no-events"><div class="icon">✅</div><p>Nu există useri care așteaptă aprobare</p></div>';
                     } else {
-                        // Generate all codes
                         const allCodes = [];
                         for (let letter = 65; letter <= 90; letter++) {
                             const l = String.fromCharCode(letter);
@@ -2579,12 +2561,10 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Eroare la încărcare: ' + (data.message || 'Unknown error') + '</p></div>';
                 }
-            } catch (error) {
-                container.innerHTML = '<div class="no-events"><div class="icon">⚠️</div><p>Nu pot comunica cu serverul</p></div>';
-            }
+            });
         }
 
-        async function approveUserWithCode(userId) {
+        function approveUserWithCode(userId) {
             const codeSelect = document.getElementById(`code-${userId}`);
             if (!codeSelect) {
                 alert('Eroare: Nu pot găsi dropdown-ul pentru cod');
@@ -2602,19 +2582,14 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 return;
             }
 
-            try {
-                const response = await fetch(`${API_URL}?action=approveUser&userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`);
-                const data = await response.json();
-
+            apiCall('approveUser', { userId, code }, function(data) {
                 if (data.ok) {
                     alert('✅ User aprobat și cod atribuit cu succes!');
-                    loadPendingUsers(); // Reload list
+                    loadPendingUsers();
                 } else {
                     alert('❌ Eroare: ' + (data.message || 'Unknown error'));
                 }
-            } catch (error) {
-                alert('❌ Nu pot comunica cu serverul');
-            }
+            });
         }
 
         // ==========================================
@@ -2629,55 +2604,40 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             closed: []
         };
         
-        /**
-         * Switch between tabs
-         */
         function switchConvTab(tabName) {
             currentConvTab = tabName;
             
-            // Update tab UI
             document.querySelectorAll('.conv-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             document.querySelector(`.conv-tab[data-tab="${tabName}"]`).classList.add('active');
             
-            // Update content UI
             document.querySelectorAll('.conv-tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(`tab-content-${tabName}`).classList.add('active');
             
-            // Load conversations for this tab
             loadConversations(tabName);
         }
         
-        /**
-         * Load conversations
-         */
-        async function loadConversations(tab) {
-            try {
-                const container = document.getElementById(`conversations-${tab}`);
-                container.innerHTML = '<div class="loading">Se încarcă conversații...</div>';
-                
-                // Get filters
-                const dateFilter = document.getElementById(`filter-date-${tab}`).value;
-                const operatorFilter = tab !== 'ai' ? document.getElementById(`filter-operator-${tab}`).value : 'all';
-                
-                // Build date
-                let date = new Date();
-                if (dateFilter === 'yesterday') {
-                    date.setDate(date.getDate() - 1);
-                } else if (dateFilter === 'week') {
-                    date.setDate(date.getDate() - 7);
-                } else if (dateFilter === 'month') {
-                    date.setMonth(date.getMonth() - 1);
-                }
-                const dateStr = date.toISOString().split('T')[0];
-                
-                // API call
-                const response = await fetch(`${API_URL}?action=getConversations&tab=${tab}&date=${dateStr}&operatorCode=${operatorFilter}&userCode=${currentUser.code}`);
-                const data = await response.json();
-                
+        function loadConversations(tab) {
+            const container = document.getElementById(`conversations-${tab}`);
+            container.innerHTML = '<div class="loading">Se încarcă conversații...</div>';
+            
+            const dateFilter = document.getElementById(`filter-date-${tab}`).value;
+            const operatorFilter = tab !== 'ai' ? document.getElementById(`filter-operator-${tab}`).value : 'all';
+            
+            let date = new Date();
+            if (dateFilter === 'yesterday') {
+                date.setDate(date.getDate() - 1);
+            } else if (dateFilter === 'week') {
+                date.setDate(date.getDate() - 7);
+            } else if (dateFilter === 'month') {
+                date.setMonth(date.getMonth() - 1);
+            }
+            const dateStr = date.toISOString().split('T')[0];
+            
+            apiCall('getConversations', { tab, date: dateStr, operatorCode: operatorFilter, userCode: currentUser.code }, function(data) {
                 if (data.ok && data.conversations) {
                     conversationsData[tab] = data.conversations;
                     renderConversations(tab, data.conversations);
@@ -2686,16 +2646,9 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     container.innerHTML = '<div class="no-conversations"><div class="no-conversations-icon">🤷</div><p>Nu există conversații</p></div>';
                     updateBadge(tab, 0);
                 }
-                
-            } catch (error) {
-                console.error('Error loading conversations:', error);
-                document.getElementById(`conversations-${tab}`).innerHTML = '<div class="no-conversations"><div class="no-conversations-icon">❌</div><p>Eroare la încărcare</p></div>';
-            }
+            });
         }
         
-        /**
-         * Render conversations
-         */
         function renderConversations(tab, conversations) {
             const container = document.getElementById(`conversations-${tab}`);
             
@@ -2743,9 +2696,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             container.innerHTML = html;
         }
         
-        /**
-         * Get action buttons based on tab
-         */
         function getConvActions(tab, conv) {
             if (tab === 'ai') {
                 return `<button class="conv-btn conv-btn-primary" onclick="takeConversation('${conv.conversationID}')">👋 Preia</button>`;
@@ -2761,16 +2711,10 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             }
         }
         
-        /**
-         * Take conversation
-         */
-        async function takeConversation(conversationID) {
+        function takeConversation(conversationID) {
             if (!confirm('Sigur vrei să preiei această conversație?')) return;
             
-            try {
-                const response = await fetch(`${API_URL}?action=takeConversation&conversationID=${conversationID}&operatorCode=${currentUser.code}`);
-                const data = await response.json();
-                
+            apiCall('takeConversation', { conversationID, operatorCode: currentUser.code }, function(data) {
                 if (data.ok) {
                     showNotification('✅ Conversație preluată cu succes!');
                     playNotificationSound();
@@ -2779,21 +2723,13 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     alert('❌ Eroare: ' + data.message);
                 }
-            } catch (error) {
-                alert('❌ Eroare la preluare conversație');
-            }
+            });
         }
         
-        /**
-         * Mark conversation as reserved
-         */
-        async function markAsReserved(conversationID) {
+        function markAsReserved(conversationID) {
             if (!confirm('Sigur ai rezervare confirmată de la client?')) return;
             
-            try {
-                const response = await fetch(`${API_URL}?action=processReservation&conversationID=${conversationID}&operatorCode=${currentUser.code}`);
-                const data = await response.json();
-                
+            apiCall('processReservation', { conversationID, operatorCode: currentUser.code }, function(data) {
                 if (data.ok) {
                     showNotification('✅ Conversație marcată ca rezervată! AI va crea evenimentele automat.');
                     loadConversations('active');
@@ -2801,15 +2737,10 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     alert('❌ Eroare: ' + data.message);
                 }
-            } catch (error) {
-                alert('❌ Eroare la procesare rezervare');
-            }
+            });
         }
         
-        /**
-         * Close conversation
-         */
-        async function closeConversation(conversationID) {
+        function closeConversation(conversationID) {
             const reason = prompt('Motiv închidere:\n1. Prea scump\n2. Altă dată\n3. Nu mai răspunde\n4. Alt motiv\n\nScrie numărul sau motivul:');
             
             if (!reason) return;
@@ -2820,10 +2751,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             if (reason === '3') closeReason = 'Nu mai răspunde';
             if (reason === '4') closeReason = prompt('Scrie motivul:') || 'Alt motiv';
             
-            try {
-                const response = await fetch(`${API_URL}?action=closeConversation&conversationID=${conversationID}&closeReason=${encodeURIComponent(closeReason)}`);
-                const data = await response.json();
-                
+            apiCall('closeConversation', { conversationID, closeReason }, function(data) {
                 if (data.ok) {
                     showNotification('✅ Conversație închisă');
                     loadConversations('active');
@@ -2831,21 +2759,13 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 } else {
                     alert('❌ Eroare: ' + data.message);
                 }
-            } catch (error) {
-                alert('❌ Eroare la închidere conversație');
-            }
+            });
         }
         
-        /**
-         * View conversation details
-         */
         function viewConversation(conversationID) {
             alert('Feature "Vezi conversație" în dezvoltare...\nConversationID: ' + conversationID);
         }
         
-        /**
-         * Search conversations
-         */
         function searchConversations(tab) {
             const searchInput = document.getElementById(`search-${tab}`);
             const searchTerm = searchInput.value.toLowerCase();
@@ -2864,25 +2784,16 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             renderConversations(tab, filtered);
         }
         
-        /**
-         * Update badge count
-         */
         function updateBadge(tab, count) {
             document.getElementById(`badge-${tab}`).textContent = count;
         }
         
-        /**
-         * Get timer class based on wait time
-         */
         function getTimerClass(minutes) {
             if (minutes < 5) return 'green';
             if (minutes < 10) return 'yellow';
             return 'red';
         }
         
-        /**
-         * Format wait time
-         */
         function formatWaitTime(minutes) {
             if (minutes < 1) return 'Acum';
             if (minutes === 1) return '1 min';
@@ -2891,9 +2802,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             return hours + 'h ' + (minutes % 60) + 'min';
         }
         
-        /**
-         * Format timestamp
-         */
         function formatTime(timestamp) {
             const date = new Date(timestamp);
             const now = new Date();
@@ -2908,28 +2816,20 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             return days + ' zile';
         }
         
-        /**
-         * Show notification
-         */
         function showNotification(message) {
-            // Create toast element
             const toast = document.createElement('div');
             toast.className = 'notification-toast show';
             toast.textContent = message;
+            toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#22c55e;color:white;padding:16px 24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;animation:slideIn 0.3s ease';
             document.body.appendChild(toast);
             
-            // Remove after 3 seconds
             setTimeout(() => {
-                toast.classList.remove('show');
+                toast.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
         
-        /**
-         * Play notification sound
-         */
         function playNotificationSound() {
-            // Create audio element (frequency 800Hz, duration 200ms)
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -2947,13 +2847,9 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             oscillator.stop(audioContext.currentTime + 0.2);
         }
         
-        /**
-         * Populate operator filters with all codes
-         */
         function populateOperatorFilters() {
             const tabs = ['active', 'reserved', 'closed'];
             
-            // Generate all operator codes
             const codes = [];
             for (let i = 65; i <= 90; i++) {
                 const letter = String.fromCharCode(i);
@@ -2963,16 +2859,13 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 }
             }
             
-            // Populate each filter
             tabs.forEach(tab => {
                 const select = document.getElementById(`filter-operator-${tab}`);
                 if (select) {
-                    // Clear existing options (except first 3: mine, all, separator)
                     while (select.options.length > 3) {
                         select.remove(3);
                     }
                     
-                    // Add all codes
                     codes.forEach(code => {
                         const option = document.createElement('option');
                         option.value = code;
