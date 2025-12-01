@@ -467,6 +467,23 @@
             background: rgba(100, 116, 139, 0.5);
         }
 
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
         .no-events {
             text-align: center;
             padding: 60px 20px;
@@ -790,6 +807,15 @@
         }
 
         .gm-tab-panel.active {
+            display: block;
+        }
+
+        /* ADMIN CHAT TABS */
+        .admin-chat-tab-content {
+            display: none;
+        }
+
+        .admin-chat-tab-content.active {
             display: block;
         }
 
@@ -1149,6 +1175,614 @@
             font-size: 48px;
             margin-bottom: 16px;
         }
+        /* ═══════════════════════════════════════════ */
+        /* SISTEM DOVEZI POZE - NEW */
+        /* ═══════════════════════════════════════════ */
+        
+        .dovezi-status {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        
+        .dovezi-status-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .dovezi-etape {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .etapa-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid;
+            transition: all 0.3s;
+        }
+        
+        .etapa-icon.validat {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        .etapa-icon.obligatoriu {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+        
+        .etapa-icon.blocat {
+            background: rgba(71, 85, 105, 0.2);
+            border-color: #475569;
+            color: #475569;
+            opacity: 0.5;
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Detalii Rol - Ecran complet */
+        .rol-detalii-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: #0f172a;
+            z-index: 999;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        .rol-detalii-screen.active {
+            display: block;
+        }
+        
+        .rol-detalii-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-back {
+            padding: 10px 18px;
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 8px;
+            color: #f87171;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-back:hover {
+            background: rgba(248, 113, 113, 0.3);
+            transform: translateX(-3px);
+        }
+        
+        .rol-detalii-title {
+            font-size: 28px;
+            color: #fff;
+        }
+        
+        .rol-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .rol-info-item {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        
+        .rol-info-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .rol-info-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .etape-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .etapa-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .etapa-card.validat {
+            border-color: #10b981;
+        }
+        
+        .etapa-card.obligatoriu {
+            border-color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+        
+        .etapa-card.blocat {
+            opacity: 0.6;
+            border-color: #475569;
+        }
+        
+        .etapa-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .etapa-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .etapa-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid;
+        }
+        
+        .etapa-card.validat .etapa-number {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        .etapa-card.obligatoriu .etapa-number {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .etapa-card.blocat .etapa-number {
+            background: rgba(71, 85, 105, 0.2);
+            border-color: #475569;
+            color: #475569;
+        }
+        
+        .etapa-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .etapa-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        
+        .etapa-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .etapa-badge.validat {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+        
+        .etapa-badge.obligatoriu {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .etapa-badge.blocat {
+            background: rgba(71, 85, 105, 0.2);
+            color: #94a3b8;
+            border: 1px solid #475569;
+        }
+        
+        .bagaj-info-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .bagaj-info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checklist-box {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .checklist-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+        
+        .btn-action {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-action.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-action.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-action.secondary {
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: #f87171;
+        }
+        
+        .btn-action.secondary:hover {
+            background: rgba(248, 113, 113, 0.3);
+        }
+        
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Modal Dovezi */
+        .modal-dovezi {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-dovezi.active {
+            display: flex;
+        }
+        
+        .modal-dovezi-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-dovezi-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-dovezi-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .modal-dovezi-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .modal-dovezi-body {
+            padding: 25px;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(248, 113, 113, 0.4);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+        
+        .upload-area:hover {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #f87171;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+        
+        .preview-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .preview-image {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+        
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* AI Loading */
+        .ai-loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .ai-loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(248, 113, 113, 0.2);
+            border-top: 4px solid #f87171;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            background: rgba(30, 41, 59, 0.6);
+            height: 35px;
+            border-radius: 17px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        /* AI Result */
+        .ai-result-box {
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .ai-result-box.validat {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+        }
+        
+        .ai-result-box.respins {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+        }
+        
+        .ai-result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .ai-result-icon {
+            font-size: 40px;
+        }
+        
+        .ai-result-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .ai-result-confidence {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        
+        .confidence-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        
+        .confidence-bar-container {
+            background: rgba(71, 85, 105, 0.3);
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .confidence-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            transition: width 0.5s;
+        }
+        
+        .ai-observatii {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .ai-observatii-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .ai-observatii-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
     </style>
 </head>
 <body>
@@ -1522,6 +2156,15 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     <div class="menu-item" onclick="showPage('admin-coduri')">
                         <span class="icon">📝</span>
                         <span>Generează Coduri</span>
+                    </div>
+                    <div class="menu-section">💬 CHAT</div>
+                    <div class="menu-item" onclick="showPage('admin-chat')">
+                        <span class="icon">💬</span>
+                        <span style="color: #10b981;">Chat cu Clienții</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('ai-instructions')">
+                        <span class="icon">🧠</span>
+                        <span style="color: #fbbf24;">Instrucțiuni AI (Prompt)</span>
                     </div>
                     <div class="menu-section">👥 MANAGEMENT</div>
                     <div class="menu-item" onclick="showPage('admin-users')">
@@ -2053,6 +2696,154 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                     <p style="color: #94a3b8; text-align: center; padding: 40px;">În dezvoltare...</p>
                 </div>
 
+                <!-- PAGE: CHAT CU CLIENȚII -->
+                <div class="page" id="page-admin-chat">
+                    <div class="page-header">
+                        <h1>💬 Chat cu Clienții</h1>
+                        <p>Răspunde direct clienților - Salvare automată în CONVERSATIONS</p>
+                    </div>
+
+                    <!-- TABS -->
+                    <div class="gm-tabs" style="margin-bottom: 20px;">
+                        <button class="gm-tab active" onclick="switchAdminChatTab('live', this)">💬 Chat Live</button>
+                        <button class="gm-tab" onclick="switchAdminChatTab('conversations-data', this)">📊 CONVERSATIONS Sheet</button>
+                        <button class="gm-tab" onclick="switchAdminChatTab('profiles-data', this)">👥 CLIENT_PROFILES Sheet</button>
+                        <button class="gm-tab" onclick="switchAdminChatTab('ai-prompts', this)">🧠 Prompt-uri AI</button>
+                    </div>
+
+                    <!-- TAB: CHAT LIVE -->
+                    <div class="admin-chat-tab-content active" id="admin-chat-tab-live">
+                        <div style="display: grid; grid-template-columns: 350px 1fr; gap: 20px; height: calc(100vh - 280px);">
+                            <!-- LISTĂ CONVERSAȚII -->
+                            <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 20px; overflow-y: auto;">
+                                <h3 style="margin-bottom: 15px; color: #f87171;">📋 Conversații Active</h3>
+                                <div id="admin-chat-list">
+                                    <div class="loading">Se încarcă...</div>
+                                </div>
+                            </div>
+
+                            <!-- CHAT ACTIV -->
+                            <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
+                                <div id="admin-chat-empty" style="display: flex; align-items: center; justify-content: center; height: 100%; color: #64748b; flex-direction: column; gap: 15px;">
+                                    <div style="font-size: 64px;">💬</div>
+                                    <p>Selectează o conversație pentru a răspunde</p>
+                                </div>
+
+                                <div id="admin-chat-active" style="display: none; flex-direction: column; height: 100%;">
+                                    <!-- HEADER -->
+                                    <div style="padding: 20px; border-bottom: 1px solid rgba(248, 113, 113, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <h3 id="admin-chat-client-name" style="color: #fff; margin-bottom: 5px;">Client</h3>
+                                            <p id="admin-chat-client-phone" style="color: #94a3b8; font-size: 13px;">0700-000-000</p>
+                                        </div>
+                                        <button class="btn-secondary" onclick="closeAdminChat()">✕ Închide</button>
+                                    </div>
+
+                                    <!-- MESSAGES -->
+                                    <div id="admin-chat-messages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                                        <!-- Messages aici -->
+                                    </div>
+
+                                    <!-- INPUT -->
+                                    <div style="padding: 20px; border-top: 1px solid rgba(248, 113, 113, 0.2); display: flex; gap: 10px;">
+                                        <input type="text" id="admin-chat-input" placeholder="Scrie răspunsul..." style="flex: 1; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 14px;" onkeypress="if(event.key==='Enter') sendAdminChatMessage()">
+                                        <button class="btn-primary" onclick="sendAdminChatMessage()" id="admin-send-btn">
+                                            📤 Trimite
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: CONVERSATIONS DATA -->
+                    <div class="admin-chat-tab-content" id="admin-chat-tab-conversations-data" style="display: none;">
+                        <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="color: #f87171;">📊 CONVERSATIONS Sheet - Toate datele</h3>
+                            <button class="btn-primary" onclick="loadConversationsSheetData()">🔄 Refresh</button>
+                        </div>
+                        <div style="overflow-x: auto; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 20px;">
+                            <div id="conversations-sheet-data">
+                                <div class="loading">Se încarcă date...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: PROFILES DATA -->
+                    <div class="admin-chat-tab-content" id="admin-chat-tab-profiles-data" style="display: none;">
+                        <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="color: #f87171;">👥 CLIENT_PROFILES Sheet - Memorie clienți 10 ani</h3>
+                            <button class="btn-primary" onclick="loadProfilesSheetData()">🔄 Refresh</button>
+                        </div>
+                        <div style="overflow-x: auto; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 20px;">
+                            <div id="profiles-sheet-data">
+                                <div class="loading">Se încarcă date...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: PROMPT-URI AI (REAL - din sheet) -->
+                    <div class="admin-chat-tab-content" id="admin-chat-tab-ai-prompts" style="display: none;">
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #f87171; margin-bottom: 10px;">🧠 Prompt-uri AI - Instrucțiuni REALE pentru răspunsuri</h3>
+                            <p style="color: #94a3b8;">Aici vezi și editezi prompt-urile pe care AI-ul le folosește EFECTIV să răspundă clienților</p>
+                        </div>
+
+                        <!-- INFO BOX -->
+                        <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid #fbbf24; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <h4 style="color: #fbbf24; margin-bottom: 10px;">💡 CE SUNT PROMPT-URILE AI?</h4>
+                            <p style="color: #cbd5e1; margin-bottom: 10px; font-size: 14px;">
+                                Prompt-urile sunt <strong>instrucțiuni</strong> care îi spun AI-ului CUM să răspundă clienților.
+                            </p>
+                            <div style="color: #94a3b8; font-size: 13px; line-height: 1.8;">
+                                ✏️ <strong>Când AI greșește:</strong> Editează prompt-ul ACTIV → Salvează → AI va răspunde diferit!<br>
+                                ✅ <strong>Prompt ACTIV:</strong> Doar UN prompt poate fi activ (folosit de AI). Click "✅ Activează" pentru a schimba.<br>
+                                📊 <strong>Prompt-uri multiple:</strong> Poți avea mai multe prompt-uri salvate (ex: General, Promoție Vară, Black Friday)
+                            </div>
+                        </div>
+
+                        <!-- CONTROLS -->
+                        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                            <button class="btn-primary" onclick="loadAIPromptsData()">🔄 Refresh Prompt-uri</button>
+                            <button class="btn-primary" onclick="openAddPromptModal()">➕ Adaugă Prompt Nou</button>
+                        </div>
+
+                        <!-- PROMPTS LIST -->
+                        <div id="ai-prompts-list" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 20px;">
+                            <div class="loading">Se încarcă prompt-uri...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE: INSTRUCȚIUNI AI (PROMPT) -->
+                <div class="page" id="page-ai-instructions">
+                    <div class="page-header">
+                        <h1>🧠 Instrucțiuni AI - Logica de răspuns</h1>
+                        <p>Editează prompt-ul pe care AI-ul îl folosește să răspundă clienților</p>
+                    </div>
+
+                    <!-- INFO BOX -->
+                    <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid #fbbf24; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="color: #fbbf24; margin-bottom: 10px;">💡 CE ESTE PROMPT-UL AI?</h4>
+                        <p style="color: #cbd5e1; margin-bottom: 10px;">
+                            Prompt-ul este <strong>setul de instrucțiuni</strong> care îi spune AI-ului CUM să răspundă clienților.
+                        </p>
+                        <p style="color: #94a3b8; font-size: 13px;">
+                            ✏️ <strong>Când AI greșește:</strong> Editează prompt-ul aici → Salvează → AI va răspunde diferit!<br>
+                            🎯 <strong>Prompt activ:</strong> Doar UN prompt poate fi activ (folosit de AI). Click "✅ Activează" pentru a schimba.
+                        </p>
+                    </div>
+
+                    <!-- PROMPT LIST -->
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn-primary" onclick="loadAIPrompts()">🔄 Refresh Prompt-uri</button>
+                    </div>
+
+                    <div id="ai-prompts-container" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 20px;">
+                        <div class="loading">Se încarcă prompt-urile AI...</div>
+                    </div>
+                </div>
+
                 <!-- PAGE: GESTIONARE UTILIZATORI -->
                 <div class="page" id="page-admin-users">
                     <div class="page-header">
@@ -2263,6 +3054,8 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 if (pageId === 'petreceri-mele') loadPetreceriMele();
                 if (pageId === 'total') loadTotalPetreceri();
                 if (pageId === 'admin-users') loadPendingUsers();
+                if (pageId === 'admin-chat') loadAdminChatConversations();
+                if (pageId === 'ai-instructions') loadAIPrompts();
                 if (pageId === 'conversations') {
                     loadConversations(currentConvTab);
                     populateOperatorFilters();
@@ -2368,7 +3161,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             const hasAllocation = event.ce_cod_ai;
             
             return `
-                <div class="event-card" onclick="${!hasAllocation ? `openAlocareModal('${event.id}')` : ''}">
+                <div class="event-card" onclick="${hasAllocation ? `veziDetaliiRol('${event.id}')` : `openAlocareModal('${event.id}')`}">
                     <div class="event-header">
                         <div>
                             <div class="event-title">${event.personaj || 'Eveniment'}</div>
@@ -2395,6 +3188,17 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                             <span>Notat: ${event.cine_noteaza || 'N/A'}</span>
                         </div>
                     </div>
+                    
+                    ${hasAllocation ? `
+                        <div class="dovezi-status" onclick="event.stopPropagation();">
+                            <div class="dovezi-status-title">📸 DOVEZI</div>
+                            <div class="dovezi-etape">
+                                <div class="etapa-icon validat" title="Bagaj - Validat">✓</div>
+                                <div class="etapa-icon obligatoriu" title="Am ajuns - Obligatoriu">2</div>
+                                <div class="etapa-icon blocat" title="Returnare - Blocat">3</div>
+                            </div>
+                        </div>
+                    ` : ''}
                     
                     ${!hasAllocation ? '<div class="event-actions"><button class="btn-primary" onclick="event.stopPropagation(); openAlocareModal(\'' + event.id + '\')">🎯 Alocă</button></div>' : ''}
                 </div>
@@ -2879,6 +3683,1315 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         }
 
         // ==========================================
+        // ADMIN CHAT - TAB SWITCHING
+        // ==========================================
+        
+        function switchAdminChatTab(tabName, button) {
+            // Update buttons
+            document.querySelectorAll('#page-admin-chat .gm-tab').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.admin-chat-tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById(`admin-chat-tab-${tabName}`).style.display = 'block';
+            
+            // Load data când switch to data tabs
+            if (tabName === 'conversations-data') {
+                loadConversationsSheetData();
+            } else if (tabName === 'profiles-data') {
+                loadProfilesSheetData();
+            } else if (tabName === 'ai-prompts') {
+                loadAIPromptsData();
+            }
+        }
+        
+        // ==========================================
+        // AI PROMPTS MANAGEMENT
+        // ==========================================
+        
+        function loadAIPromptsData() {
+            const container = document.getElementById('ai-prompts-list');
+            container.innerHTML = '<div class="loading">Se încarcă prompt-uri AI...</div>';
+            
+            apiCall('getAIPrompts', {}, function(data) {
+                if (data.ok && data.rows) {
+                    renderAIPrompts(data.headers, data.rows);
+                } else {
+                    container.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 40px;">❌ Eroare la încărcare: ' + (data.message || 'Unknown error') + '</div>';
+                }
+            });
+        }
+        
+        function renderAIPrompts(headers, rows) {
+            const container = document.getElementById('ai-prompts-list');
+            
+            if (!rows || rows.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 40px;">Nu există prompt-uri salvate. Click "Adaugă Prompt Nou" pentru a crea unul!</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            rows.forEach((row, index) => {
+                const promptName = row[0];
+                const promptText = row[1];
+                const isActive = row[2];
+                const createdAt = row[3];
+                const updatedAt = row[4];
+                
+                // Active or Inactive badge
+                const statusBadge = isActive ? 
+                    '<span style="background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ ACTIV</span>' :
+                    '<span style="background: rgba(100, 116, 139, 0.2); color: #94a3b8; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">⭕ INACTIV</span>';
+                
+                // Truncate prompt text for preview
+                const preview = promptText.length > 200 ? promptText.substring(0, 200) + '...' : promptText;
+                
+                html += `
+                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid ${isActive ? 'rgba(34, 197, 94, 0.5)' : 'rgba(248, 113, 113, 0.2)'}; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h4 style="color: #f87171; margin-bottom: 8px; font-size: 16px;">${promptName}</h4>
+                                <div style="margin-bottom: 10px;">${statusBadge}</div>
+                                <div style="color: #64748b; font-size: 12px;">
+                                    📅 Creat: ${new Date(createdAt).toLocaleString('ro-RO')}<br>
+                                    🔄 Actualizat: ${new Date(updatedAt).toLocaleString('ro-RO')}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                ${!isActive ? `<button class="btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="activatePrompt(${index})">✅ Activează</button>` : ''}
+                                <button class="btn-secondary" style="padding: 8px 16px; font-size: 12px;" onclick="editPrompt(${index}, '${promptName.replace(/'/g, "\\'")}', \`${promptText.replace(/`/g, '\\`')}\`)">✏️ Editează</button>
+                                ${!isActive ? `<button class="btn-danger" style="padding: 8px 16px; font-size: 12px;" onclick="deletePrompt(${index}, '${promptName.replace(/'/g, "\\'")}')">🗑️ Șterge</button>` : ''}
+                            </div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 15px; font-family: monospace; font-size: 12px; color: #cbd5e1; white-space: pre-wrap; max-height: 150px; overflow-y: auto;">
+${preview}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function activatePrompt(rowIndex) {
+            if (!confirm('Activezi acest prompt? AI va folosi acest prompt pentru toate răspunsurile viitoare.')) {
+                return;
+            }
+            
+            apiCall('setActivePrompt', { rowIndex: rowIndex }, function(data) {
+                if (data.ok) {
+                    alert('✅ ' + data.message);
+                    loadAIPromptsData(); // Refresh
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        function editPrompt(rowIndex, promptName, promptText) {
+            // Create modal
+            const modalHTML = `
+                <div class="modal active" id="edit-prompt-modal">
+                    <div class="modal-content" style="max-width: 900px;">
+                        <h3 style="color: #f87171; margin-bottom: 20px;">✏️ Editează Prompt: ${promptName}</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px;">Nume Prompt:</label>
+                            <input type="text" id="edit-prompt-name" value="${promptName}" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 14px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px;">Text Prompt (Instrucțiuni pentru AI):</label>
+                            <textarea id="edit-prompt-text" rows="15" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 13px; font-family: monospace; resize: vertical;">${promptText}</textarea>
+                            <p style="color: #94a3b8; font-size: 12px; margin-top: 8px;">
+                                💡 Aici scrii EXACT ce vrei să facă AI-ul. Exemplu: "Răspunde politicos", "Folosește emoji", "Întreabă despre zonă și dată"
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <button class="btn-primary" onclick="savePromptEdit(${rowIndex})">💾 Salvează</button>
+                            <button class="btn-secondary" onclick="closeModal('edit-prompt-modal')">Închide</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existing = document.getElementById('edit-prompt-modal');
+            if (existing) existing.remove();
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Close on background click
+            document.getElementById('edit-prompt-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal('edit-prompt-modal');
+                }
+            });
+        }
+        
+        function savePromptEdit(rowIndex) {
+            const promptName = document.getElementById('edit-prompt-name').value;
+            const promptText = document.getElementById('edit-prompt-text').value;
+            
+            if (!promptText.trim()) {
+                alert('❌ Prompt-ul nu poate fi gol!');
+                return;
+            }
+            
+            // Show loading
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '⏳ Salvez...';
+            saveBtn.disabled = true;
+            
+            apiCall('updateAIPrompt', {
+                rowIndex: rowIndex,
+                promptText: promptText
+            }, function(data) {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                
+                if (data.ok) {
+                    alert('✅ ' + data.message);
+                    closeModal('edit-prompt-modal');
+                    loadAIPromptsData(); // Refresh
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        function deletePrompt(rowIndex, promptName) {
+            if (!confirm(`Sigur vrei să ștergi prompt-ul "${promptName}"?`)) {
+                return;
+            }
+            
+            apiCall('deleteAIPrompt', { rowIndex: rowIndex }, function(data) {
+                if (data.ok) {
+                    alert('✅ Prompt șters cu succes!');
+                    loadAIPromptsData(); // Refresh
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        function openAddPromptModal() {
+            const modalHTML = `
+                <div class="modal active" id="add-prompt-modal">
+                    <div class="modal-content" style="max-width: 900px;">
+                        <h3 style="color: #f87171; margin-bottom: 20px;">➕ Adaugă Prompt Nou</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px;">Nume Prompt:</label>
+                            <input type="text" id="add-prompt-name" placeholder="Ex: Prompt Promoție Vară 2025" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 14px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px;">Text Prompt (Instrucțiuni pentru AI):</label>
+                            <textarea id="add-prompt-text" rows="15" placeholder="Ești asistentul SuperParty...
+                            
+Scrie aici instrucțiunile pentru AI.
+Exemplu:
+- Cum să salute
+- Ce informații să dea
+- Cum să răspundă la întrebări
+- Tonul de comunicare" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 13px; font-family: monospace; resize: vertical;"></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="add-prompt-active" style="width: 18px; height: 18px;">
+                                <span style="color: #cbd5e1; font-size: 14px;">Activează acest prompt imediat (AI va folosi acest prompt)</span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <button class="btn-primary" onclick="saveNewPrompt()">💾 Salvează Prompt</button>
+                            <button class="btn-secondary" onclick="closeModal('add-prompt-modal')">Închide</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existing = document.getElementById('add-prompt-modal');
+            if (existing) existing.remove();
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Close on background click
+            document.getElementById('add-prompt-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal('add-prompt-modal');
+                }
+            });
+        }
+        
+        function saveNewPrompt() {
+            const promptName = document.getElementById('add-prompt-name').value;
+            const promptText = document.getElementById('add-prompt-text').value;
+            const isActive = document.getElementById('add-prompt-active').checked;
+            
+            if (!promptName.trim()) {
+                alert('❌ Numele prompt-ului este obligatoriu!');
+                return;
+            }
+            
+            if (!promptText.trim()) {
+                alert('❌ Textul prompt-ului nu poate fi gol!');
+                return;
+            }
+            
+            // Show loading
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '⏳ Salvez...';
+            saveBtn.disabled = true;
+            
+            apiCall('addAIPrompt', {
+                promptName: promptName,
+                systemPrompt: promptText,
+                isActive: isActive
+            }, function(data) {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                
+                if (data.ok) {
+                    alert('✅ ' + data.message);
+                    closeModal('add-prompt-modal');
+                    loadAIPromptsData(); // Refresh
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        // ==========================================
+        // LOAD SHEET DATA
+        // ==========================================
+        
+        function loadConversationsSheetData() {
+            const container = document.getElementById('conversations-sheet-data');
+            container.innerHTML = '<div class="loading">Se încarcă date din CONVERSATIONS...</div>';
+            
+            apiCall('getSheetData', { sheetName: 'CONVERSATIONS' }, function(data) {
+                if (data.ok && data.rows) {
+                    renderSheetTable(data.headers, data.rows, 'conversations-sheet-data', 'CONVERSATIONS');
+                } else {
+                    container.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 40px;">❌ Eroare la încărcare: ' + (data.message || 'Unknown error') + '</div>';
+                }
+            });
+        }
+        
+        function loadProfilesSheetData() {
+            const container = document.getElementById('profiles-sheet-data');
+            container.innerHTML = '<div class="loading">Se încarcă date din CLIENT_PROFILES...</div>';
+            
+            apiCall('getSheetData', { sheetName: 'CLIENT_PROFILES' }, function(data) {
+                if (data.ok && data.rows) {
+                    renderSheetTable(data.headers, data.rows, 'profiles-sheet-data', 'CLIENT_PROFILES');
+                } else {
+                    container.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 40px;">❌ Eroare la încărcare: ' + (data.message || 'Unknown error') + '</div>';
+                }
+            });
+        }
+        
+        function renderSheetTable(headers, rows, containerId, sheetName) {
+            const container = document.getElementById(containerId);
+            
+            if (!rows || rows.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 40px;">Sheet gol</div>';
+                return;
+            }
+            
+            let html = '<table class="data-table" style="min-width: 100%;"><thead><tr>';
+            
+            // Headers
+            html += '<th style="min-width: 50px;">#</th>';
+            headers.forEach(header => {
+                html += `<th style="min-width: 150px;">${header}</th>`;
+            });
+            html += '<th style="min-width: 100px;">Acțiuni</th>';
+            html += '</tr></thead><tbody>';
+            
+            // Rows
+            rows.forEach((row, index) => {
+                html += '<tr>';
+                html += `<td style="font-weight: 600; color: #f87171;">${index + 1}</td>`;
+                
+                row.forEach((cell, cellIndex) => {
+                    let displayValue = cell;
+                    
+                    // Truncate long values
+                    if (typeof cell === 'string' && cell.length > 100) {
+                        displayValue = cell.substring(0, 100) + '...';
+                    }
+                    
+                    // Format booleans
+                    if (cell === true) displayValue = '✅ DA';
+                    if (cell === false) displayValue = '❌ NU';
+                    
+                    html += `<td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${String(cell).replace(/"/g, '&quot;')}">${displayValue}</td>`;
+                });
+                
+                // Actions
+                const rowData = JSON.stringify(row).replace(/"/g, '&quot;');
+                html += `<td>
+                    <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick='viewSheetRow(${JSON.stringify(headers)}, ${JSON.stringify(row)}, "${sheetName}", ${index})'>
+                        ✏️ Editează
+                    </button>
+                </td>`;
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            html += `<div style="margin-top: 20px; color: #94a3b8; font-size: 13px;">
+                📊 Total: ${rows.length} rânduri | 📋 Coloane: ${headers.length}
+            </div>`;
+            
+            container.innerHTML = html;
+        }
+        
+        function viewSheetRow(headers, row, sheetName, rowIndex) {
+            let html = '<div style="max-height: 70vh; overflow-y: auto;">';
+            html += `<h3 style="color: #f87171; margin-bottom: 20px;">📋 ${sheetName} - Rândul ${rowIndex + 1}</h3>`;
+            html += '<form id="edit-sheet-row-form"><table class="data-table" style="margin-bottom: 20px;"><tbody>';
+            
+            headers.forEach((header, index) => {
+                let value = row[index];
+                let displayValue = value;
+                
+                // Create input field for editing
+                let inputHtml = '';
+                
+                // Boolean fields
+                if (value === true || value === false) {
+                    inputHtml = `<select class="sheet-edit-input" data-column="${header}" style="width: 100%; padding: 8px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 6px; color: #fff;">
+                        <option value="true" ${value === true ? 'selected' : ''}>✅ DA</option>
+                        <option value="false" ${value === false ? 'selected' : ''}>❌ NU</option>
+                    </select>`;
+                }
+                // Long text fields (Messages, Notes, etc.)
+                else if (typeof value === 'string' && value.length > 100) {
+                    inputHtml = `<textarea class="sheet-edit-input" data-column="${header}" rows="6" style="width: 100%; padding: 8px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 6px; color: #fff; font-family: monospace; font-size: 12px; resize: vertical;">${value || ''}</textarea>`;
+                }
+                // Normal text fields
+                else {
+                    inputHtml = `<input type="text" class="sheet-edit-input" data-column="${header}" value="${String(value || '').replace(/"/g, '&quot;')}" style="width: 100%; padding: 8px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 6px; color: #fff;">`;
+                }
+                
+                html += `<tr>
+                    <th style="width: 200px; text-align: left; vertical-align: top;">${header}</th>
+                    <td>${inputHtml}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></form>';
+            
+            // Action buttons
+            html += `<div style="text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-primary" onclick="saveSheetRow('${sheetName}', ${rowIndex})">
+                    💾 Salvează Modificările
+                </button>
+                <button class="btn-danger" onclick="if(confirm('Sigur vrei să ștergi acest rând?')) deleteSheetRow('${sheetName}', ${rowIndex})" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                    🗑️ Șterge Rând
+                </button>
+                <button class="btn-secondary" onclick="closeModal('modal-sheet-row')">
+                    Închide
+                </button>
+            </div>`;
+            
+            html += '</div>';
+            
+            // Create/update modal
+            let modal = document.getElementById('modal-sheet-row');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'modal-sheet-row';
+                modal.className = 'modal';
+                modal.innerHTML = '<div class="modal-content" id="modal-sheet-row-content" style="max-width: 800px;"></div>';
+                document.body.appendChild(modal);
+            }
+            
+            document.getElementById('modal-sheet-row-content').innerHTML = html;
+            modal.classList.add('active');
+        }
+        
+        function saveSheetRow(sheetName, rowIndex) {
+            // Collect all edited values
+            const inputs = document.querySelectorAll('.sheet-edit-input');
+            const updates = {};
+            
+            inputs.forEach(input => {
+                const columnName = input.getAttribute('data-column');
+                let value = input.value;
+                
+                // Convert boolean strings to actual booleans
+                if (value === 'true') value = true;
+                if (value === 'false') value = false;
+                
+                updates[columnName] = value;
+            });
+            
+            console.log('💾 Saving updates:', updates);
+            
+            // Show loading
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '⏳ Salvez...';
+            saveBtn.disabled = true;
+            
+            apiCall('updateSheetRow', {
+                sheetName: sheetName,
+                rowIndex: rowIndex,
+                updates: JSON.stringify(updates)
+            }, function(data) {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                
+                if (data.ok) {
+                    alert('✅ Modificări salvate cu succes!');
+                    closeModal('modal-sheet-row');
+                    
+                    // Refresh data
+                    if (sheetName === 'CONVERSATIONS') {
+                        loadConversationsSheetData();
+                    } else if (sheetName === 'CLIENT_PROFILES') {
+                        loadProfilesSheetData();
+                    }
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        function deleteSheetRow(sheetName, rowIndex) {
+            apiCall('deleteSheetRow', {
+                sheetName: sheetName,
+                rowIndex: rowIndex
+            }, function(data) {
+                if (data.ok) {
+                    alert('✅ Rând șters cu succes!');
+                    closeModal('modal-sheet-row');
+                    
+                    // Refresh data
+                    if (sheetName === 'CONVERSATIONS') {
+                        loadConversationsSheetData();
+                    } else if (sheetName === 'CLIENT_PROFILES') {
+                        loadProfilesSheetData();
+                    }
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+
+        // ==========================================
+        // AI INSTRUCTIONS - PROMPT MANAGEMENT
+        // ==========================================
+        
+        function loadAIPrompts() {
+            const container = document.getElementById('ai-prompts-container');
+            container.innerHTML = '<div class="loading">Se încarcă prompt-urile AI...</div>';
+            
+            apiCall('getAIPrompts', {}, function(data) {
+                if (data.ok && data.rows) {
+                    renderAIPrompts(data.headers, data.rows);
+                } else {
+                    container.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 40px;">❌ Eroare: ' + (data.message || 'Unknown error') + '</div>';
+                }
+            });
+        }
+        
+        function renderAIPrompts(headers, rows) {
+            const container = document.getElementById('ai-prompts-container');
+            
+            if (!rows || rows.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 40px;">Nu există prompt-uri salvate.</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            rows.forEach((row, index) => {
+                const promptName = row[0];
+                const promptText = row[1];
+                const isActive = row[2];
+                const createdAt = row[3];
+                const updatedAt = row[4];
+                
+                const statusBadge = isActive ? 
+                    '<span style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ ACTIV</span>' :
+                    '<span style="background: rgba(100, 116, 139, 0.3); color: #94a3b8; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Inactiv</span>';
+                
+                html += `
+                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(248, 113, 113, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h3 style="color: #f87171; margin-bottom: 5px;">${promptName}</h3>
+                                <div style="color: #64748b; font-size: 12px;">
+                                    Creat: ${new Date(createdAt).toLocaleString('ro-RO')} | 
+                                    Actualizat: ${new Date(updatedAt).toLocaleString('ro-RO')}
+                                </div>
+                            </div>
+                            <div>${statusBadge}</div>
+                        </div>
+                        
+                        <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.1); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                            <div style="color: #94a3b8; font-size: 12px; margin-bottom: 10px; font-weight: 600;">PROMPT TEXT:</div>
+                            <pre style="color: #cbd5e1; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin: 0; font-family: monospace; max-height: 400px; overflow-y: auto;">${promptText}</pre>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-primary" onclick="editAIPrompt(${index}, '${promptName.replace(/'/g, "\\'")}', ${JSON.stringify(promptText).replace(/'/g, "\\'")})" style="padding: 8px 16px; font-size: 13px;">
+                                ✏️ Editează Prompt
+                            </button>
+                            ${!isActive ? `
+                                <button class="btn-primary" onclick="setActivePrompt(${index})" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 8px 16px; font-size: 13px;">
+                                    ✅ Activează (folosește acest prompt)
+                                </button>
+                            ` : `
+                                <span style="color: #22c55e; font-size: 13px; font-weight: 600;">✅ Acest prompt este folosit de AI!</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function editAIPrompt(rowIndex, promptName, promptText) {
+            const modal = document.getElementById('ai-prompt-edit-modal');
+            if (!modal) {
+                createAIPromptEditModal();
+            }
+            
+            document.getElementById('edit-prompt-name').value = promptName;
+            document.getElementById('edit-prompt-text').value = promptText;
+            document.getElementById('edit-prompt-modal').dataset.rowIndex = rowIndex;
+            
+            document.getElementById('ai-prompt-edit-modal').classList.add('active');
+        }
+        
+        function createAIPromptEditModal() {
+            const modal = document.createElement('div');
+            modal.id = 'ai-prompt-edit-modal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <h3 style="color: #f87171; margin-bottom: 20px;">✏️ Editează Prompt AI</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Nume Prompt:
+                        </label>
+                        <input type="text" id="edit-prompt-name" readonly style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #94a3b8; font-size: 14px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #f87171; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Instrucțiuni AI (Prompt Text):
+                        </label>
+                        <textarea id="edit-prompt-text" rows="20" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px; color: #fff; font-size: 13px; font-family: monospace; line-height: 1.5; resize: vertical;"></textarea>
+                        <div style="color: #94a3b8; font-size: 12px; margin-top: 8px;">
+                            💡 Sfat: Fii specific! Spune AI-ului exact cum să răspundă, ce să întrebe, ce tone să folosească.
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;" id="edit-prompt-modal">
+                        <button class="btn-primary" onclick="saveAIPrompt()">
+                            💾 Salvează Modificările
+                        </button>
+                        <button class="btn-secondary" onclick="closeModal('ai-prompt-edit-modal')">
+                            Închide
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal('ai-prompt-edit-modal');
+                }
+            });
+        }
+        
+        function saveAIPrompt() {
+            const rowIndex = parseInt(document.getElementById('edit-prompt-modal').dataset.rowIndex);
+            const promptText = document.getElementById('edit-prompt-text').value;
+            
+            if (!promptText.trim()) {
+                alert('❌ Prompt-ul nu poate fi gol!');
+                return;
+            }
+            
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '⏳ Salvez...';
+            saveBtn.disabled = true;
+            
+            apiCall('updateAIPrompt', {
+                rowIndex: rowIndex,
+                promptText: promptText
+            }, function(data) {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                
+                if (data.ok) {
+                    alert('✅ Prompt actualizat cu succes! AI va folosi noile instrucțiuni.');
+                    closeModal('ai-prompt-edit-modal');
+                    loadAIPrompts();
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+        
+        function setActivePrompt(rowIndex) {
+            if (!confirm('Sigur vrei să activezi acest prompt? AI va începe să folosească aceste instrucțiuni.')) {
+                return;
+            }
+            
+            apiCall('setActivePrompt', {
+                rowIndex: rowIndex
+            }, function(data) {
+                if (data.ok) {
+                    alert('✅ Prompt activat! AI folosește acum aceste instrucțiuni.');
+                    loadAIPrompts();
+                } else {
+                    alert('❌ Eroare: ' + (data.message || 'Unknown error'));
+                }
+            });
+        }
+
+        // ==========================================
+        // ADMIN CHAT - LIVE CHAT CU CLIENȚII
+        // ==========================================
+        
+        let currentAdminConversation = null;
+        let adminChatRefreshInterval = null;
+        
+        function loadAdminChatConversations() {
+            apiCall('getConversations', { tab: 'all', date: '', operatorCode: '', userCode: '' }, function(data) {
+                const container = document.getElementById('admin-chat-list');
+                
+                if (data.ok && data.conversations && data.conversations.length > 0) {
+                    let html = '';
+                    
+                    data.conversations.forEach(conv => {
+                        const isActive = currentAdminConversation && currentAdminConversation.conversationID === conv.conversationID;
+                        const activeClass = isActive ? 'style="background: rgba(248, 113, 113, 0.2); border-left: 3px solid #f87171;"' : '';
+                        
+                        html += `
+                            <div ${activeClass} style="padding: 12px; margin-bottom: 10px; background: rgba(15, 23, 42, 0.6); border-radius: 8px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.3s;" onclick="openAdminChat('${conv.conversationID}')">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div style="font-weight: 600; color: #fff; font-size: 14px;">
+                                        ${conv.clientName || conv.clientPhone || 'Guest'}
+                                    </div>
+                                    <div style="font-size: 11px; color: #94a3b8;">
+                                        ${formatTime(conv.timestamp)}
+                                    </div>
+                                </div>
+                                <div style="font-size: 13px; color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${conv.lastMessage || 'Fără mesaj'}
+                                </div>
+                                <div style="margin-top: 6px;">
+                                    <span style="font-size: 11px; padding: 3px 8px; background: ${conv.status === 'AI' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(234, 179, 8, 0.2)'}; color: ${conv.status === 'AI' ? '#22c55e' : '#eab308'}; border-radius: 4px;">
+                                        ${conv.status === 'AI' ? '🤖 AI' : '👤 ' + conv.status}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">Nu există conversații</div>';
+                }
+            });
+        }
+        
+        function openAdminChat(conversationID) {
+            // Oprește refresh-ul anterior
+            if (adminChatRefreshInterval) {
+                clearInterval(adminChatRefreshInterval);
+            }
+            
+            // Încarcă conversația
+            apiCall('getConversationDetails', { conversationID: conversationID }, function(data) {
+                if (data.ok && data.conversation) {
+                    currentAdminConversation = data.conversation;
+                    
+                    // Ascunde empty, arată chat activ
+                    document.getElementById('admin-chat-empty').style.display = 'none';
+                    document.getElementById('admin-chat-active').style.display = 'flex';
+                    
+                    // Update header
+                    document.getElementById('admin-chat-client-name').textContent = data.conversation.clientName || data.conversation.clientPhone || 'Guest';
+                    document.getElementById('admin-chat-client-phone').textContent = data.conversation.clientPhone || data.conversation.clientID;
+                    
+                    // Render messages
+                    renderAdminChatMessages(data.conversation.messages);
+                    
+                    // Focus input
+                    document.getElementById('admin-chat-input').focus();
+                    
+                    // Start auto-refresh (la 5 secunde)
+                    adminChatRefreshInterval = setInterval(() => {
+                        refreshAdminChat(conversationID);
+                    }, 5000);
+                    
+                    // Refresh lista pentru a marca conversația activă
+                    loadAdminChatConversations();
+                } else {
+                    alert('❌ Nu pot încărca conversația');
+                }
+            });
+        }
+        
+        function renderAdminChatMessages(messagesText) {
+            const container = document.getElementById('admin-chat-messages');
+            
+            if (!messagesText) {
+                container.innerHTML = '<div style="text-align: center; color: #64748b;">Fără mesaje</div>';
+                return;
+            }
+            
+            const messages = messagesText.split('\n').filter(m => m.trim() !== '');
+            let html = '';
+            
+            messages.forEach(msg => {
+                // Format: [HH:MM] Client: mesaj SAU [HH:MM] AI: mesaj SAU [HH:MM] Admin: mesaj
+                const match = msg.match(/\[([^\]]+)\] (Client|AI|Admin|OPERATOR):\s*(.+)/);
+                
+                if (match) {
+                    const time = match[1];
+                    const sender = match[2];
+                    const text = match[3];
+                    
+                    const isClient = sender === 'Client';
+                    const alignStyle = isClient ? 'flex-start' : 'flex-end';
+                    const bgColor = isClient ? 'rgba(100, 116, 139, 0.3)' : 'linear-gradient(135deg, #f87171, #ef4444)';
+                    const textColor = isClient ? '#cbd5e1' : '#fff';
+                    
+                    html += `
+                        <div style="display: flex; justify-content: ${alignStyle};">
+                            <div style="max-width: 70%;">
+                                <div style="background: ${bgColor}; color: ${textColor}; padding: 10px 14px; border-radius: 12px; margin-bottom: 4px;">
+                                    ${text}
+                                </div>
+                                <div style="font-size: 11px; color: #64748b; text-align: ${isClient ? 'left' : 'right'};">
+                                    ${sender} • ${time}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function refreshAdminChat(conversationID) {
+            if (!currentAdminConversation) return;
+            
+            apiCall('getConversationDetails', { conversationID: conversationID }, function(data) {
+                if (data.ok && data.conversation) {
+                    currentAdminConversation = data.conversation;
+                    renderAdminChatMessages(data.conversation.messages);
+                }
+            });
+        }
+        
+        function sendAdminChatMessage() {
+            const input = document.getElementById('admin-chat-input');
+            const message = input.value.trim();
+            const sendBtn = document.getElementById('admin-send-btn');
+            
+            if (!message || !currentAdminConversation) return;
+            
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Se trimite...';
+            
+            apiCall('sendAdminChatMessage', { 
+                conversationID: currentAdminConversation.conversationID,
+                message: message,
+                adminName: currentUser.name
+            }, function(data) {
+                if (data.ok) {
+                    input.value = '';
+                    
+                    // Refresh imediat
+                    refreshAdminChat(currentAdminConversation.conversationID);
+                    
+                    // Refresh lista
+                    loadAdminChatConversations();
+                } else {
+                    alert('❌ Eroare la trimitere: ' + (data.message || 'Unknown error'));
+                }
+                
+                sendBtn.disabled = false;
+                sendBtn.textContent = '📤 Trimite';
+                input.focus();
+            });
+        }
+        
+        function closeAdminChat() {
+            if (adminChatRefreshInterval) {
+                clearInterval(adminChatRefreshInterval);
+                adminChatRefreshInterval = null;
+            }
+            
+            currentAdminConversation = null;
+            
+            document.getElementById('admin-chat-empty').style.display = 'flex';
+            document.getElementById('admin-chat-active').style.display = 'none';
+            document.getElementById('admin-chat-input').value = '';
+            
+            // Refresh lista
+            loadAdminChatConversations();
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        // SISTEM DOVEZI POZE - COMPLETE IMPLEMENTATION
+        // ══════════════════════════════════════════════════════════════
+        
+        let currentRolId = null;
+        let currentEtapa = null;
+        let previewImages = [];
+        
+        // Vezi detalii rol complet
+        function veziDetaliiRol(idRol) {
+            currentRolId = idRol;
+            
+            // Ascunde pagina principală
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            // Arată ecranul detalii
+            const screen = document.getElementById('rol-detalii-screen');
+            screen.classList.add('active');
+            
+            // Încarcă datele
+            incarcaDetaliiRol(idRol);
+        }
+        
+        function inchideDetaliiRol() {
+            document.getElementById('rol-detalii-screen').classList.remove('active');
+            
+            // Reactivează pagina Ce Petreceri Am
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (item.getAttribute('data-page') === 'petreceri-mele') {
+                    item.click();
+                }
+            });
+        }
+        
+        async function incarcaDetaliiRol(idRol) {
+            try {
+                // API call către backend
+                const userCode = localStorage.getItem('userCode') || 'B5';
+                
+                const url = `${API_URL}?action=getRolDetalii&idRol=${encodeURIComponent(idRol)}&codPersoana=${encodeURIComponent(userCode)}&callback=handleRolDetaliiResponse`;
+                
+                // Create script tag for JSONP
+                const script = document.createElement('script');
+                script.src = url;
+                document.head.appendChild(script);
+                
+                // Cleanup
+                script.onload = () => document.head.removeChild(script);
+                
+            } catch (error) {
+                console.error('Eroare:', error);
+                alert('Eroare la încărcare detalii: ' + error.message);
+                inchideDetaliiRol();
+            }
+        }
+        
+        // JSONP callback
+        function handleRolDetaliiResponse(data) {
+            if (!data.success) {
+                alert('Eroare: ' + (data.error || 'Necunoscut'));
+                inchideDetaliiRol();
+                return;
+            }
+            
+            // Populează UI
+            const rol = data.rol;
+            const statusEtape = data.statusEtape;
+            
+            document.getElementById('rol-detalii-title').textContent = `🎭 ${rol.personaj || 'Rol'}`;
+            document.getElementById('rol-detalii-subtitle').textContent = `${rol.codEveniment} - ${rol.data}`;
+            
+            // Populează info grid
+            const infoGrid = document.getElementById('rol-info-grid');
+            infoGrid.innerHTML = `
+                <div class="rol-info-item">
+                    <div class="rol-info-label">📅 Data & Ora</div>
+                    <div class="rol-info-value">${rol.data} ${rol.ora}</div>
+                </div>
+                <div class="rol-info-item">
+                    <div class="rol-info-label">👤 Client</div>
+                    <div class="rol-info-value">${rol.client}</div>
+                </div>
+                <div class="rol-info-item">
+                    <div class="rol-info-label">📞 Telefon</div>
+                    <div class="rol-info-value">${rol.telefon}</div>
+                </div>
+                <div class="rol-info-item">
+                    <div class="rol-info-label">📍 Locație</div>
+                    <div class="rol-info-value">${rol.locatie}</div>
+                </div>
+                <div class="rol-info-item">
+                    <div class="rol-info-label">⏱️ Ore</div>
+                    <div class="rol-info-value">${rol.ore}h</div>
+                </div>
+                <div class="rol-info-item">
+                    <div class="rol-info-label">🎭 Tip Rol</div>
+                    <div class="rol-info-value">${rol.tipRol}</div>
+                </div>
+            `;
+            
+            // Populează etapele
+            genereazaEtape(rol, statusEtape);
+        }
+        
+        function genereazaEtape(rol, statusEtape) {
+            const container = document.getElementById('etape-container');
+            const etape = [
+                { nr: 1, nume: 'BAGAJ', key: 'etapa1', descriere: 'Costume/echipamente pregătite', cineFace: rol.cineFaceBagajul, esTu: rol.isFacBagaj },
+                { nr: 2, nume: 'AM AJUNS', key: 'etapa2', descriere: 'Verificare bagaj primit', cineFace: rol.cineMerge, esTu: rol.isMerg },
+                { nr: 3, nume: 'RETURNARE', key: 'etapa3', descriere: 'Costum la spălat + accesorii', cineFace: rol.cineMerge, esTu: rol.isMerg }
+            ];
+            
+            // Adaugă etapa 4 pentru DECORAȚIUNE
+            if (rol.tipRol === 'DECORATIUNE') {
+                etape.push({ nr: 4, nume: 'RECUPERARE', key: 'etapa4', descriere: 'Echipament recuperat', cineFace: rol.cineMerge, esTu: rol.isMerg });
+            }
+            
+            let html = '';
+            
+            etape.forEach((etapa, index) => {
+                const status = statusEtape[etapa.key] || { status: 'pending' };
+                const isValidat = status.status === 'VALIDAT';
+                const isPending = status.status === 'pending';
+                const isRespins = status.status === 'RESPINS';
+                
+                // Determină dacă e blocat (etapa anterioară nu e validată)
+                let isBlocat = false;
+                if (index > 0) {
+                    const etapaAnterioara = statusEtape[etape[index - 1].key];
+                    isBlocat = !etapaAnterioara || etapaAnterioara.status !== 'VALIDAT';
+                }
+                
+                const cardClass = isValidat ? 'validat' : (isBlocat ? 'blocat' : 'obligatoriu');
+                const badgeClass = isValidat ? 'validat' : (isBlocat ? 'blocat' : 'obligatoriu');
+                const badgeText = isValidat ? '✅ Validat' : (isBlocat ? '🔒 Blocat' : '🔴 Obligatoriu');
+                
+                html += `
+                    <div class="etapa-card ${cardClass}">
+                        <div class="etapa-card-header">
+                            <div class="etapa-title-group">
+                                <div class="etapa-number">${etapa.nr}</div>
+                                <div>
+                                    <div class="etapa-title">${etapa.nume}</div>
+                                    <div class="etapa-subtitle">${etapa.descriere}</div>
+                                </div>
+                            </div>
+                            <div class="etapa-badge ${badgeClass}">${badgeText}</div>
+                        </div>
+                        
+                        ${etapa.esTu && !isBlocat ? `
+                            <div class="etapa-card-body">
+                                ${etapa.nr === 2 || etapa.nr === 3 ? `
+                                    <div class="bagaj-info-box">
+                                        <div class="bagaj-info-title">
+                                            📦 Bagajul făcut de ${etapa.nr === 2 ? rol.cineFaceBagajul : 'tine'}
+                                        </div>
+                                        <button class="btn-action secondary" style="margin-top: 10px;" onclick="veziBagajulEtapa('${etapa.key}')">
+                                            👁️ Vezi ce a fost în bagaj
+                                        </button>
+                                    </div>
+                                ` : ''}
+                                
+                                ${isValidat ? `
+                                    <div style="margin-top: 15px;">
+                                        <p style="color: #10b981; margin-bottom: 10px;">✅ Această etapă e deja validată!</p>
+                                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">Confidence: ${status.confidence}%</p>
+                                        <div class="ai-observatii">
+                                            <div class="ai-observatii-title">Ce a văzut AI:</div>
+                                            <div class="ai-observatii-text">${status.ceAVazut || 'Toate items OK'}</div>
+                                        </div>
+                                        <button class="btn-action secondary" onclick="veziPozeEtapa('${etapa.key}', '${status.linkPoze || ''}')">
+                                            👁️ Vezi pozele tale
+                                        </button>
+                                    </div>
+                                ` : `
+                                    <button class="btn-action primary" style="margin-top: 15px; width: 100%;" onclick="deschideModalUpload('${rol.idRol}', '${etapa.nr}-${etapa.nume}', '${rol.personaj}', '${etapa.nr}')">
+                                        📷 Încarcă Poze ${etapa.nume}
+                                    </button>
+                                `}
+                            </div>
+                        ` : `
+                            <div class="etapa-card-body">
+                                <p style="color: #94a3b8;">
+                                    ${!etapa.esTu ? `Etapa ${etapa.nr} este făcută de ${etapa.cineFace}` : 'Completează etapa anterioară'}
+                                </p>
+                                ${!etapa.esTu && isValidat ? `
+                                    <button class="btn-action secondary" style="margin-top: 10px;" onclick="veziPozeEtapa('${etapa.key}', '${status.linkPoze || ''}')">
+                                        👁️ Vezi pozele lui ${etapa.cineFace}
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Deschide modal upload
+        function deschideModalUpload(idRol, etapa, personaj, nrEtapa) {
+            currentRolId = idRol;
+            currentEtapa = etapa;
+            previewImages = [];
+            
+            document.getElementById('modal-upload-title').textContent = `📷 Upload Poze - ETAPA ${etapa}`;
+            document.getElementById('modal-upload-subtitle').textContent = `${currentRolId} - ${personaj}`;
+            document.getElementById('preview-images-grid').innerHTML = '';
+            document.getElementById('btn-submit-poze').disabled = true;
+            
+            // Checklist bazat pe etapă
+            let checklistHTML = '';
+            if (nrEtapa == 1) {
+                // BAGAJ
+                checklistHTML = `
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Costum ${personaj} complet</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Toate accesoriile (coroană, mănuși, etc.)</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Poză ansamblu + detaliu</span></div>
+                `;
+            } else if (nrEtapa == 2) {
+                // AM AJUNS
+                checklistHTML = `
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Costum ${personaj} (același din bagaj)</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Toate accesoriile din bagaj</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Poze clare pentru comparație</span></div>
+                `;
+                
+                // Arată info bagaj
+                document.getElementById('bagaj-info-box').style.display = 'block';
+                document.getElementById('bagaj-info-title-text').textContent = 'Verifică că ai tot din bagaj:';
+            } else if (nrEtapa == 3) {
+                // RETURNARE
+                checklistHTML = `
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Costum pus LA SPĂLAT (vizibil)</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Accesorii returnate pe raft/cutie</span></div>
+                    <div class="checklist-item"><span style="color: #10b981;">✓</span> <span>Poză organizare depozitare</span></div>
+                `;
+            }
+            
+            document.getElementById('checklist-items').innerHTML = checklistHTML;
+            
+            document.getElementById('modal-upload-poze').classList.add('active');
+        }
+        
+        function inchideModalUpload() {
+            document.getElementById('modal-upload-poze').classList.remove('active');
+            document.getElementById('bagaj-info-box').style.display = 'none';
+        }
+        
+        // File input handler
+        const fileInputDovezi = document.getElementById('file-input-dovezi');
+        if (fileInputDovezi) {
+            fileInputDovezi.addEventListener('change', function(e) {
+                const files = e.target.files;
+                const previewContainer = document.getElementById('preview-images-grid');
+                
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const base64 = event.target.result;
+                        previewImages.push(base64);
+                        
+                        const div = document.createElement('div');
+                        div.className = 'preview-image';
+                        div.innerHTML = `
+                            <img src="${base64}" alt="Preview">
+                            <button class="preview-remove" onclick="removePreviewImage(${previewImages.length - 1})">×</button>
+                        `;
+                        previewContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(files[i]);
+                }
+                
+                document.getElementById('btn-submit-poze').disabled = false;
+                
+                // Reset input
+                e.target.value = '';
+            });
+        }
+        
+        function removePreviewImage(index) {
+            previewImages.splice(index, 1);
+            
+            // Re-render preview
+            const container = document.getElementById('preview-images-grid');
+            container.innerHTML = '';
+            
+            previewImages.forEach((img, i) => {
+                const div = document.createElement('div');
+                div.className = 'preview-image';
+                div.innerHTML = `
+                    <img src="${img}" alt="Preview">
+                    <button class="preview-remove" onclick="removePreviewImage(${i})">×</button>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('btn-submit-poze').disabled = previewImages.length === 0;
+        }
+        
+        // Trimite poze la AI
+        async function trimitePozeAI() {
+            if (previewImages.length === 0) {
+                alert('Te rog adaugă minim o poză!');
+                return;
+            }
+            
+            // Închide modal upload
+            inchideModalUpload();
+            
+            // Deschide modal loading
+            document.getElementById('modal-ai-loading').classList.add('active');
+            
+            // Simulare progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                document.getElementById('ai-progress-fill').style.width = progress + '%';
+                document.getElementById('ai-progress-text').textContent = progress + '%';
+                
+                if (progress === 30) {
+                    document.getElementById('ai-loading-status').textContent = 'Analizare imagini...';
+                } else if (progress === 60) {
+                    document.getElementById('ai-loading-status').textContent = 'Verificare completitudine...';
+                } else if (progress === 90) {
+                    document.getElementById('ai-loading-status').textContent = 'Comparație cu bagaj...';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        // Închide loading
+                        document.getElementById('modal-ai-loading').classList.remove('active');
+                        
+                        // Trimite către backend
+                        uploadPozeBackend();
+                    }, 500);
+                }
+            }, 300);
+        }
+        
+        async function uploadPozeBackend() {
+            try {
+                const userCode = localStorage.getItem('userCode') || 'B5';
+                
+                // Pentru testare - mock response
+                const mockResponse = {
+                    success: true,
+                    validare: {
+                        valid: true,
+                        confidence: 95,
+                        observatii: 'Toate items detectate corect. Costum în stare bună, accesorii complete.',
+                        items_detectate: {
+                            costum: true,
+                            accesorii: true
+                        },
+                        probleme: [],
+                        match_cu_bagaj: 100
+                    }
+                };
+                
+                // TODO: Înlocuiește cu API call real când backend e gata
+                // const url = `${API_URL}?action=uploadPoze&idRol=${currentRolId}&etapa=${currentEtapa}&codPersoana=${userCode}&callback=handleUploadResponse`;
+                // ... JSONP call
+                
+                setTimeout(() => {
+                    afiseazaRezultatAI(mockResponse.validare);
+                }, 500);
+                
+            } catch (error) {
+                console.error('Eroare upload:', error);
+                alert('Eroare la upload: ' + error.message);
+            }
+        }
+        
+        function afiseazaRezultatAI(validare) {
+            const isValid = validare.valid;
+            
+            // Configurează modal
+            const resultBox = document.getElementById('ai-result-box');
+            resultBox.className = 'ai-result-box ' + (isValid ? 'validat' : 'respins');
+            
+            document.getElementById('ai-result-icon').textContent = isValid ? '✅' : '❌';
+            document.getElementById('ai-result-title-text').textContent = isValid ? 'VALIDAT!' : 'RESPINS!';
+            document.getElementById('modal-result-title').textContent = isValid ? '✅ Validare reușită' : '⚠️ Probleme detectate';
+            
+            // Confidence
+            const confidence = validare.confidence || 0;
+            document.getElementById('confidence-bar').style.width = confidence + '%';
+            document.getElementById('confidence-text').textContent = confidence + '%';
+            
+            // Observații
+            document.getElementById('ai-observatii-text').textContent = validare.observatii || 'Fără observații';
+            
+            // Deschide modal
+            document.getElementById('modal-ai-result').classList.add('active');
+        }
+        
+        function inchideModalAI() {
+            document.getElementById('modal-ai-result').classList.remove('active');
+            
+            // Refresh detalii rol
+            if (currentRolId) {
+                incarcaDetaliiRol(currentRolId);
+            }
+        }
+        
+        function veziBagajulEtapa(etapaKey) {
+            alert('Vezi bagaj pentru: ' + etapaKey + '\n\nFuncționalitate în dezvoltare...');
+            // TODO: Implementează modal cu pozele din bagaj
+        }
+        
+        function veziPozeEtapa(etapaKey, linkPoze) {
+            if (!linkPoze) {
+                alert('Nu există poze pentru această etapă');
+                return;
+            }
+            
+            // Deschide pozele în tab nou
+            const linkuri = linkPoze.split('|||');
+            linkuri.forEach(link => {
+                window.open(link, '_blank');
+            });
+        }
+        
+        function veziBagajulFacut() {
+            alert('Vezi bagajul făcut\n\nFuncționalitate în dezvoltare...');
+            // TODO: Implementează
+        }
+
+        // ==========================================
         // INIT
         // ==========================================
         window.onload = function() {
@@ -2891,5 +5004,139 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             }
         };
     </script>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- SISTEM DOVEZI - ECRAN DETALII ROL -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="rol-detalii-screen" id="rol-detalii-screen">
+        <div class="rol-detalii-header">
+            <button class="btn-back" onclick="inchideDetaliiRol()">
+                <span>←</span>
+                <span>Înapoi</span>
+            </button>
+            <div>
+                <div class="rol-detalii-title" id="rol-detalii-title">🎭 Încărcare...</div>
+                <div class="rol-info-label" id="rol-detalii-subtitle"></div>
+            </div>
+        </div>
+        
+        <div class="rol-info-grid" id="rol-info-grid">
+            <!-- Va fi populat dinamic -->
+        </div>
+        
+        <div class="etape-container" id="etape-container">
+            <!-- Va fi populat dinamic cu etape -->
+        </div>
+    </div>
+
+    <!-- MODAL UPLOAD POZE -->
+    <div class="modal-dovezi" id="modal-upload-poze">
+        <div class="modal-dovezi-content">
+            <div class="modal-dovezi-header">
+                <button class="modal-close" onclick="inchideModalUpload()">×</button>
+                <div class="modal-dovezi-title" id="modal-upload-title">📷 Upload Poze</div>
+                <div class="modal-dovezi-subtitle" id="modal-upload-subtitle">Etapa...</div>
+            </div>
+            
+            <div class="modal-dovezi-body">
+                <div class="bagaj-info-box" id="bagaj-info-box" style="display: none;">
+                    <div class="bagaj-info-title">
+                        <span>📦</span>
+                        <span id="bagaj-info-title-text">Bagajul făcut de...</span>
+                    </div>
+                    <button class="btn-action secondary" style="margin-top: 10px; width: 100%;" onclick="veziBagajulFacut()">
+                        👁️ Vezi pozele din bagaj
+                    </button>
+                </div>
+                
+                <div class="checklist-box">
+                    <div class="checklist-title">📋 Ce trebuie să fotografiezi:</div>
+                    <div id="checklist-items">
+                        <!-- Va fi populat dinamic -->
+                    </div>
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('file-input-dovezi').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Click pentru a deschide camera sau alege poze</div>
+                    <input type="file" id="file-input-dovezi" multiple accept="image/*" capture="environment" style="display: none;">
+                </div>
+                
+                <div class="preview-images-grid" id="preview-images-grid">
+                    <!-- Preview poze -->
+                </div>
+                
+                <button class="btn-action primary" id="btn-submit-poze" style="width: 100%;" onclick="trimitePozeAI()" disabled>
+                    ✅ Trimite la Validare AI
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL AI LOADING -->
+    <div class="modal-dovezi" id="modal-ai-loading">
+        <div class="modal-dovezi-content">
+            <div class="modal-dovezi-header">
+                <div class="modal-dovezi-title">🤖 AI Vision analizează...</div>
+                <div class="modal-dovezi-subtitle">Te rog așteaptă</div>
+            </div>
+            
+            <div class="modal-dovezi-body">
+                <div class="ai-loading active">
+                    <div class="spinner"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ai-progress-fill" style="width: 0%;">
+                            <span id="ai-progress-text">0%</span>
+                        </div>
+                    </div>
+                    <p style="color: #94a3b8; margin-top: 15px;" id="ai-loading-status">
+                        Verificare în curs...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL AI REZULTAT -->
+    <div class="modal-dovezi" id="modal-ai-result">
+        <div class="modal-dovezi-content">
+            <div class="modal-dovezi-header">
+                <button class="modal-close" onclick="inchideModalAI()">×</button>
+                <div class="modal-dovezi-title" id="modal-result-title">Rezultat Validare</div>
+            </div>
+            
+            <div class="modal-dovezi-body">
+                <div class="ai-result-box" id="ai-result-box">
+                    <div class="ai-result-header">
+                        <span class="ai-result-icon" id="ai-result-icon">✅</span>
+                        <div>
+                            <div class="ai-result-title" id="ai-result-title-text">Validat!</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-result-confidence">
+                        <div class="confidence-label">Confidence AI:</div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-bar-fill" id="confidence-bar" style="width: 0%;">
+                                <span id="confidence-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-observatii">
+                        <div class="ai-observatii-title">Ce a văzut AI:</div>
+                        <div class="ai-observatii-text" id="ai-observatii-text">
+                            <!-- Text dinamic -->
+                        </div>
+                    </div>
+                    
+                    <button class="btn-action primary" style="width: 100%; margin-top: 15px;" onclick="inchideModalAI()">
+                        👍 OK, Închide
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
