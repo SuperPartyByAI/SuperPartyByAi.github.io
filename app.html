@@ -721,12 +721,12 @@
             
             // ✅ FIXAT: trimite 'username' nu 'email'
             apiCall('login', { username: email, password }, function(data) {
-                if (data.ok) {
+                if (data.success) {
                     currentUser = data.user;
                     saveSession(currentUser);
                     showDashboard();
                 } else {
-                    errorDiv.textContent = data.message || 'Eroare la autentificare';
+                    errorDiv.textContent = data.error || data.message || 'Eroare la autentificare';
                     errorDiv.classList.add('active');
                 }
                 
@@ -763,7 +763,7 @@
             }
             
             apiCall('register', { name, email, password, confirmPassword }, function(data) {
-                if (data.ok) {
+                if (data.success) {
                     successDiv.textContent = 'Cont creat cu succes! Așteaptă aprobarea adminului...';
                     successDiv.classList.add('active');
                     
@@ -774,7 +774,7 @@
                         document.getElementById('loginEmail').value = email;
                     }, 3000);
                 } else {
-                    errorDiv.textContent = data.message || 'Eroare la creare cont';
+                    errorDiv.textContent = data.error || data.message || 'Eroare la creare cont';
                     errorDiv.classList.add('active');
                 }
                 
