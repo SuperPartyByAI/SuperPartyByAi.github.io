@@ -762,7 +762,8 @@
                 return;
             }
             
-            apiCall('register', { name, email, password, confirmPassword }, function(data) {
+            // ✅ FIXAT: trimite 'username' nu 'email'
+            apiCall('register', { name, username: email, password, confirmPassword }, function(data) {
                 if (data.success) {
                     successDiv.textContent = 'Cont creat cu succes! Așteaptă aprobarea adminului...';
                     successDiv.classList.add('active');
