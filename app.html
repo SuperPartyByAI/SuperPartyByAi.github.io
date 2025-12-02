@@ -790,6 +790,2265 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            border: none;
+        }
+        
+        .btn-back:hover {
+            background: rgba(248, 113, 113, 0.3);
+            transform: translateX(-3px);
+        }
+        
+        .rol-detalii-title {
+            font-size: 28px;
+            color: #fff;
+        }
+        
+        .rol-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .rol-info-item {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        
+        .rol-info-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .rol-info-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .etape-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .etapa-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .etapa-card.validat {
+            border-color: #10b981;
+        }
+        
+        .etapa-card.obligatoriu {
+            border-color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+        
+        .etapa-card.blocat {
+            opacity: 0.6;
+            border-color: #475569;
+        }
+        
+        .etapa-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .etapa-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .etapa-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid;
+        }
+        
+        .etapa-card.validat .etapa-number {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        .etapa-card.obligatoriu .etapa-number {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .etapa-card.blocat .etapa-number {
+            background: rgba(71, 85, 105, 0.2);
+            border-color: #475569;
+            color: #475569;
+        }
+        
+        .etapa-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .etapa-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        
+        .etapa-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .etapa-badge.validat {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+        
+        .etapa-badge.obligatoriu {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .etapa-badge.blocat {
+            background: rgba(71, 85, 105, 0.2);
+            color: #94a3b8;
+            border: 1px solid #475569;
+        }
+        
+        .bagaj-info-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .bagaj-info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checklist-box {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .checklist-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+        
+        .btn-action {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-action.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-action.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-action.secondary {
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: #f87171;
+        }
+        
+        .btn-action.secondary:hover {
+            background: rgba(248, 113, 113, 0.3);
+        }
+        
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Modal Dovezi */
+        .modal-dovezi {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-dovezi.active {
+            display: flex;
+        }
+        
+        .modal-dovezi-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-dovezi-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        
+        .modal-dovezi-header .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .modal-dovezi-header .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-dovezi-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .modal-dovezi-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .modal-dovezi-body {
+            padding: 25px;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(248, 113, 113, 0.4);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+        
+        .upload-area:hover {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #f87171;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+        
+        .preview-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .preview-image {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+        
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* AI Loading */
+        .ai-loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .ai-loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(248, 113, 113, 0.2);
+            border-top: 4px solid #f87171;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            background: rgba(30, 41, 59, 0.6);
+            height: 35px;
+            border-radius: 17px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        /* AI Result */
+        .ai-result-box {
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .ai-result-box.validat {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+        }
+        
+        .ai-result-box.respins {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+        }
+        
+        .ai-result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .ai-result-icon {
+            font-size: 40px;
+        }
+        
+        .ai-result-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .ai-result-confidence {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        
+        .confidence-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        
+        .confidence-bar-container {
+            background: rgba(71, 85, 105, 0.3);
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .confidence-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            transition: width 0.5s;
+        }
+        
+        .ai-observatii {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .ai-observatii-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .ai-observatii-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="screen active" id="loginScreen">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h1>🎭 SuperParty</h1>
+                    <p>Portal Operatori</p>
+                </div>
+                <div class="auth-content">
+                    <div class="error-message" id="loginError"></div>
+                    
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" required placeholder="operator@superparty.ro" autocomplete="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">Parolă</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="loginBtn">Autentificare</button>
+                    </form>
+                    
+                    <div class="toggle-link">
+                        Nu ai cont? <a onclick="showRegister()">Înregistrează-te</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER SCREEN -->
+    <div class="screen" id="registerScreen">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h1>🎭 SuperParty</h1>
+                    <p>Creare Cont Operator</p>
+                </div>
+                <div class="auth-content">
+                    <div class="error-message" id="registerError"></div>
+                    <div class="success-message" id="registerSuccess"></div>
+                    
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="registerName">Nume Complet</label>
+                            <input type="text" id="registerName" required placeholder="Ion Popescu" autocomplete="name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" required placeholder="operator@superparty.ro" autocomplete="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerPassword">Parolă</label>
+                            <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6" autocomplete="new-password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerConfirmPassword">Confirmă Parola</label>
+                            <input type="password" id="registerConfirmPassword" required placeholder="••••••••" minlength="6" autocomplete="new-password">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="registerBtn">Creare Cont</button>
+                    </form>
+                    
+                    <div class="toggle-link">
+                        Ai deja cont? <a onclick="showLogin()">Autentifică-te</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div class="screen" id="dashboardScreen">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🎉 SuperParty</div>
+                <div style="font-size: 12px; color: #94a3b8;">by <span style="color: #f87171;">AI</span> ✨</div>
+                <div class="sidebar-user">
+                    <div class="sidebar-user-name" id="userName"></div>
+                    <div class="sidebar-user-code">Cod: <span id="userCode"></span></div>
+                    <div id="modeBadge"></div>
+                </div>
+            </div>
+
+            <div class="sidebar-menu" id="sidebarMenu">
+                <!-- Menu items loaded dynamically -->
+            </div>
+
+            <button class="logout-btn" onclick="handleLogout()">🚪 Deconectare</button>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="mainContent">
+            <!-- Pages loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SISTEM DOVEZI POZE - HTML STRUCTURES
+         ═══════════════════════════════════════════════════════════════════ -->
+    
+    <!-- ECRAN DETALII ROL -->
+    <div class="rol-detalii-screen" id="rolDetaliiScreen">
+        <div class="rol-detalii-header">
+            <button class="btn-back" onclick="inchideDetaliiRol()">
+                <span>←</span>
+                <span>Înapoi</span>
+            </button>
+            <h1 class="rol-detalii-title" id="rolDetaliiTitle">Detalii Rol</h1>
+        </div>
+        
+        <div class="rol-info-grid" id="rolInfoGrid">
+            <!-- Populated dynamically -->
+        </div>
+        
+        <div class="etape-container" id="etapeContainer">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+    
+    <!-- MODAL UPLOAD POZE -->
+    <div class="modal-dovezi" id="modalDovezi">
+        <div class="modal-dovezi-content">
+            <div class="modal-dovezi-header">
+                <button class="modal-close" onclick="inchideModalDovezi()">×</button>
+                <h2 class="modal-dovezi-title" id="modalDoveziTitle">Încarcă Poze</h2>
+                <p class="modal-dovezi-subtitle" id="modalDoveziSubtitle">Etapa 1: Bagaj</p>
+            </div>
+            
+            <div class="modal-dovezi-body">
+                <!-- Checklist -->
+                <div class="checklist-box">
+                    <div class="checklist-title">📋 Verifică înainte de fotografiere:</div>
+                    <div id="modalChecklist">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Upload Area -->
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">
+                        <strong>Click pentru a selecta poze</strong><br>
+                        sau trage și aruncă aici
+                    </div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+                
+                <!-- Preview Grid -->
+                <div class="preview-images-grid" id="previewGrid"></div>
+                
+                <!-- AI Loading -->
+                <div class="ai-loading" id="aiLoading">
+                    <div class="spinner"></div>
+                    <p style="color: #94a3b8; margin-top: 15px;">🤖 AI analizează pozele...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                
+                <!-- AI Result -->
+                <div id="aiResultContainer"></div>
+                
+                <!-- Actions -->
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-action secondary" onclick="inchideModalDovezi()" style="flex: 1;">
+                        ❌ Anulează
+                    </button>
+                    <button class="btn-action primary" id="btnTrimite" onclick="trimitePozeAI()" disabled style="flex: 2;">
+                        🚀 Trimite pentru Validare AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ALOCARE EVENIMENT -->
+    <div class="modal" id="modal-alocare">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎯 Alocă Eveniment</h2>
+                <button class="modal-close" onclick="closeModal('modal-alocare')">×</button>
+            </div>
+
+            <div class="form-group">
+                <label>Ce cod ai:</label>
+                <select id="modal-select-cod">
+                    <option value="">Selectează cod...</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="saveAlocare()" style="width: 100%; margin-top: 10px;">
+                ✅ Alocă Eveniment
+            </button>
+        </div>
+    </div>
+
+    <!-- CHAT WIDGET -->
+    <div class="chat-widget" id="chatWidget" style="display: none;">
+        <button class="chat-button" onclick="toggleChat()" id="chatButton">💬</button>
+        
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-window-header">
+                <h3>🤖 SuperParty AI</h3>
+                <button class="chat-close" onclick="toggleChat()">×</button>
+            </div>
+            
+            <div class="chat-window-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="chat-bubble">Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?</div>
+                </div>
+            </div>
+            
+            <div class="chat-window-input">
+                <input type="text" id="chatInput" placeholder="Scrie mesajul tău..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">Trimite</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // CONFIGURARE + API
+        // ═══════════════════════════════════════════════════════════════════
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzBn05lJvebaWaJJ91tzka4fWDweCEWFOkfB3SuppbUtpGEy00LA7ljo-AUEGEImGEI/exec';
+        
+        const ADMIN_PASSWORD = 'Adminandrei209512!';
+        const GM_PASSWORD = 'Gmandrei209512!';
+        
+        let currentUser = null;
+        let currentMode = 'operator';
+        let pendingMode = null;
+        let currentEventId = null;
+        let allEvents = [];
+        let chatConversationId = '';
+
+        /**
+         * JSONP API CALL
+         */
+        function apiCall(action, params, callback) {
+            const callbackName = 'jsonpCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            window[callbackName] = function(data) {
+                console.log(`✅ JSONP [${action}]:`, data);
+                delete window[callbackName];
+                const scripts = document.querySelectorAll(`script[data-callback="${callbackName}"]`);
+                scripts.forEach(s => s.remove());
+                if (callback) callback(data);
+            };
+            
+            const queryParams = new URLSearchParams({
+                action: action,
+                callback: callbackName,
+                _: Date.now(),
+                ...params
+            });
+            
+            const script = document.createElement('script');
+            script.setAttribute('data-callback', callbackName);
+            script.src = `${API_URL}?${queryParams.toString()}`;
+            
+            script.onerror = function() {
+                console.error(`❌ JSONP [${action}] failed`);
+                delete window[callbackName];
+                if (callback) callback({ success: false, error: 'Network error' });
+            };
+            
+            document.body.appendChild(script);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // SESSION MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════
+        function saveSession(user) {
+            localStorage.setItem('superparty_user', JSON.stringify(user));
+        }
+
+        function loadSession() {
+            const saved = localStorage.getItem('superparty_user');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function clearSession() {
+            localStorage.removeItem('superparty_user');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // SCREEN MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════
+        function showLogin() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('loginError').classList.remove('active');
+        }
+
+        function showRegister() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('registerScreen').classList.add('active');
+            document.getElementById('registerError').classList.remove('active');
+            document.getElementById('registerSuccess').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('dashboardScreen').classList.add('active');
+            
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userCode').textContent = currentUser.code;
+            
+            document.getElementById('chatWidget').style.display = 'block';
+            
+            loadMenu();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // LOGIN / REGISTER
+        // ═══════════════════════════════════════════════════════════════════
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.disabled = true;
+            btn.textContent = 'Se autentifică...';
+            errorDiv.classList.remove('active');
+            
+            apiCall('login', { username: email, password }, function(data) {
+                if (data.success) {
+                    currentUser = data.user;
+                    saveSession(currentUser);
+                    showDashboard();
+                } else {
+                    errorDiv.textContent = data.error || data.message || 'Eroare la autentificare';
+                    errorDiv.classList.add('active');
+                }
+                
+                btn.disabled = false;
+                btn.textContent = 'Autentificare';
+            });
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const btn = document.getElementById('registerBtn');
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            btn.disabled = true;
+            btn.textContent = 'Se creează contul...';
+            errorDiv.classList.remove('active');
+            successDiv.classList.remove('active');
+            
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Parolele nu coincid!';
+                errorDiv.classList.add('active');
+                btn.disabled = false;
+                btn.textContent = 'Creare Cont';
+                return;
+            }
+            
+            apiCall('register', { name, username: email, password, confirmPassword }, function(data) {
+                if (data.success) {
+                    successDiv.textContent = 'Cont creat cu succes!';
+                    successDiv.classList.add('active');
+                    
+                    document.getElementById('registerForm').reset();
+                    
+                    setTimeout(() => {
+                        showLogin();
+                        document.getElementById('loginEmail').value = email;
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error || data.message || 'Eroare la creare cont';
+                    errorDiv.classList.add('active');
+                }
+                
+                btn.disabled = false;
+                btn.textContent = 'Creare Cont';
+            });
+        }
+
+        function handleLogout() {
+            if (confirm('Sigur vrei să te deconectezi?')) {
+                currentUser = null;
+                currentMode = 'operator';
+                clearSession();
+                location.reload();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // MENU & PAGES
+        // ═══════════════════════════════════════════════════════════════════
+        function loadMenu() {
+            const menu = document.getElementById('sidebarMenu');
+            const badge = document.getElementById('modeBadge');
+            
+            badge.innerHTML = '';
+            menu.innerHTML = `
+                <div class="menu-item active" onclick="showPage('home')">
+                    <span class="icon">🏠</span>
+                    <span>Acasă</span>
+                </div>
+                <div class="menu-item" onclick="showPage('petreceri-mele')">
+                    <span class="icon">🎊</span>
+                    <span>Ce Petreceri Am</span>
+                </div>
+            `;
+            
+            loadOperatorPages();
+        }
+
+        function loadOperatorPages() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="page active" id="page-home">
+                    <div class="page-header">
+                        <h1>🏠 Acasă</h1>
+                        <p>Bine ai venit, ${currentUser.name}!</p>
+                    </div>
+                    <div id="homeContent">
+                        <div class="loading">⏳ Încărcare...</div>
+                    </div>
+                </div>
+                
+                <div class="page" id="page-petreceri-mele">
+                    <div class="page-header">
+                        <h1>🎊 Ce Petreceri Am</h1>
+                        <p>Evenimente alocate pentru ${currentUser.code}</p>
+                    </div>
+                    <div id="petreceriMeleContent">
+                        <div class="loading">⏳ Încărcare...</div>
+                    </div>
+                </div>
+            `;
+            
+            loadPetreceriMele();
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            
+            const pageElement = document.getElementById('page-' + pageId);
+            if (pageElement) {
+                pageElement.classList.add('active');
+            }
+            
+            if (pageId === 'petreceri-mele') {
+                loadPetreceriMele();
+            }
+        }
+
+        function loadPetreceriMele() {
+            const container = document.getElementById('petreceriMeleContent');
+            container.innerHTML = '<div class="loading">⏳ Se încarcă evenimente...</div>';
+            
+            // Mock data - în producție ar fi din backend
+            setTimeout(() => {
+                const mockEvents = [
+                    {
+                        id: 'TEST-SPIDEY-001',
+                        personaj: 'Spider-Man',
+                        data: '02/12/2024',
+                        ora: '15:00',
+                        adresa: 'Str. Eroilor 45, București',
+                        ce_cod_ai: currentUser.code
+                    },
+                    {
+                        id: 'TEST-VATA-002',
+                        personaj: 'Vată de Zahăr',
+                        data: '03/12/2024',
+                        ora: '14:00',
+                        adresa: 'Bd. Unirii 123, București',
+                        ce_cod_ai: currentUser.code
+                    },
+                    {
+                        id: 'TEST-ELSA-003',
+                        personaj: 'Elsa (Frozen)',
+                        data: '02/12/2024',
+                        ora: '11:00',
+                        adresa: 'Str. Florilor 78, București',
+                        ce_cod_ai: currentUser.code
+                    }
+                ];
+                
+                if (mockEvents.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-events">
+                            <div class="icon">📭</div>
+                            <p>Nu ai evenimente alocate momentan</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = mockEvents.map(ev => renderEventCard(ev)).join('');
+                }
+            }, 500);
+        }
+
+        function renderEventCard(event) {
+            const hasAllocation = event.ce_cod_ai;
+            
+            return `
+                <div class="event-card" onclick="${hasAllocation ? `veziDetaliiRol('${event.id}')` : ''}">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.personaj || 'Eveniment'}</div>
+                            <div class="event-id">ID: ${event.id}</div>
+                        </div>
+                        <div class="event-badge">Alocat: ${event.ce_cod_ai}</div>
+                    </div>
+                    
+                    <div class="event-details">
+                        <div class="event-detail">
+                            <span class="icon">📅</span>
+                            <span>${event.data}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="icon">🕐</span>
+                            <span>${event.ora}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="icon">📍</span>
+                            <span>${event.adresa}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dovezi-status" onclick="event.stopPropagation();">
+                        <div class="dovezi-status-title">📸 DOVEZI</div>
+                        <div class="dovezi-etape">
+                            <div class="etapa-icon obligatoriu" title="Bagaj - Obligatoriu">1</div>
+                            <div class="etapa-icon blocat" title="Am ajuns - Blocat">2</div>
+                            <div class="etapa-icon blocat" title="Returnare - Blocat">3</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('active');
+        }
+
+        function addChatMessage(text, isUser) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble';
+            bubble.textContent = text;
+            
+            messageDiv.appendChild(bubble);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, true);
+            input.value = '';
+            
+            addChatMessage('Funcția chat este în dezvoltare...', false);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // SISTEM DOVEZI POZE - JavaScript v3.8
+        // ═══════════════════════════════════════════════════════════════════
+
+        let currentRolDetalii = null;
+        let currentEtapaUpload = null;
+        let selectedFiles = [];
+
+        function veziDetaliiRol(evenimentId) {
+            console.log('🔍 veziDetaliiRol:', evenimentId);
+            
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('rolDetaliiScreen').classList.add('active');
+            
+            incarcaDetaliiRol(evenimentId);
+        }
+
+        function inchideDetaliiRol() {
+            document.getElementById('rolDetaliiScreen').classList.remove('active');
+            document.getElementById('mainContent').style.display = 'block';
+            currentRolDetalii = null;
+        }
+
+        function incarcaDetaliiRol(evenimentId) {
+            const titleEl = document.getElementById('rolDetaliiTitle');
+            const infoGrid = document.getElementById('rolInfoGrid');
+            const etapeContainer = document.getElementById('etapeContainer');
+            
+            titleEl.textContent = 'Se încarcă...';
+            infoGrid.innerHTML = '<div class="loading">⏳ Încărcare date...</div>';
+            etapeContainer.innerHTML = '';
+            
+            apiCall('getRolDetalii', {
+                email: currentUser.code,
+                evenimentId: evenimentId
+            }, function(data) {
+                console.log('📦 getRolDetalii response:', data);
+                
+                if (!data.success) {
+                    infoGrid.innerHTML = '<div style="color: #ef4444; padding: 20px;">❌ ' + (data.error || 'Eroare la încărcare') + '</div>';
+                    return;
+                }
+                
+                currentRolDetalii = data.eveniment;
+                const etape = data.etape || [];
+                const etapeCompletate = data.etapeCompletate || [];
+                
+                titleEl.textContent = `${currentRolDetalii.rol} | ${currentRolDetalii.data}`;
+                
+                infoGrid.innerHTML = `
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">🎭 ROL</div>
+                        <div class="rol-info-value">${currentRolDetalii.rol}</div>
+                    </div>
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">📅 DATA</div>
+                        <div class="rol-info-value">${currentRolDetalii.data}</div>
+                    </div>
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">🕐 ORA</div>
+                        <div class="rol-info-value">${currentRolDetalii.oraStart} - ${currentRolDetalii.oraSfarsit}</div>
+                    </div>
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">📍 LOCAȚIE</div>
+                        <div class="rol-info-value">${currentRolDetalii.locatie}</div>
+                    </div>
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">👤 CLIENT</div>
+                        <div class="rol-info-value">${currentRolDetalii.client}</div>
+                    </div>
+                    <div class="rol-info-item">
+                        <div class="rol-info-label">📞 TELEFON</div>
+                        <div class="rol-info-value">${currentRolDetalii.telefonClient}</div>
+                    </div>
+                `;
+                
+                etapeContainer.innerHTML = etape.map((etapa, index) => {
+                    const esteValidat = etapeCompletate.includes(etapa.id);
+                    const esteObligatoriu = index === 0 || (index > 0 && etapeCompletate.includes(etape[index - 1].id));
+                    const esteBlocat = !esteObligatoriu && !esteValidat;
+                    
+                    let statusClass = esteBlocat ? 'blocat' : (esteValidat ? 'validat' : 'obligatoriu');
+                    let badgeText = esteBlocat ? '🔒 Blocat' : (esteValidat ? '✅ Validat' : '⚠️ Obligatoriu');
+                    let badgeClass = statusClass;
+                    
+                    return `
+                        <div class="etapa-card ${statusClass}">
+                            <div class="etapa-card-header">
+                                <div class="etapa-title-group">
+                                    <div class="etapa-number">${etapa.icon}</div>
+                                    <div>
+                                        <div class="etapa-title">${etapa.nume}</div>
+                                        <div class="etapa-subtitle">${etapa.descriere}</div>
+                                    </div>
+                                </div>
+                                <div class="etapa-badge ${badgeClass}">
+                                    <span>${badgeText}</span>
+                                </div>
+                            </div>
+                            
+                            ${etapa.id === 'bagaj' && !esteValidat ? `
+                                <div class="bagaj-info-box">
+                                    <div class="bagaj-info-title">
+                                        <span>⚠️</span>
+                                        <span>IMPORTANT - Fotografiază ÎNAINTE de plecare!</span>
+                                    </div>
+                                    <p style="font-size: 13px; color: #f59e0b; margin: 5px 0 0 0;">
+                                        Pozele trebuie făcute acasă/bază, NU în mașină sau la locație.
+                                    </p>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="checklist-box">
+                                <div class="checklist-title">📋 Checklist:</div>
+                                ${etapa.checklist.map(item => `
+                                    <div class="checklist-item">
+                                        <span>${esteValidat ? '✅' : '⬜'}</span>
+                                        <span>${item}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            ${esteValidat ? `
+                                <button class="btn-action secondary" disabled>
+                                    ✅ Etapă Completată
+                                </button>
+                            ` : (esteObligatoriu ? `
+                                <button class="btn-action primary" onclick="deschideModalUpload('${etapa.id}', '${etapa.nume}', ${JSON.stringify(etapa.checklist).replace(/"/g, '&quot;')})">
+                                    📸 Încarcă Poze
+                                </button>
+                            ` : `
+                                <button class="btn-action secondary" disabled>
+                                    🔒 Completează etapele anterioare
+                                </button>
+                            `)}
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function deschideModalUpload(etapaId, etapaNume, checklist) {
+            currentEtapaUpload = etapaId;
+            selectedFiles = [];
+            
+            document.getElementById('modalDoveziTitle').textContent = 'Încarcă Poze';
+            document.getElementById('modalDoveziSubtitle').textContent = etapaNume;
+            
+            const checklistHTML = checklist.map(item => `
+                <div class="checklist-item">
+                    <span>⬜</span>
+                    <span>${item}</span>
+                </div>
+            `).join('');
+            document.getElementById('modalChecklist').innerHTML = checklistHTML;
+            
+            document.getElementById('previewGrid').innerHTML = '';
+            document.getElementById('aiResultContainer').innerHTML = '';
+            document.getElementById('aiLoading').classList.remove('active');
+            document.getElementById('btnTrimite').disabled = true;
+            
+            document.getElementById('modalDovezi').classList.add('active');
+        }
+
+        function inchideModalDovezi() {
+            document.getElementById('modalDovezi').classList.remove('active');
+            selectedFiles = [];
+            currentEtapaUpload = null;
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            
+            if (files.length === 0) return;
+            
+            console.log('📸 Selected files:', files.length);
+            
+            selectedFiles = files;
+            
+            const previewGrid = document.getElementById('previewGrid');
+            previewGrid.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-image';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}">
+                        <button class="preview-remove" onclick="removeFile(${index})">×</button>
+                    `;
+                    previewGrid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            document.getElementById('btnTrimite').disabled = false;
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            
+            if (selectedFiles.length === 0) {
+                document.getElementById('previewGrid').innerHTML = '';
+                document.getElementById('btnTrimite').disabled = true;
+                return;
+            }
+            
+            const previewGrid = document.getElementById('previewGrid');
+            previewGrid.innerHTML = '';
+            
+            selectedFiles.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-image';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${idx + 1}">
+                        <button class="preview-remove" onclick="removeFile(${idx})">×</button>
+                    `;
+                    previewGrid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function trimitePozeAI() {
+            if (selectedFiles.length === 0) {
+                alert('Selectează cel puțin o poză!');
+                return;
+            }
+            
+            console.log('🚀 Trimitere poze pentru validare AI...');
+            
+            document.getElementById('aiLoading').classList.add('active');
+            document.getElementById('btnTrimite').disabled = true;
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                if (progress <= 90) {
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progressFill').textContent = progress + '%';
+                }
+            }, 300);
+            
+            const promises = selectedFiles.map(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const base64 = reader.result.split(',')[1];
+                        resolve({
+                            fileName: file.name,
+                            data: base64,
+                            mimeType: file.type
+                        });
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            Promise.all(promises).then(poze => {
+                console.log('📦 Poze convertite:', poze.length);
+                
+                apiCall('uploadPoze', {
+                    email: currentUser.code,
+                    evenimentId: currentRolDetalii.id,
+                    etapa: currentEtapaUpload,
+                    poze: JSON.stringify(poze)
+                }, function(data) {
+                    clearInterval(progressInterval);
+                    document.getElementById('progressFill').style.width = '100%';
+                    document.getElementById('progressFill').textContent = '100%';
+                    
+                    setTimeout(() => {
+                        document.getElementById('aiLoading').classList.remove('active');
+                        
+                        if (data.success) {
+                            afiseazaRezultatAI(data.data.aiValidation);
+                        } else {
+                            alert('❌ Eroare: ' + (data.error || 'Nu s-au putut încărca pozele'));
+                            document.getElementById('btnTrimite').disabled = false;
+                        }
+                    }, 500);
+                });
+            }).catch(error => {
+                clearInterval(progressInterval);
+                console.error('❌ Eroare conversie:', error);
+                document.getElementById('aiLoading').classList.remove('active');
+                alert('❌ Eroare la procesare poze');
+                document.getElementById('btnTrimite').disabled = false;
+            });
+        }
+
+        function afiseazaRezultatAI(aiValidation) {
+            const container = document.getElementById('aiResultContainer');
+            
+            const isValid = aiValidation.result === 'VALID';
+            const boxClass = isValid ? 'validat' : 'respins';
+            const icon = isValid ? '✅' : '⚠️';
+            const title = isValid ? 'VALIDAT' : 'ATENȚIE';
+            
+            container.innerHTML = `
+                <div class="ai-result-box ${boxClass}">
+                    <div class="ai-result-header">
+                        <div class="ai-result-icon">${icon}</div>
+                        <div>
+                            <div class="ai-result-title">${title}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-result-confidence">
+                        <div class="confidence-label">Confidence Score:</div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-bar-fill" style="width: ${aiValidation.confidence}%;">
+                                ${aiValidation.confidence}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-observatii">
+                        <div class="ai-observatii-title">📝 Observații AI:</div>
+                        <div class="ai-observatii-text">${aiValidation.message}</div>
+                    </div>
+                    
+                    ${isValid ? `
+                        <button class="btn-action primary" onclick="finalizareUpload()" style="width: 100%; margin-top: 15px;">
+                            ✅ Finalizează și Închide
+                        </button>
+                    ` : `
+                        <button class="btn-action secondary" onclick="inchideModalDovezi()" style="width: 100%; margin-top: 15px;">
+                            🔄 Încearcă din nou
+                        </button>
+                    `}
+                </div>
+            `;
+        }
+
+        function finalizareUpload() {
+            inchideModalDovezi();
+            incarcaDetaliiRol(currentRolDetalii.id);
+            addChatMessage('✅ Poze încărcate și validate cu succes pentru etapa ' + currentEtapaUpload + '!', false);
+        }
+
+        console.log('✅ Sistem Dovezi Poze v3.8 - JavaScript LOADED!');
+
+        // ═══════════════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════════════
+        window.onload = function() {
+            const savedUser = loadSession();
+            if (savedUser) {
+                currentUser = savedUser;
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        };
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty - Portal Operatori</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* AUTH SCREENS */
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .auth-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .auth-content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-right: 2px solid rgba(248, 113, 113, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .sidebar-logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-user {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(248, 113, 113, 0.1);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .sidebar-user-name {
+            font-weight: 600;
+            color: #f87171;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-user-code {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .mode-badge.admin {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .mode-badge.gm {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            padding-bottom: 100px;
+        }
+
+        .menu-section {
+            padding: 15px 20px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            border-left-color: #f87171;
+        }
+
+        .menu-item.active {
+            background: rgba(248, 113, 113, 0.15);
+            color: #fff;
+            border-left-color: #ef4444;
+        }
+
+        .menu-item .icon {
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 220px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* CARDS */
+        .event-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .event-card:hover {
+            border-color: #f87171;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(248, 113, 113, 0.2);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .event-id {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .event-badge {
+            padding: 6px 12px;
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 20px;
+            font-size: 11px;
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .event-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .event-detail .icon {
+            font-size: 16px;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(248, 113, 113, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            background: rgba(100, 116, 139, 0.3);
+            color: #cbd5e1;
+            border: 1px solid rgba(100, 116, 139, 0.5);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(100, 116, 139, 0.5);
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .no-events .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #f87171;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #f87171;
+        }
+
+        .modal-content .form-group label {
+            color: #cbd5e1;
+        }
+
+        .modal-content .form-group select,
+        .modal-content .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .modal-content .form-group select:focus,
+        .modal-content .form-group input:focus {
+            outline: none;
+            border-color: #f87171;
+        }
+
+        /* CHAT WIDGET */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 2000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-window-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-window-header h3 {
+            font-size: 18px;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .chat-close:hover {
+            opacity: 1;
+        }
+
+        .chat-window-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .chat-message.user {
+            text-align: right;
+        }
+
+        .chat-message.bot {
+            text-align: left;
+        }
+
+        .chat-bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.bot .chat-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-window-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-window-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+        }
+
+        .chat-window-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-send {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chat-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .chat-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /* SISTEM DOVEZI POZE - CSS */
+        /* ═══════════════════════════════════════════ */
+        
+        .dovezi-status {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        
+        .dovezi-status-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .dovezi-etape {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .etapa-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid;
+            transition: all 0.3s;
+        }
+        
+        .etapa-icon.validat {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        .etapa-icon.obligatoriu {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+        
+        .etapa-icon.blocat {
+            background: rgba(71, 85, 105, 0.2);
+            border-color: #475569;
+            color: #475569;
+            opacity: 0.5;
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Detalii Rol - Ecran complet */
+        .rol-detalii-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: #0f172a;
+            z-index: 999;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        .rol-detalii-screen.active {
+            display: block;
+        }
+        
+        .rol-detalii-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-back {
+            padding: 10px 18px;
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 8px;
+            color: #f87171;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-back:hover {
