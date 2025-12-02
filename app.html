@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SuperParty - Portal Operatori</title>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -2370,11 +2371,11 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         // ==========================================
         // CONFIGURARE + TOATE FUNCȚIILE ORIGINALE
         // ==========================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec';
-        const CHAT_API_URL = 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec';
+        const API_URL = SUPERPARTY_CONFIG.BACKEND_URL;
+        const CHAT_API_URL = SUPERPARTY_CONFIG.BACKEND_URL;
         
-        const ADMIN_PASSWORD = 'Adminandrei209512!';
-        const GM_PASSWORD = 'Gmandrei209512!';
+        const ADMIN_PASSWORD = SUPERPARTY_CONFIG.ADMIN_PASSWORD;
+        const GM_PASSWORD = SUPERPARTY_CONFIG.GM_PASSWORD;
         
         let currentUser = null;
         let currentMode = 'operator';
@@ -3423,7 +3424,7 @@ console.log('🔧 SuperParty Auth Fix v3.8 - Loading...');
 // CONFIGURARE
 // ═══════════════════════════════════════════════════════════════════
 
-const BACKEND_URL_FIX = 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec';
+const BACKEND_URL_FIX = SUPERPARTY_CONFIG.BACKEND_URL;
 
 // ═══════════════════════════════════════════════════════════════════
 // API CALL OVERRIDE - JSONP pentru CORS bypass
