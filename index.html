@@ -272,37 +272,24 @@
         let conversationId = '';
 
         /**
-         * JSONP API CALL - Universal function to bypass CORS
+         * API CALL - Fetch cu parametri GET
          */
         function apiCall(action, params, callback) {
-            const callbackName = 'jsonpCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            window[callbackName] = function(data) {
-                console.log(`✅ JSONP [${action}]:`, data);
-                delete window[callbackName];
-                const scripts = document.querySelectorAll(`script[data-callback="${callbackName}"]`);
-                scripts.forEach(s => s.remove());
-                if (callback) callback(data);
-            };
-            
             const queryParams = new URLSearchParams({
                 action: action,
-                callback: callbackName,
-                _: Date.now(),
                 ...params
             });
             
-            const script = document.createElement('script');
-            script.setAttribute('data-callback', callbackName);
-            script.src = `${API_URL}?${queryParams.toString()}`;
-            
-            script.onerror = function() {
-                console.error(`❌ JSONP [${action}] failed`);
-                delete window[callbackName];
-                if (callback) callback({ success: false, error: 'Network error' });
-            };
-            
-            document.body.appendChild(script);
+            fetch(`${API_URL}?${queryParams.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`✅ API [${action}]:`, data);
+                    if (callback) callback(data);
+                })
+                .catch(error => {
+                    console.error(`❌ API [${action}] failed:`, error);
+                    if (callback) callback({ success: false, error: 'Network error' });
+                });
         }
 
         // ==========================================
