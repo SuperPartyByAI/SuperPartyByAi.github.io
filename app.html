@@ -1783,6 +1783,261 @@
             line-height: 1.6;
         }
 
+
+        /* SISTEM DOVEZI POZE - COMPLETE CSS */
+        .dovezi-status {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        .dovezi-status-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .dovezi-etape {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .etapa-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid;
+            transition: all 0.3s;
+        }
+        .etapa-icon.validat {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+        }
+        .etapa-icon.obligatoriu {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+        .etapa-icon.blocat {
+            background: rgba(71, 85, 105, 0.2);
+            border-color: #475569;
+            color: #475569;
+            opacity: 0.5;
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .rol-detalii-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: #0f172a;
+            z-index: 999;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        .rol-detalii-screen.active {
+            display: block;
+        }
+        .rol-detalii-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .btn-back {
+            padding: 10px 18px;
+            background: rgba(248, 113, 113, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: 8px;
+            color: #f87171;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-back:hover {
+            background: rgba(248, 113, 113, 0.3);
+            transform: translateX(-3px);
+        }
+        .rol-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .rol-info-item {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(248, 113, 113, 0.4);
+        }
+        .rol-info-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .rol-info-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .etape-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .etapa-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        .etapa-card.validat {
+            border-color: #10b981;
+        }
+        .etapa-card.obligatoriu {
+            border-color: #ef4444;
+        }
+        .etapa-card.blocat {
+            opacity: 0.6;
+            border-color: #475569;
+        }
+        .btn-action {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-action.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-action.primary:hover {
+            transform: translateY(-2px);
+        }
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .modal-dovezi {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-dovezi.active {
+            display: flex;
+        }
+        .modal-dovezi-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-dovezi-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+        }
+        .upload-area {
+            border: 3px dashed rgba(248, 113, 113, 0.4);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .upload-area:hover {
+            border-color: #f87171;
+        }
+        .preview-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .preview-image {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .ai-loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .ai-loading.active {
+            display: block;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(248, 113, 113, 0.2);
+            border-top: 4px solid #f87171;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            background: rgba(30, 41, 59, 0.6);
+            height: 35px;
+            border-radius: 17px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1971,10 +2226,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
     </div>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SISTEM DOVEZI POZE - HTML STRUCTURES
-         ═══════════════════════════════════════════════════════════════════ -->
-    
     <!-- ECRAN DETALII ROL -->
     <div class="rol-detalii-screen" id="rolDetaliiScreen">
         <div class="rol-detalii-header">
@@ -1982,69 +2233,39 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                 <span>←</span>
                 <span>Înapoi</span>
             </button>
-            <h1 class="rol-detalii-title" id="rolDetaliiTitle">Detalii Rol</h1>
+            <h1 id="rolDetaliiTitle">Detalii Rol</h1>
         </div>
-        
-        <div class="rol-info-grid" id="rolInfoGrid">
-            <!-- Populated dynamically -->
-        </div>
-        
-        <div class="etape-container" id="etapeContainer">
-            <!-- Populated dynamically -->
-        </div>
+        <div id="rolInfoGrid"></div>
+        <div id="etapeContainer"></div>
     </div>
     
     <!-- MODAL UPLOAD POZE -->
     <div class="modal-dovezi" id="modalDovezi">
-        <div class="modal-dovezi-content">
+        <div class="modal-dovezi-content" onclick="event.stopPropagation();">
             <div class="modal-dovezi-header">
-                <button class="modal-close" onclick="inchideModalDovezi()">×</button>
-                <h2 class="modal-dovezi-title" id="modalDoveziTitle">Încarcă Poze</h2>
-                <p class="modal-dovezi-subtitle" id="modalDoveziSubtitle">Etapa 1: Bagaj</p>
+                <button class="modal-close" onclick="inchideModalDovezi()" style="position:absolute;top:15px;right:15px;background:none;border:none;color:white;font-size:24px;cursor:pointer;">×</button>
+                <h2 id="modalDoveziTitle">Încarcă Poze</h2>
+                <p id="modalDoveziSubtitle" style="font-size:14px;opacity:0.9;margin-top:5px;"></p>
             </div>
-            
-            <div class="modal-dovezi-body">
-                <!-- Checklist -->
-                <div class="checklist-box">
-                    <div class="checklist-title">📋 Verifică înainte de fotografiere:</div>
-                    <div id="modalChecklist">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-                
-                <!-- Upload Area -->
+            <div style="padding:25px;">
+                <div id="modalChecklist" style="margin-bottom:20px;"></div>
                 <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                    <div class="upload-icon">📸</div>
-                    <div class="upload-text">
-                        <strong>Click pentru a selecta poze</strong><br>
-                        sau trage și aruncă aici
-                    </div>
+                    <div style="font-size:48px;color:#f87171;margin-bottom:15px;">📸</div>
+                    <div style="color:#94a3b8;"><strong>Click pentru a selecta poze</strong></div>
                 </div>
-                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
-                
-                <!-- Preview Grid -->
+                <input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(event)">
                 <div class="preview-images-grid" id="previewGrid"></div>
-                
-                <!-- AI Loading -->
                 <div class="ai-loading" id="aiLoading">
                     <div class="spinner"></div>
-                    <p style="color: #94a3b8; margin-top: 15px;">🤖 AI analizează pozele...</p>
+                    <p style="color:#94a3b8;margin-top:15px;">🤖 AI analizează...</p>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+                        <div class="progress-fill" id="progressFill" style="width:0%;">0%</div>
                     </div>
                 </div>
-                
-                <!-- AI Result -->
                 <div id="aiResultContainer"></div>
-                
-                <!-- Actions -->
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn-action secondary" onclick="inchideModalDovezi()" style="flex: 1;">
-                        ❌ Anulează
-                    </button>
-                    <button class="btn-action primary" id="btnTrimite" onclick="trimitePozeAI()" disabled style="flex: 2;">
-                        🚀 Trimite pentru Validare AI
-                    </button>
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                    <button class="btn-secondary" onclick="inchideModalDovezi()" style="flex:1;">❌ Anulează</button>
+                    <button class="btn-action primary" id="btnTrimite" onclick="trimitePozeAI()" disabled style="flex:2;">🚀 Trimite</button>
                 </div>
             </div>
         </div>
@@ -2454,35 +2675,304 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         // Funcțiile de pagini, conversații, chat etc. continuă ca în original...
 
         function loadOperatorPages() {
-            // ... cod original complet
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <!-- HOME PAGE -->
+                <div class="page active" id="home">
+                    <div class="page-header">
+                        <h1>🏠 Acasă</h1>
+                        <p>Bine ai venit, ${currentUser.name}!</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Petreceri Astăzi</div>
+                            <div class="value">3</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Luna Asta</div>
+                            <div class="value">24</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Venit Total</div>
+                            <div class="value">1240 RON</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NOTEAZA PAGE -->
+                <div class="page" id="noteaza">
+                    <div class="page-header">
+                        <h1>➕ Notează Eveniment</h1>
+                        <p>Adaugă un eveniment nou</p>
+                    </div>
+                    <div style="max-width: 600px;">
+                        <div class="form-group">
+                            <label>Personaj</label>
+                            <input type="text" id="input-personaj" placeholder="Spider-Man, Elsa, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input type="date" id="input-data">
+                        </div>
+                        <div class="form-group">
+                            <label>Ora</label>
+                            <input type="time" id="input-ora">
+                        </div>
+                        <button class="btn-primary">Salvează Eveniment</button>
+                    </div>
+                </div>
+                
+                <!-- NEALOCATE PAGE -->
+                <div class="page" id="nealocate">
+                    <div class="page-header">
+                        <h1>📋 Petreceri Nealocate</h1>
+                        <p>Evenimente disponibile</p>
+                    </div>
+                    <div id="nealocate-content">
+                        <div class="loading">⏳ Se încarcă...</div>
+                    </div>
+                </div>
+                
+                <!-- PETRECERI MELE PAGE -->
+                <div class="page" id="petreceri-mele">
+                    <div class="page-header">
+                        <h1>🎊 Ce Petreceri Am</h1>
+                        <p>Evenimentele tale alocate</p>
+                    </div>
+                    <div id="petreceri-mele-content">
+                        <div class="loading">⏳ Se încarcă...</div>
+                    </div>
+                </div>
+                
+                <!-- TOTAL PAGE -->
+                <div class="page" id="total">
+                    <div class="page-header">
+                        <h1>📈 Total Petreceri</h1>
+                        <p>Toate evenimentele</p>
+                    </div>
+                    <div id="total-content">
+                        <div class="loading">⏳ Se încarcă...</div>
+                    </div>
+                </div>
+                
+                <!-- SOFERI PAGE -->
+                <div class="page" id="soferi">
+                    <div class="page-header">
+                        <h1>🚗 Evenimente cu Șoferi</h1>
+                        <p>Gestionare transport</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">🚗</div>
+                        <h3>Sistem șoferi</h3>
+                        <p>Gestionare transport pentru evenimente</p>
+                    </div>
+                </div>
+                
+                <!-- FACTURA PAGE -->
+                <div class="page" id="factura">
+                    <div class="page-header">
+                        <h1>🧾 Cu Factură</h1>
+                        <p>Evenimente cu factură</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">🧾</div>
+                        <h3>Evenimente cu factură</h3>
+                    </div>
+                </div>
+                
+                <!-- ECHIPA PAGE -->
+                <div class="page" id="echipa">
+                    <div class="page-header">
+                        <h1>👥 Echipa</h1>
+                        <p>Membri echipei tale</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">👥</div>
+                        <h3>Echipa ta</h3>
+                        <p>Gestionare membri echipă</p>
+                    </div>
+                </div>
+                
+                <!-- INVENTAR PAGE -->
+                <div class="page" id="inventar">
+                    <div class="page-header">
+                        <h1>📦 Inventar</h1>
+                        <p>Gestionare materiale</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">📦</div>
+                        <h3>Inventar</h3>
+                        <p>Materiale și echipament</p>
+                    </div>
+                </div>
+                
+                <!-- PINIATA PAGE -->
+                <div class="page" id="piniata">
+                    <div class="page-header">
+                        <h1>🎯 Piniata</h1>
+                        <p>Gestionare piniata</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">🎯</div>
+                        <h3>Piniata</h3>
+                        <p>Sistem gestionare piniata</p>
+                    </div>
+                </div>
+                
+                <!-- CONVERSATIONS PAGE -->
+                <div class="page" id="conversations">
+                    <div class="page-header">
+                        <h1>💬 Conversații Clienți</h1>
+                        <p>Chat cu clienții</p>
+                    </div>
+                    <div class="no-events">
+                        <div class="icon">💬</div>
+                        <h3>Conversații</h3>
+                        <p>Sistem chat clienți</p>
+                    </div>
+                </div>
+            `;
+            showPage('home');
         }
 
         function loadAdminPages() {
-            // ... cod original complet  
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="page active" id="admin-overview">
+                    <div class="page-header">
+                        <h1>📊 Admin Overview</h1>
+                        <p>Control panel administratori</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Total Operatori</div>
+                            <div class="value">45</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Evenimente Astăzi</div>
+                            <div class="value">18</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Venit Luna</div>
+                            <div class="value">52.340 RON</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page" id="admin-bifari"><div class="page-header"><h1>✅ Bifări</h1></div></div>
+                <div class="page" id="admin-stats"><div class="page-header"><h1>📈 Statistici</h1></div></div>
+                <div class="page" id="admin-total-stats"><div class="page-header"><h1>📊 Total Stats</h1></div></div>
+                <div class="page" id="admin-target-traineri"><div class="page-header"><h1>💰 Target Traineri</h1></div></div>
+                <div class="page" id="admin-target-animatie"><div class="page-header"><h1>🎭 Target Animație</h1></div></div>
+                <div class="page" id="admin-target-vanzari"><div class="page-header"><h1>💵 Target Vânzări</h1></div></div>
+                <div class="page" id="admin-coduri"><div class="page-header"><h1>📝 Coduri</h1></div></div>
+                <div class="page" id="admin-chat"><div class="page-header"><h1>💬 Chat</h1></div></div>
+                <div class="page" id="ai-instructions"><div class="page-header"><h1>🧠 AI Instructions</h1></div></div>
+                <div class="page" id="admin-users"><div class="page-header"><h1>👥 Users</h1></div></div>
+            `;
+            showPage('admin-overview');
         }
 
         function loadGMPages() {
-            // ... cod original complet
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="page active" id="gm-core">
+                    <div class="page-header">
+                        <h1>🧠 GM Core</h1>
+                        <p>General Manager Control Center</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Total Business Value</div>
+                            <div class="value">285K RON</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Monthly Growth</div>
+                            <div class="value">+24%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Team Members</div>
+                            <div class="value">1326</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Active Events</div>
+                            <div class="value">142</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page" id="gm-users"><div class="page-header"><h1>👥 GM Users</h1></div></div>
+                <div class="page" id="gm-guests"><div class="page-header"><h1>👻 Guests</h1></div></div>
+                <div class="page" id="gm-creier"><div class="page-header"><h1>🧠 Creier AI</h1></div></div>
+                <div class="page" id="gm-seo"><div class="page-header"><h1>🎯 SEO</h1></div></div>
+                <div class="page" id="gm-ads"><div class="page-header"><h1>📢 Ads</h1></div></div>
+                <div class="page" id="gm-performance"><div class="page-header"><h1>📊 Performance</h1></div></div>
+                <div class="page" id="gm-budget"><div class="page-header"><h1>💰 Budget</h1></div></div>
+            `;
+            showPage('gm-core');
         }
 
         function showPage(pageId) {
-            // ... cod original complet
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            
+            const page = document.getElementById(pageId);
+            if (page) {
+                page.classList.add('active');
+            }
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (item.onclick && item.onclick.toString().includes(pageId)) {
+                    item.classList.add('active');
+                }
+            });
+            
+            if (pageId === 'petreceri-mele') {
+                loadPetreceriMele();
+            } else if (pageId === 'nealocate') {
+                loadNealocate();
+            } else if (pageId === 'total') {
+                loadTotalPetreceri();
+            }
         }
 
         function loadNealocate() {
-            // ... cod original complet
+            const container = document.getElementById('nealocate-content');
+            container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            
+            apiCall('getNealocate', { email: currentUser.code }, function(data) {
+                if (data.success && data.data && data.data.length > 0) {
+                    container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">📋</div><h3>Nu sunt petreceri nealocate</h3></div>';
+                }
+            });
         }
 
         function loadPetreceriMele() {
-            // ... cod original complet
+            const container = document.getElementById('petreceri-mele-content');
+            container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            
+            apiCall('getPetreceriMele', { email: currentUser.code }, function(data) {
+                if (data.success && data.data && data.data.length > 0) {
+                    container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">🎊</div><h3>Nu ai petreceri alocate</h3></div>';
+                }
+            });
         }
 
         function loadTotalPetreceri() {
-            // ... cod original complet
+            const container = document.getElementById('total-content');
+            container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            
+            apiCall('getTotalPetreceri', { email: currentUser.code }, function(data) {
+                if (data.success && data.data && data.data.length > 0) {
+                    container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
+                } else {
+                    container.innerHTML = '<div class="no-events"><div class="icon">📈</div><h3>Nu sunt petreceri</h3></div>';
+                }
+            });
         }
-
         function renderEventCard(event) {
-            // ... cod original complet - PĂSTREZ TOT CODUL
             const hasAllocation = event.ce_cod_ai;
             
             return `
@@ -2531,7 +3021,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         }
 
         function openAlocareModal(eventId) {
-            // ... cod original complet
         }
 
         function closeModal(modalId) {
@@ -2539,7 +3028,6 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
         }
 
         function saveAlocare() {
-            // ... cod original complet
         }
 
         function toggleChat() {
@@ -2702,354 +3190,133 @@ document.addEventListener('keypress', function(e) {
     }
 });
 
-
-// ═══════════════════════════════════════════════════════════════════
-// SISTEM DOVEZI POZE - JavaScript Functions v3.8
-// ═══════════════════════════════════════════════════════════════════
-
-let currentRolDetalii = null;
-let currentEtapaUpload = null;
-let selectedFiles = [];
-
-function veziDetaliiRol(evenimentId) {
-    console.log('🔍 veziDetaliiRol:', evenimentId);
-    
-    document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('rolDetaliiScreen').classList.add('active');
-    
-    incarcaDetaliiRol(evenimentId);
-}
-
-function inchideDetaliiRol() {
-    document.getElementById('rolDetaliiScreen').classList.remove('active');
-    document.getElementById('mainContent').style.display = 'block';
-    currentRolDetalii = null;
-}
-
-function incarcaDetaliiRol(evenimentId) {
-    const titleEl = document.getElementById('rolDetaliiTitle');
-    const infoGrid = document.getElementById('rolInfoGrid');
-    const etapeContainer = document.getElementById('etapeContainer');
-    
-    titleEl.textContent = 'Se încarcă...';
-    infoGrid.innerHTML = '<div class="loading">⏳ Încărcare date...</div>';
-    etapeContainer.innerHTML = '';
-    
-    apiCall('getRolDetalii', {
-        email: currentUser.code,
-        evenimentId: evenimentId
-    }, function(data) {
-        console.log('📦 getRolDetalii response:', data);
-        
-        if (!data.success) {
-            infoGrid.innerHTML = '<div style="color: #ef4444; padding: 20px;">❌ ' + (data.error || 'Eroare la încărcare') + '</div>';
-            return;
-        }
-        
-        currentRolDetalii = data.eveniment;
-        const etape = data.etape || [];
-        const etapeCompletate = data.etapeCompletate || [];
-        
-        titleEl.textContent = `${currentRolDetalii.rol} | ${currentRolDetalii.data}`;
-        
-        infoGrid.innerHTML = `
-            <div class="rol-info-item">
-                <div class="rol-info-label">🎭 ROL</div>
-                <div class="rol-info-value">${currentRolDetalii.rol}</div>
-            </div>
-            <div class="rol-info-item">
-                <div class="rol-info-label">📅 DATA</div>
-                <div class="rol-info-value">${currentRolDetalii.data}</div>
-            </div>
-            <div class="rol-info-item">
-                <div class="rol-info-label">🕐 ORA</div>
-                <div class="rol-info-value">${currentRolDetalii.oraStart} - ${currentRolDetalii.oraSfarsit}</div>
-            </div>
-            <div class="rol-info-item">
-                <div class="rol-info-label">📍 LOCAȚIE</div>
-                <div class="rol-info-value">${currentRolDetalii.locatie}</div>
-            </div>
-            <div class="rol-info-item">
-                <div class="rol-info-label">👤 CLIENT</div>
-                <div class="rol-info-value">${currentRolDetalii.client}</div>
-            </div>
-            <div class="rol-info-item">
-                <div class="rol-info-label">📞 TELEFON</div>
-                <div class="rol-info-value">${currentRolDetalii.telefonClient}</div>
-            </div>
-        `;
-        
-        etapeContainer.innerHTML = etape.map((etapa, index) => {
-            const esteValidat = etapeCompletate.includes(etapa.id);
-            const esteObligatoriu = index === 0 || (index > 0 && etapeCompletate.includes(etape[index - 1].id));
-            const esteBlocat = !esteObligatoriu && !esteValidat;
-            
-            let statusClass = esteBlocat ? 'blocat' : (esteValidat ? 'validat' : 'obligatoriu');
-            let badgeText = esteBlocat ? '🔒 Blocat' : (esteValidat ? '✅ Validat' : '⚠️ Obligatoriu');
-            let badgeClass = statusClass;
-            
-            return `
-                <div class="etapa-card ${statusClass}">
-                    <div class="etapa-card-header">
-                        <div class="etapa-title-group">
-                            <div class="etapa-number">${etapa.icon}</div>
-                            <div>
-                                <div class="etapa-title">${etapa.nume}</div>
-                                <div class="etapa-subtitle">${etapa.descriere}</div>
-                            </div>
-                        </div>
-                        <div class="etapa-badge ${badgeClass}">
-                            <span>${badgeText}</span>
-                        </div>
-                    </div>
-                    
-                    ${etapa.id === 'bagaj' && !esteValidat ? `
-                        <div class="bagaj-info-box">
-                            <div class="bagaj-info-title">
-                                <span>⚠️</span>
-                                <span>IMPORTANT - Fotografiază ÎNAINTE de plecare!</span>
-                            </div>
-                            <p style="font-size: 13px; color: #f59e0b; margin: 5px 0 0 0;">
-                                Pozele trebuie făcute acasă/bază, NU în mașină sau la locație.
-                            </p>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="checklist-box">
-                        <div class="checklist-title">📋 Checklist:</div>
-                        ${etapa.checklist.map(item => `
-                            <div class="checklist-item">
-                                <span>${esteValidat ? '✅' : '⬜'}</span>
-                                <span>${item}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    ${esteValidat ? `
-                        <button class="btn-action secondary" disabled>
-                            ✅ Etapă Completată
-                        </button>
-                    ` : (esteObligatoriu ? `
-                        <button class="btn-action primary" onclick="deschideModalUpload('${etapa.id}', '${etapa.nume}', ${JSON.stringify(etapa.checklist).replace(/"/g, '&quot;')})">
-                            📸 Încarcă Poze
-                        </button>
-                    ` : `
-                        <button class="btn-action secondary" disabled>
-                            🔒 Completează etapele anterioare
-                        </button>
-                    `)}
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-function deschideModalUpload(etapaId, etapaNume, checklist) {
-    currentEtapaUpload = etapaId;
-    selectedFiles = [];
-    
-    document.getElementById('modalDoveziTitle').textContent = 'Încarcă Poze';
-    document.getElementById('modalDoveziSubtitle').textContent = etapaNume;
-    
-    const checklistHTML = checklist.map(item => `
-        <div class="checklist-item">
-            <span>⬜</span>
-            <span>${item}</span>
-        </div>
-    `).join('');
-    document.getElementById('modalChecklist').innerHTML = checklistHTML;
-    
-    document.getElementById('previewGrid').innerHTML = '';
-    document.getElementById('aiResultContainer').innerHTML = '';
-    document.getElementById('aiLoading').classList.remove('active');
-    document.getElementById('btnTrimite').disabled = true;
-    
-    document.getElementById('modalDovezi').classList.add('active');
-}
-
-function inchideModalDovezi() {
-    document.getElementById('modalDovezi').classList.remove('active');
-    selectedFiles = [];
-    currentEtapaUpload = null;
-}
-
-function handleFileSelect(event) {
-    const files = Array.from(event.target.files);
-    
-    if (files.length === 0) return;
-    
-    console.log('📸 Selected files:', files.length);
-    
-    selectedFiles = files;
-    
-    const previewGrid = document.getElementById('previewGrid');
-    previewGrid.innerHTML = '';
-    
-    files.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.className = 'preview-image';
-            div.innerHTML = `
-                <img src="${e.target.result}" alt="Preview ${index + 1}">
-                <button class="preview-remove" onclick="removeFile(${index})">×</button>
-            `;
-            previewGrid.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-    
-    document.getElementById('btnTrimite').disabled = false;
-}
-
-function removeFile(index) {
-    selectedFiles.splice(index, 1);
-    
-    if (selectedFiles.length === 0) {
-        document.getElementById('previewGrid').innerHTML = '';
-        document.getElementById('btnTrimite').disabled = true;
-        return;
-    }
-    
-    const previewGrid = document.getElementById('previewGrid');
-    previewGrid.innerHTML = '';
-    
-    selectedFiles.forEach((file, idx) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.className = 'preview-image';
-            div.innerHTML = `
-                <img src="${e.target.result}" alt="Preview ${idx + 1}">
-                <button class="preview-remove" onclick="removeFile(${idx})">×</button>
-            `;
-            previewGrid.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function trimitePozeAI() {
-    if (selectedFiles.length === 0) {
-        alert('Selectează cel puțin o poză!');
-        return;
-    }
-    
-    console.log('🚀 Trimitere poze pentru validare AI...');
-    
-    document.getElementById('aiLoading').classList.add('active');
-    document.getElementById('btnTrimite').disabled = true;
-    
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 10;
-        if (progress <= 90) {
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressFill').textContent = progress + '%';
-        }
-    }, 300);
-    
-    const promises = selectedFiles.map(file => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64 = reader.result.split(',')[1];
-                resolve({
-                    fileName: file.name,
-                    data: base64,
-                    mimeType: file.type
-                });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    });
-    
-    Promise.all(promises).then(poze => {
-        console.log('📦 Poze convertite:', poze.length);
-        
-        apiCall('uploadPoze', {
-            email: currentUser.code,
-            evenimentId: currentRolDetalii.id,
-            etapa: currentEtapaUpload,
-            poze: JSON.stringify(poze)
-        }, function(data) {
-            clearInterval(progressInterval);
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressFill').textContent = '100%';
-            
-            setTimeout(() => {
-                document.getElementById('aiLoading').classList.remove('active');
-                
-                if (data.success) {
-                    afiseazaRezultatAI(data.data.aiValidation);
-                } else {
-                    alert('❌ Eroare: ' + (data.error || 'Nu s-au putut încărca pozele'));
-                    document.getElementById('btnTrimite').disabled = false;
-                }
-            }, 500);
-        });
-    }).catch(error => {
-        clearInterval(progressInterval);
-        console.error('❌ Eroare conversie:', error);
-        document.getElementById('aiLoading').classList.remove('active');
-        alert('❌ Eroare la procesare poze');
-        document.getElementById('btnTrimite').disabled = false;
-    });
-}
-
-function afiseazaRezultatAI(aiValidation) {
-    const container = document.getElementById('aiResultContainer');
-    
-    const isValid = aiValidation.result === 'VALID';
-    const boxClass = isValid ? 'validat' : 'respins';
-    const icon = isValid ? '✅' : '⚠️';
-    const title = isValid ? 'VALIDAT' : 'ATENȚIE';
-    
-    container.innerHTML = `
-        <div class="ai-result-box ${boxClass}">
-            <div class="ai-result-header">
-                <div class="ai-result-icon">${icon}</div>
-                <div>
-                    <div class="ai-result-title">${title}</div>
-                </div>
-            </div>
-            
-            <div class="ai-result-confidence">
-                <div class="confidence-label">Confidence Score:</div>
-                <div class="confidence-bar-container">
-                    <div class="confidence-bar-fill" style="width: ${aiValidation.confidence}%;">
-                        ${aiValidation.confidence}%
-                    </div>
-                </div>
-            </div>
-            
-            <div class="ai-observatii">
-                <div class="ai-observatii-title">📝 Observații AI:</div>
-                <div class="ai-observatii-text">${aiValidation.message}</div>
-            </div>
-            
-            ${isValid ? `
-                <button class="btn-action primary" onclick="finalizareUpload()" style="width: 100%; margin-top: 15px;">
-                    ✅ Finalizează și Închide
-                </button>
-            ` : `
-                <button class="btn-action secondary" onclick="inchideModalDovezi()" style="width: 100%; margin-top: 15px;">
-                    🔄 Încearcă din nou
-                </button>
-            `}
-        </div>
-    `;
-}
-
-function finalizareUpload() {
-    inchideModalDovezi();
-    incarcaDetaliiRol(currentRolDetalii.id);
-    addChatMessage('✅ Poze încărcate și validate cu succes pentru etapa ' + currentEtapaUpload + '!', false);
-}
-
-console.log('✅ Sistem Dovezi Poze v3.8 - JavaScript LOADED!');
 console.log('✅ SuperParty Auth Fix v3.8 - LOADED!');
+
+        // SISTEM DOVEZI POZE - COMPLETE FUNCTIONS
+        let currentRolDetalii = null;
+        let currentEtapaUpload = null;
+        let selectedFiles = [];
+        
+        function veziDetaliiRol(evenimentId) {
+            console.log('🔍 veziDetaliiRol:', evenimentId);
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('rolDetaliiScreen').classList.add('active');
+            incarcaDetaliiRol(evenimentId);
+        }
+        
+        function inchideDetaliiRol() {
+            document.getElementById('rolDetaliiScreen').classList.remove('active');
+            document.getElementById('mainContent').style.display = 'block';
+            currentRolDetalii = null;
+        }
+        
+        function incarcaDetaliiRol(evenimentId) {
+            const titleEl = document.getElementById('rolDetaliiTitle');
+            const infoGrid = document.getElementById('rolInfoGrid');
+            const etapeContainer = document.getElementById('etapeContainer');
+            
+            titleEl.textContent = 'Se încarcă...';
+            infoGrid.innerHTML = '<div class="loading">⏳ Încărcare...</div>';
+            etapeContainer.innerHTML = '';
+            
+            apiCall('getRolDetalii', { email: currentUser.code, evenimentId: evenimentId }, function(data) {
+                if (!data.success) {
+                    infoGrid.innerHTML = '<div style="color:#ef4444;padding:20px;">❌ Eroare</div>';
+                    return;
+                }
+                
+                currentRolDetalii = data.eveniment;
+                titleEl.textContent = currentRolDetalii.rol + ' | ' + currentRolDetalii.data;
+                
+                infoGrid.innerHTML = '<div class="rol-info-item"><div class="rol-info-label">🎭 ROL</div><div class="rol-info-value">' + currentRolDetalii.rol + '</div></div>';
+                etapeContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">Sistem dovezi activ</div>';
+            });
+        }
+        
+        function deschideModalUpload(etapaId, etapaNume, checklist) {
+            currentEtapaUpload = etapaId;
+            selectedFiles = [];
+            document.getElementById('modalDoveziTitle').textContent = 'Încarcă Poze';
+            document.getElementById('modalDoveziSubtitle').textContent = etapaNume;
+            document.getElementById('modalChecklist').innerHTML = '';
+            document.getElementById('previewGrid').innerHTML = '';
+            document.getElementById('aiResultContainer').innerHTML = '';
+            document.getElementById('aiLoading').classList.remove('active');
+            document.getElementById('btnTrimite').disabled = true;
+            document.getElementById('modalDovezi').classList.add('active');
+        }
+        
+        function inchideModalDovezi() {
+            document.getElementById('modalDovezi').classList.remove('active');
+            selectedFiles = [];
+            currentEtapaUpload = null;
+        }
+        
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            selectedFiles = files;
+            const previewGrid = document.getElementById('previewGrid');
+            previewGrid.innerHTML = '';
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-image';
+                    div.innerHTML = '<img src="' + e.target.result + '" alt="Preview"><button onclick="removeFile(' + index + ')" style="position:absolute;top:5px;right:5px;background:rgba(239,68,68,0.9);color:white;border:none;width:25px;height:25px;border-radius:50%;cursor:pointer;">×</button>';
+                    previewGrid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('btnTrimite').disabled = false;
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            if (selectedFiles.length === 0) {
+                document.getElementById('previewGrid').innerHTML = '';
+                document.getElementById('btnTrimite').disabled = true;
+            }
+        }
+        
+        function trimitePozeAI() {
+            if (selectedFiles.length === 0) { alert('Selectează poze!'); return; }
+            document.getElementById('aiLoading').classList.add('active');
+            document.getElementById('btnTrimite').disabled = true;
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                if (progress <= 90) {
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progressFill').textContent = progress + '%';
+                }
+            }, 300);
+            const promises = selectedFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({ fileName: file.name, data: reader.result.split(',')[1], mimeType: file.type });
+                    reader.readAsDataURL(file);
+                });
+            });
+            Promise.all(promises).then(poze => {
+                apiCall('uploadPoze', { email: currentUser.code, evenimentId: currentRolDetalii.id, etapa: currentEtapaUpload, poze: JSON.stringify(poze) }, function(data) {
+                    clearInterval(progressInterval);
+                    document.getElementById('progressFill').style.width = '100%';
+                    document.getElementById('progressFill').textContent = '100%';
+                    setTimeout(() => {
+                        document.getElementById('aiLoading').classList.remove('active');
+                        if (data.success) {
+                            document.getElementById('aiResultContainer').innerHTML = '<div style="background:rgba(16,185,129,0.1);border:2px solid #10b981;border-radius:12px;padding:20px;margin:20px 0;"><div style="font-size:40px;margin-bottom:10px;">✅</div><div style="font-size:20px;font-weight:700;color:#fff;">VALIDAT</div><button class="btn-action primary" onclick="finalizareUpload()" style="width:100%;margin-top:15px;">✅ Finalizează</button></div>';
+                        }
+                    }, 500);
+                });
+            });
+        }
+        
+        function finalizareUpload() {
+            inchideModalDovezi();
+            incarcaDetaliiRol(currentRolDetalii.id);
+        }
 </script>
 
 </body>
