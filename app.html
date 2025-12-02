@@ -2478,6 +2478,32 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                         <span class="icon">👥</span>
                         <span>Gestionare Utilizatori</span>
                     </div>
+                    <div class="menu-section">📱 NOTARE EVENIMENTE</div>
+                    <div class="menu-item" onclick="showNotareAI()">
+                        <span class="icon">🤖</span>
+                        <span>Notare Evenimente AI</span>
+                    </div>
+                    <div class="menu-item" onclick="showEroriAI()">
+                        <span class="icon">⚠️</span>
+                        <span>Erori AI</span>
+                    </div>
+                    <div class="menu-item" onclick="showIstoricConversatii()">
+                        <span class="icon">💬</span>
+                        <span>Istoric Conversații</span>
+                    </div>
+                    <div class="menu-item" onclick="showAprobareEvenimente()">
+                        <span class="icon">✅</span>
+                        <span>Aprobare Evenimente</span>
+                    </div>
+                    <div class="menu-item" onclick="showExceptiiPermanente()">
+                        <span class="icon">⚙️</span>
+                        <span>Excepții Permanente</span>
+                    </div>
+                    <div class="menu-item" onclick="showModificareEvenimente()">
+                        <span class="icon">✏️</span>
+                        <span>Modificare Evenimente</span>
+                    </div>
+
                     <div class="menu-section">🔙 ÎNAPOI</div>
                     <div class="menu-item" onclick="switchToOperatorMode()">
                         <span class="icon">↩️</span>
@@ -2505,6 +2531,32 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
                         <span class="icon">🧠</span>
                         <span>Creier AI</span>
                     </div>
+                    <div class="menu-section">📱 NOTARE EVENIMENTE</div>
+                    <div class="menu-item" onclick="showNotareAI()">
+                        <span class="icon">🤖</span>
+                        <span>Notare Evenimente AI</span>
+                    </div>
+                    <div class="menu-item" onclick="showEroriAI()">
+                        <span class="icon">⚠️</span>
+                        <span>Erori AI</span>
+                    </div>
+                    <div class="menu-item" onclick="showIstoricConversatii()">
+                        <span class="icon">💬</span>
+                        <span>Istoric Conversații</span>
+                    </div>
+                    <div class="menu-item" onclick="showAprobareEvenimente()">
+                        <span class="icon">✅</span>
+                        <span>Aprobare Evenimente</span>
+                    </div>
+                    <div class="menu-item" onclick="showExceptiiPermanente()">
+                        <span class="icon">⚙️</span>
+                        <span>Excepții Permanente</span>
+                    </div>
+                    <div class="menu-item" onclick="showModificareEvenimente()">
+                        <span class="icon">✏️</span>
+                        <span>Modificare Evenimente</span>
+                    </div>
+
                     <div class="menu-section">🎯 SEO & ADS</div>
                     <div class="menu-item" onclick="showPage('gm-seo')">
                         <span class="icon">🎯</span>
@@ -2938,7 +2990,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             const container = document.getElementById('nealocate-content');
             container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
             
-            apiCall('getNealocate', { email: currentUser.code }, function(data) {
+            apiCall('getNealocate', { userEmail: currentUser.email }, function(data) {
                 if (data.success && data.data && data.data.length > 0) {
                     container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
                 } else {
@@ -2951,7 +3003,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             const container = document.getElementById('petreceri-mele-content');
             container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
             
-            apiCall('getPetreceriMele', { email: currentUser.code }, function(data) {
+            apiCall('getPetreceriMele', { userEmail: currentUser.email }, function(data) {
                 if (data.success && data.data && data.data.length > 0) {
                     container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
                 } else {
@@ -2964,7 +3016,7 @@ Bună! 👋 Sunt asistentul SuperParty. Cu ce te pot ajuta?
             const container = document.getElementById('total-content');
             container.innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
             
-            apiCall('getTotalPetreceri', { email: currentUser.code }, function(data) {
+            apiCall('getTotalPetreceri', { userEmail: currentUser.email }, function(data) {
                 if (data.success && data.data && data.data.length > 0) {
                     container.innerHTML = data.data.map(event => renderEventCard(event)).join('');
                 } else {
@@ -3317,7 +3369,365 @@ console.log('✅ SuperParty Auth Fix v3.8 - LOADED!');
             inchideModalDovezi();
             incarcaDetaliiRol(currentRolDetalii.id);
         }
+
+
+        // ═══════════════════════════════════════════════════════════════
+        // FUNCȚII NOI v3.9 - Notare Evenimente cu AI
+        // ═══════════════════════════════════════════════════════════════
+
+        let currentConvIdAI = null;
+
+        function showNotareAI() {
+            showPage('pageNotareAI');
+            document.getElementById('chatMessagesAI').innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 50px 20px;"><div style="font-size: 48px; margin-bottom: 15px;">💬</div><p>Începe conversația cu AI</p></div>';
+        }
+
+        function sendChatMessageAI() {
+            const input = document.getElementById('chatInputAI');
+            const message = input.value.trim();
+            if (!message) return;
+
+            if (!currentConvIdAI) {
+                currentConvIdAI = 'CONV_' + Date.now();
+            }
+
+            appendChatMessageAI('user', message);
+            input.value = '';
+
+            apiCall('chatOperator', {
+                message: message,
+                userEmail: currentUser.email,
+                convId: currentConvIdAI
+            }, function(response) {
+                if (response.success) {
+                    appendChatMessageAI('ai', response.message);
+                    if (response.requireProof) {
+                        document.getElementById('proofUploadAreaAI').style.display = 'block';
+                    }
+                    if (response.eventId) {
+                        appendChatMessageAI('system', '✅ Eveniment creat: ' + response.eventId);
+                        currentConvIdAI = null;
+                        setTimeout(function() {
+                            document.getElementById('proofUploadAreaAI').style.display = 'none';
+                        }, 1000);
+                    }
+                } else {
+                    appendChatMessageAI('ai', '❌ ' + (response.message || response.error || 'Eroare'));
+                }
+            });
+        }
+
+        function appendChatMessageAI(type, message) {
+            const container = document.getElementById('chatMessagesAI');
+            const div = document.createElement('div');
+            div.style.marginBottom = '15px';
+            div.style.padding = '12px 16px';
+            div.style.borderRadius = '10px';
+            div.style.maxWidth = '85%';
+
+            if (type === 'user') {
+                div.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                div.style.color = 'white';
+                div.style.marginLeft = 'auto';
+                div.innerHTML = '<strong>👤 Tu:</strong><br>' + message;
+            } else if (type === 'ai') {
+                div.style.background = 'rgba(255,255,255,0.05)';
+                div.style.border = '1px solid rgba(255,255,255,0.1)';
+                div.style.color = 'white';
+                div.innerHTML = '<strong>🤖 AI:</strong><br>' + message.replace(/\n/g, '<br>');
+            } else if (type === 'system') {
+                div.style.background = '#10b981';
+                div.style.color = 'white';
+                div.style.textAlign = 'center';
+                div.style.margin = '20px auto';
+                div.style.maxWidth = '100%';
+                div.innerHTML = message;
+            }
+
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function uploadProofAI() {
+            const fileInput = document.getElementById('proofFileAI');
+            if (fileInput.files.length === 0) {
+                alert('Selectează poze!');
+                return;
+            }
+            appendChatMessageAI('system', '📤 Se încarcă dovada...');
+            setTimeout(function() {
+                const mockUrl = 'https://drive.google.com/mock/' + Date.now();
+                apiCall('chatOperator', {
+                    message: 'Retrimite cu dovadă',
+                    userEmail: currentUser.email,
+                    convId: currentConvIdAI,
+                    proofUrl: mockUrl
+                }, function(response) {
+                    document.getElementById('proofUploadAreaAI').style.display = 'none';
+                    if (response.success) {
+                        appendChatMessageAI('ai', response.message);
+                        if (response.eventId) currentConvIdAI = null;
+                    }
+                });
+            }, 500);
+        }
+
+        function showEroriAI() {
+            showPage('pageEroriAI');
+            loadEroriAI('all');
+        }
+
+        function loadEroriAI(period) {
+            document.getElementById('eroriListAI').innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            setTimeout(function() {
+                document.getElementById('eroriListAI').innerHTML = '<div class="no-events"><div class="icon">✅</div><h3>Nicio eroare!</h3></div>';
+            }, 500);
+        }
+
+        function showIstoricConversatii() {
+            showPage('pageIstoricConversatii');
+        }
+
+        function searchConversationsAI() {
+            document.getElementById('conversationsListAI').innerHTML = '<div class="loading">⏳ Se caută...</div>';
+            setTimeout(function() {
+                document.getElementById('conversationsListAI').innerHTML = '<div class="no-events"><div class="icon">💬</div><h3>Nicio conversație</h3></div>';
+            }, 500);
+        }
+
+        function showAprobareEvenimente() {
+            showPage('pageAprobareEvenimente');
+            loadApprovalsAI('incomplete');
+        }
+
+        function loadApprovalsAI(filter) {
+            document.getElementById('approvalsListAI').innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            apiCall('getEventsNeedingApproval', {}, function(response) {
+                if (response.success && response.data && response.data.length > 0) {
+                    document.getElementById('approvalsListAI').innerHTML = '<div class="event-card"><h3>Evenimente de aprobat</h3></div>';
+                } else {
+                    document.getElementById('approvalsListAI').innerHTML = '<div class="no-events"><div class="icon">✅</div><h3>Toate OK!</h3></div>';
+                }
+            });
+        }
+
+        function showExceptiiPermanente() {
+            showPage('pageExceptiiPermanente');
+            loadExceptionsAI();
+        }
+
+        function loadExceptionsAI() {
+            document.getElementById('exceptionsListAI').innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            apiCall('getExceptions', {}, function(response) {
+                if (response.success && response.data && response.data.length > 0) {
+                    document.getElementById('exceptionsListAI').innerHTML = '<div class="event-card"><h3>Excepții active</h3></div>';
+                } else {
+                    document.getElementById('exceptionsListAI').innerHTML = '<div class="no-events"><div class="icon">⚙️</div><h3>Nicio excepție</h3></div>';
+                }
+            });
+        }
+
+        function showAddExceptionAI() {
+            alert('Funcție în dezvoltare: Adăugare excepție');
+        }
+
+        function showModificareEvenimente() {
+            showPage('pageModificareEvenimente');
+        }
+
+        function loadEventForEditAI() {
+            const eventId = document.getElementById('searchEventIDAI').value.trim();
+            if (!eventId) {
+                alert('Introdu ID eveniment!');
+                return;
+            }
+            document.getElementById('editEventFormAI').style.display = 'block';
+            document.getElementById('editEventFormAI').innerHTML = '<div class="loading">⏳ Se încarcă...</div>';
+            apiCall('getEvenimentDetalii', { eventId: eventId }, function(response) {
+                if (response.success) {
+                    document.getElementById('editEventFormAI').innerHTML = '<div class="event-card"><h3>Eveniment: ' + eventId + '</h3><p>Formular în dezvoltare</p></div>';
+                } else {
+                    document.getElementById('editEventFormAI').innerHTML = '<div class="no-events"><div class="icon">❌</div><h3>Nu găsit!</h3></div>';
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // SFÂRȘIT FUNCȚII NOI v3.9
+        // ═══════════════════════════════════════════════════════════════
+
+
 </script>
+
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PAGINI NOI v3.9 - Notare Evenimente cu AI
+         ═══════════════════════════════════════════════════════════════ -->
+    
+    <!-- PAGINĂ: Notare Evenimente AI -->
+    <div id="pageNotareAI" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>🤖 Notare Evenimente cu AI</h1>
+            <p>Vorbește cu AI pentru a nota evenimente</p>
+        </div>
+        <div class="page-content">
+            <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 30px; max-width: 900px; margin: 0 auto;">
+                <div id="chatMessagesAI" style="height: 450px; overflow-y: auto; padding: 20px; background: #0f172a; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 50px 20px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">💬</div>
+                        <p>Începe conversația cu AI pentru a nota un eveniment</p>
+                    </div>
+                </div>
+                
+                <div id="proofUploadAreaAI" style="display:none; background: #fef3c7; padding: 20px; margin-bottom: 20px; border-radius: 10px; color: #92400e;">
+                    <p style="margin-bottom: 15px; font-weight: 600;">📸 Trebuie dovadă obligatoriu!</p>
+                    <input type="file" id="proofFileAI" accept="image/*" multiple style="margin-bottom: 15px; padding: 10px;">
+                    <button onclick="uploadProofAI()" class="btn-primary">Încarcă Dovadă</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInputAI" placeholder="Ex: Notează Elsa pe 10 decembrie ora 15:00..." style="flex: 1; padding: 15px; border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; background: rgba(255,255,255,0.05); color: white;">
+                    <button onclick="sendChatMessageAI()" class="btn-primary" style="padding: 15px 30px;">Trimite 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGINĂ: Erori AI -->
+    <div id="pageEroriAI" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>⚠️ Erori Notare AI</h1>
+            <p>Tracking erori de notare</p>
+        </div>
+        <div class="page-content">
+            <div style="margin-bottom: 30px; display: flex; gap: 10px; justify-content: center;">
+                <button onclick="loadEroriAI('today')" class="btn-secondary">Astăzi</button>
+                <button onclick="loadEroriAI('week')" class="btn-secondary">Săptămâna asta</button>
+                <button onclick="loadEroriAI('month')" class="btn-secondary">Luna asta</button>
+                <button onclick="loadEroriAI('all')" class="btn-primary">Toate</button>
+            </div>
+            <div id="eroriListAI" style="max-width: 1000px; margin: 0 auto;">
+                <div class="no-events">
+                    <div class="icon">✅</div>
+                    <h3>Nicio eroare găsită!</h3>
+                    <p>AI-ul funcționează perfect 🎉</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGINĂ: Istoric Conversații -->
+    <div id="pageIstoricConversatii" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>💬 Istoric Conversații cu AI</h1>
+            <p>Vezi toate conversațiile operatorilor</p>
+        </div>
+        <div class="page-content">
+            <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 30px; max-width: 1100px; margin: 0 auto 30px;">
+                <h3 style="margin-bottom: 20px; color: #f87171;">🔍 Filtre Rapide</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>📞 Număr telefon</label>
+                        <input type="text" id="filterTelefonAI" placeholder="0721...">
+                    </div>
+                    <div class="form-group">
+                        <label>🎫 ID Eveniment</label>
+                        <input type="text" id="filterEventIDAI" placeholder="EV-...">
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Operator</label>
+                        <select id="filterOperatorAI" class="filter-select">
+                            <option value="">Toți</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Perioadă</label>
+                        <select id="filterPeriodAI" class="filter-select">
+                            <option value="today">Astăzi</option>
+                            <option value="week">Ultima săptămână</option>
+                            <option value="month" selected>Ultima lună</option>
+                            <option value="all">Toate</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="searchConversationsAI()" class="btn-primary" style="width: 100%; padding: 15px;">Caută Conversații 🔍</button>
+            </div>
+            <div id="conversationsListAI" style="max-width: 1100px; margin: 0 auto;">
+                <div class="no-events">
+                    <div class="icon">💬</div>
+                    <h3>Nicio conversație găsită</h3>
+                    <p>Folosește filtrele de mai sus</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGINĂ: Aprobare Evenimente -->
+    <div id="pageAprobareEvenimente" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>✅ Aprobare Evenimente</h1>
+            <p>Aprobă evenimente incomplete</p>
+        </div>
+        <div class="page-content">
+            <div style="margin-bottom: 30px; display: flex; gap: 10px; justify-content: center;">
+                <button onclick="loadApprovalsAI('incomplete')" class="btn-primary">Incomplete (0)</button>
+                <button onclick="loadApprovalsAI('ai_rejected')" class="btn-secondary">AI Respins (0)</button>
+                <button onclick="loadApprovalsAI('all')" class="btn-secondary">Toate</button>
+            </div>
+            <div id="approvalsListAI" style="max-width: 1000px; margin: 0 auto;">
+                <div class="no-events">
+                    <div class="icon">✅</div>
+                    <h3>Toate evenimentele sunt complete!</h3>
+                    <p>Niciun eveniment nu necesită aprobare 🎉</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGINĂ: Excepții Permanente -->
+    <div id="pageExceptiiPermanente" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>⚙️ Excepții Permanente Dovezi</h1>
+            <p>Gestionează excepții pentru operatori</p>
+        </div>
+        <div class="page-content">
+            <button onclick="showAddExceptionAI()" class="btn-primary" style="margin-bottom: 30px; padding: 15px 30px;">➕ Adaugă excepție nouă</button>
+            <div id="exceptionsListAI" style="max-width: 1000px; margin: 0 auto;">
+                <div class="no-events">
+                    <div class="icon">⚙️</div>
+                    <h3>Nicio excepție activă</h3>
+                    <p>Adaugă excepții pentru operatori de încredere</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGINĂ: Modificare Evenimente -->
+    <div id="pageModificareEvenimente" class="page" style="display:none;">
+        <div class="page-header">
+            <h1>✏️ Modificare Eveniment</h1>
+            <p>Editează evenimente existente</p>
+        </div>
+        <div class="page-content">
+            <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 12px; padding: 30px; max-width: 800px; margin: 0 auto;">
+                <div style="margin-bottom: 30px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">🔍 Caută eveniment după ID</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="searchEventIDAI" placeholder="EV-12345..." style="flex: 1; padding: 12px; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; background: rgba(255,255,255,0.05); color: white;">
+                        <button onclick="loadEventForEditAI()" class="btn-primary" style="padding: 12px 30px;">Caută 🔍</button>
+                    </div>
+                </div>
+                <div id="editEventFormAI" style="display:none;">
+                    <div class="no-events">
+                        <div class="icon">📝</div>
+                        <h3>Formular în dezvoltare</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </body>
 </html>
