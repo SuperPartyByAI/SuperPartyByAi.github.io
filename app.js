@@ -15,6 +15,41 @@ const AppState = {
 };
 
 // ═══════════════════════════════════════════════════════════
+// CONSOLE PROTECTION (only in production)
+// ═══════════════════════════════════════════════════════════
+
+if (typeof SUPERPARTY_CONFIG !== 'undefined' && !SUPERPARTY_CONFIG.DEBUG) {
+    // PRODUCTION MODE - Block console
+    console.log('🔒 Console protection ENABLED (production mode)');
+    
+    // Disable F12
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Disable right-click
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Override console methods
+    const noop = () => {};
+    console.log = noop;
+    console.warn = noop;
+    console.error = noop;
+    console.info = noop;
+    console.debug = noop;
+} else {
+    // DEBUG MODE - Console enabled
+    console.log('🔓 Console protection DISABLED (debug mode)');
+    console.log('✅ Full console access enabled for development');
+}
+
+// ═══════════════════════════════════════════════════════════
 // APP INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 
@@ -771,22 +806,6 @@ async function handleForgotPassword() {
     // Hide loading
     btnText.style.display = 'inline';
     btnLoading.style.display = 'none';
-}
-        localStorage.removeItem('userId');
-        
-        // Reset state
-        AppState.user = null;
-        AppState.notifications = [];
-        AppState.unreadCount = 0;
-        
-        // Show login screen
-        showLoginScreen();
-        
-        showToast('Te-ai deconectat', 'success');
-        
-    } catch (error) {
-        console.error('Logout error:', error);
-    }
 }
 
 // ═══════════════════════════════════════════════════════════
