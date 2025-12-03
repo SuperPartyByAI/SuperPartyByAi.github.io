@@ -23,7 +23,7 @@ const SUPERPARTY_CONFIG = {
     },
     
     // Debug mode
-    DEBUG: false
+    DEBUG: true  // ← ACTIVAT pentru development!
 };
 
 // Log confirmare
