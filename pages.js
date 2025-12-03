@@ -793,7 +793,6 @@ async function archiveEventFromList(eventId) {
         showToast('❌ ' + error.message, 'error');
     }
 }
-}
 
 async function renderInbox() {
     document.getElementById('main-content').innerHTML = `
