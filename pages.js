@@ -1261,7 +1261,7 @@ function prevFormStep(step) {
     document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
     
     document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
-    document.querySelector(`.step[data-step="${step}"]`).classList.add('active'));
+    document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
