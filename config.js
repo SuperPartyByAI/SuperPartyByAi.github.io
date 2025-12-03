@@ -1,17 +1,37 @@
 /**
- * SUPERPARTY CONFIG
- * Modifică doar URL-ul aici când faci deployment nou
+ * SUPERPARTY CONFIG v7.0
+ * Configurare centralizată pentru frontend
  */
 
 const SUPERPARTY_CONFIG = {
-    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec',
+    // Backend URL - ACTUALIZEAZĂ AICI LA DEPLOYMENT NOU
+    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbxpV3NKZJLzNe5tTGX5TlUVnAQc1j6z82kPz7QkzartJpFfdPgvvg0T84ay1Ljlrxk/exec',
     
-    // Parole admin/GM
+    // Parole (pentru referință - NU le schimba dacă nu e nevoie)
     ADMIN_PASSWORD: 'Adminandrei209512!',
     GM_PASSWORD: 'Gmandrei209512!',
     
     // Versiune
-    VERSION: '5.0'
+    VERSION: '7.0',
+    
+    // Features activate
+    FEATURES: {
+        CHAT_AI: true,
+        DOVEZI_SYSTEM: true,
+        PERFORMANCE_DASHBOARD: true,
+        ADMIN_CHAT: true
+    },
+    
+    // Debug mode
+    DEBUG: false
 };
 
-console.log('✅ SuperParty Config loaded - Backend:', SUPERPARTY_CONFIG.BACKEND_URL);
+// Log confirmare
+console.log('✅ SuperParty v7.0 Config loaded');
+console.log('📡 Backend:', SUPERPARTY_CONFIG.BACKEND_URL);
+console.log('🔧 Features:', SUPERPARTY_CONFIG.FEATURES);
+
+// Export pentru module (dacă folosești)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SUPERPARTY_CONFIG;
+}
