@@ -459,6 +459,24 @@ function showLoginScreen() {
         e.preventDefault();
         await handleLogin();
     });
+    
+    // Setup register button
+    const btnRegister = document.getElementById('btn-register');
+    if (btnRegister) {
+        btnRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterForm();
+        });
+    }
+    
+    // Setup forgot password button
+    const btnForgotPassword = document.getElementById('btn-forgot-password');
+    if (btnForgotPassword) {
+        btnForgotPassword.addEventListener('click', (e) => {
+            e.preventDefault();
+            showForgotPasswordForm();
+        });
+    }
 }
 
 /**
@@ -518,6 +536,242 @@ async function logout() {
     try {
         // Clear session
         localStorage.removeItem('sessionToken');
+        localStorage.removeItem('userId');
+        
+        AppState.user = null;
+        
+        showToast('La revedere!', 'success');
+        showLoginScreen();
+        
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+}
+
+/**
+ * Show register form
+ */
+function showRegisterForm() {
+    const modalHTML = `
+        <div class="modal-backdrop" id="register-modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>Creează cont nou</h3>
+                    <button class="btn-close" onclick="document.getElementById('register-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label>Nume complet</label>
+                            <input type="text" id="reg-name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="reg-email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="reg-phone" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Parolă</label>
+                            <input type="password" id="reg-password" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirmă parola</label>
+                            <input type="password" id="reg-password-confirm" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <select id="reg-role" class="form-control" required>
+                                <option value="">Selectează rol...</option>
+                                <option value="OPERATOR">Operator</option>
+                                <option value="TRAINER">Trainer</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="modal-footer" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('register-modal').remove()">
+                                Anulează
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-text">Creează cont</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Se încarcă...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Handle form submit
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleRegister();
+    });
+}
+
+/**
+ * Handle register
+ */
+async function handleRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const passwordConfirm = document.getElementById('reg-password-confirm').value;
+    const role = document.getElementById('reg-role').value;
+    
+    // Validation
+    if (!name || !email || !phone || !password || !passwordConfirm || !role) {
+        showToast('Te rog completează toate câmpurile', 'error');
+        return;
+    }
+    
+    if (password !== passwordConfirm) {
+        showToast('Parolele nu se potrivesc', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showToast('Parola trebuie să aibă minim 6 caractere', 'error');
+        return;
+    }
+    
+    // Show loading
+    const btnText = document.querySelector('#register-form .btn-text');
+    const btnLoading = document.querySelector('#register-form .btn-loading');
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-flex';
+    
+    try {
+        const response = await API.register({
+            name: name,
+            email: email,
+            phone: phone,
+            password: password,
+            role: role
+        });
+        
+        if (response.success) {
+            showToast('Cont creat cu succes! Te poți autentifica acum.', 'success');
+            document.getElementById('register-modal').remove();
+            
+            // Pre-fill email in login form
+            document.getElementById('login-email').value = email;
+        } else {
+            showToast(response.error || 'Eroare la crearea contului', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Register error:', error);
+        showToast('Eroare la crearea contului', 'error');
+    }
+    
+    // Hide loading
+    btnText.style.display = 'inline';
+    btnLoading.style.display = 'none';
+}
+
+/**
+ * Show forgot password form
+ */
+function showForgotPasswordForm() {
+    const modalHTML = `
+        <div class="modal-backdrop" id="forgot-password-modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>Resetare parolă</h3>
+                    <button class="btn-close" onclick="document.getElementById('forgot-password-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 20px; color: #666;">
+                        Introdu adresa de email și vei primi instrucțiuni pentru resetarea parolei.
+                    </p>
+                    
+                    <form id="forgot-password-form">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="forgot-email" class="form-control" required>
+                        </div>
+                        
+                        <div class="modal-footer" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('forgot-password-modal').remove()">
+                                Anulează
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-text">Trimite instrucțiuni</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Se trimite...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Handle form submit
+    document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleForgotPassword();
+    });
+}
+
+/**
+ * Handle forgot password
+ */
+async function handleForgotPassword() {
+    const email = document.getElementById('forgot-email').value.trim();
+    
+    if (!email) {
+        showToast('Te rog introdu adresa de email', 'error');
+        return;
+    }
+    
+    // Show loading
+    const btnText = document.querySelector('#forgot-password-form .btn-text');
+    const btnLoading = document.querySelector('#forgot-password-form .btn-loading');
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-flex';
+    
+    try {
+        const response = await API.forgotPassword(email);
+        
+        if (response.success) {
+            showToast('Instrucțiunile au fost trimise pe email!', 'success');
+            document.getElementById('forgot-password-modal').remove();
+        } else {
+            showToast(response.error || 'Eroare la trimiterea instrucțiunilor', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        showToast('Eroare la trimiterea instrucțiunilor', 'error');
+    }
+    
+    // Hide loading
+    btnText.style.display = 'inline';
+    btnLoading.style.display = 'none';
+}
         localStorage.removeItem('userId');
         
         // Reset state
