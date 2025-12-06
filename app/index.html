@@ -119,7 +119,8 @@
         label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
         input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
         input:focus { border-color: #818cf8; }
-        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
+        .btn:hover { transform: scale(1.02); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
         
@@ -135,6 +136,9 @@
             font-weight: 600; 
             border-bottom: 2px solid white; 
             cursor: pointer;
+        }
+        .link-toggle a:hover {
+            opacity: 0.8;
         }
         
         .register-card label { color: #374151; text-transform: none; }
@@ -221,7 +225,7 @@
                 <button type="submit" class="btn" id="loginBtn">🔓 Intră în aplicație</button>
             </form>
             <div class="link-toggle">
-                Nu ai cont? <a onclick="showPage('register')">Înregistrează-te aici</a>
+                Nu ai cont? <a href="#" onclick="event.preventDefault(); showPage('register');">Înregistrează-te aici</a>
             </div>
         </div>
     </div>
@@ -250,7 +254,7 @@
                 <button type="submit" class="btn" id="registerBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✨ Creează cont</button>
             </form>
             <div class="link-toggle">
-                Ai deja cont? <a onclick="showPage('login')">Login aici</a>
+                Ai deja cont? <a href="#" onclick="event.preventDefault(); showPage('login');">Login aici</a>
             </div>
         </div>
     </div>
@@ -346,7 +350,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PAGE (hidden, opens with command) -->
+    <!-- ADMIN PAGE -->
     <div id="admin" class="page admin-page">
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
         <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
@@ -363,7 +367,7 @@
         </div>
     </div>
 
-    <!-- GM PAGE (hidden, opens with command) -->
+    <!-- GM PAGE -->
     <div id="gm" class="page gm-page">
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
         <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
@@ -377,18 +381,34 @@
         const BACKEND = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
         let currentUser = null;
 
+        // DEV MODE - pentru test local fără backend
+        const DEV_MODE = false; // schimbă în true pentru test local
+
         function jsonp(url) {
             return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('Request timeout'));
+                }, 10000);
+                
                 const cb = 'cb_' + Date.now();
-                window[cb] = (data) => { delete window[cb]; document.body.removeChild(s); resolve(data); };
+                window[cb] = (data) => { 
+                    clearTimeout(timeout);
+                    delete window[cb]; 
+                    document.body.removeChild(s); 
+                    resolve(data); 
+                };
                 const s = document.createElement('script');
                 s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
-                s.onerror = () => reject(new Error('JSONP failed'));
+                s.onerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error('Backend nu răspunde. Verifică conexiunea sau backend-ul.'));
+                };
                 document.body.appendChild(s);
             });
         }
 
         function showPage(pageId) {
+            console.log('Switching to page:', pageId);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
         }
@@ -409,50 +429,52 @@
             showPage('login');
         }
 
-        // COMMAND SYSTEM pentru Admin/GM
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'SUPERPARTY_COMMAND') {
-                if (event.data.command === 'open mod andrei admin') {
-                    showPage('admin');
-                    loadAdmin();
-                } else if (event.data.command === 'open mod andrei gm') {
-                    showPage('gm');
-                }
-            }
-        });
-
+        // LOGIN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
             const err = document.getElementById('loginError');
-            btn.disabled = true; btn.textContent = 'Se încarcă...'; err.style.display = 'none';
+            
+            btn.disabled = true; 
+            btn.textContent = 'Se încarcă...'; 
+            err.style.display = 'none';
+            
             try {
-                const result = await jsonp(`${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-                if (result.success) {
-                    currentUser = result.user;
-                    localStorage.setItem('sp_user', JSON.stringify(result.user));
-                    
-                    // Flow: dacă nu are KYC → la KYC, altfel → la Dashboard
-                    if (!result.user.kyc_status) {
-                        showPage('kyc');
-                    } else {
-                        showPage('dashboard');
-                        document.getElementById('welcomeText').textContent = `Bine ai venit, ${result.user.username || result.user.email}!`;
-                    }
+                if (DEV_MODE) {
+                    // TEST MODE - skip backend
+                    currentUser = { email, username: 'Test User', kyc_status: false };
+                    localStorage.setItem('sp_user', JSON.stringify(currentUser));
+                    showPage('kyc');
                 } else {
-                    err.textContent = '⚠️ ' + (result.error || 'Eroare login');
-                    err.style.display = 'block';
+                    const result = await jsonp(`${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                    if (result.success) {
+                        currentUser = result.user;
+                        localStorage.setItem('sp_user', JSON.stringify(result.user));
+                        
+                        if (!result.user.kyc_status) {
+                            showPage('kyc');
+                        } else {
+                            showPage('dashboard');
+                            document.getElementById('welcomeText').textContent = `Bine ai venit, ${result.user.username || result.user.email}!`;
+                        }
+                    } else {
+                        err.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
+                        err.style.display = 'block';
+                    }
                 }
             } catch (error) {
-                err.textContent = '⚠️ Eroare: ' + error.message;
+                console.error('Login error:', error);
+                err.textContent = '⚠️ ' + error.message;
                 err.style.display = 'block';
             } finally {
-                btn.disabled = false; btn.textContent = '🔓 Intră în aplicație';
+                btn.disabled = false; 
+                btn.textContent = '🔓 Intră în aplicație';
             }
         });
 
+        // REGISTER
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('registerUsername').value;
@@ -460,24 +482,36 @@
             const password = document.getElementById('registerPassword').value;
             const btn = document.getElementById('registerBtn');
             const err = document.getElementById('registerError');
-            btn.disabled = true; btn.textContent = 'Se creează...'; err.style.display = 'none';
+            
+            btn.disabled = true; 
+            btn.textContent = 'Se creează...'; 
+            err.style.display = 'none';
+            
             try {
-                const result = await jsonp(`${BACKEND}?action=register&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-                if (result.success) {
+                if (DEV_MODE) {
                     alert('✅ Cont creat! Acum te poți loga!');
                     showPage('login');
                 } else {
-                    err.textContent = '⚠️ ' + (result.error || 'Eroare register');
-                    err.style.display = 'block';
+                    const result = await jsonp(`${BACKEND}?action=register&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                    if (result.success) {
+                        alert('✅ Cont creat! Acum te poți loga!');
+                        showPage('login');
+                    } else {
+                        err.textContent = '⚠️ ' + (result.error || 'Eroare la creare cont');
+                        err.style.display = 'block';
+                    }
                 }
             } catch (error) {
-                err.textContent = '⚠️ Eroare: ' + error.message;
+                console.error('Register error:', error);
+                err.textContent = '⚠️ ' + error.message;
                 err.style.display = 'block';
             } finally {
-                btn.disabled = false; btn.textContent = '✨ Creează cont';
+                btn.disabled = false; 
+                btn.textContent = '✨ Creează cont';
             }
         });
 
+        // KYC
         function completeKYC() {
             const contractOK = document.getElementById('contractCheck').checked;
             const buletinOK = document.getElementById('buletinUpload').files.length > 0;
@@ -508,11 +542,14 @@
             }
         }
 
+        // ADMIN
         async function loadAdmin() {
             const loading = document.getElementById('adminLoading');
             const table = document.getElementById('adminTable');
             const tbody = document.getElementById('adminBody');
-            loading.style.display = 'block'; table.style.display = 'none';
+            loading.style.display = 'block'; 
+            table.style.display = 'none';
+            
             try {
                 const result = await jsonp(`${BACKEND}?action=getUsers`);
                 if (result.success && result.users) {
@@ -522,20 +559,36 @@
                         <td><span class="badge badge-${u.status==='active'?'active':'pending'}">${u.status||'pending'}</span></td>
                         <td>${u.is_driver ? '🚗 DA' : '-'}</td>
                     </tr>`).join('');
-                    loading.style.display = 'none'; table.style.display = 'table';
-                } else loading.textContent = 'Nu s-au găsit utilizatori';
+                    loading.style.display = 'none'; 
+                    table.style.display = 'table';
+                } else {
+                    loading.textContent = 'Nu s-au găsit utilizatori';
+                }
             } catch (error) {
+                console.error('Admin error:', error);
                 loading.textContent = 'Eroare: ' + error.message;
             }
         }
 
-        // Auto-login dacă e salvat
+        // Auto-login
         const saved = localStorage.getItem('sp_user');
         if (saved) {
             currentUser = JSON.parse(saved);
             showPage('dashboard');
             document.getElementById('welcomeText').textContent = `Bine ai venit, ${currentUser.username || currentUser.email}!`;
         }
+
+        // COMMAND SYSTEM
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'SUPERPARTY_COMMAND') {
+                if (event.data.command === 'open mod andrei admin') {
+                    showPage('admin');
+                    loadAdmin();
+                } else if (event.data.command === 'open mod andrei gm') {
+                    showPage('gm');
+                }
+            }
+        });
     </script>
 </body>
 </html>
