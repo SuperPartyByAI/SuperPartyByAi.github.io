@@ -6,110 +6,88 @@
     <title>SuperParty App</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         .page { display: none; }
         .page.active { display: block; }
         
-        /* LOGIN - FULL SCREEN */
-        .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px; }
-        .login-container { width: 100%; max-width: 800px; }
-        .login-card { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 80px 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
-        .login-header { text-align: center; margin-bottom: 50px; }
-        .login-subtitle { font-size: 14px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(167, 139, 250, 0.9); margin-bottom: 15px; }
-        .login-title { font-size: 48px; font-weight: 700; color: #f1f5f9; margin-bottom: 15px; }
-        .login-desc { font-size: 18px; color: #cbd5e1; }
-        .form-group { margin-bottom: 30px; }
-        label { display: block; font-size: 14px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 12px; letter-spacing: 0.05em; }
-        input { width: 100%; padding: 20px 24px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 20px; color: #f1f5f9; font-size: 18px; outline: none; transition: all 0.3s; }
-        input::placeholder { color: #64748b; }
-        input:focus { border-color: #818cf8; box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.2); }
-        .btn-primary { width: 100%; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 20px; font-weight: 700; cursor: pointer; margin-top: 20px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5); transition: all 0.3s; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6); }
-        .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 18px; border-radius: 12px; margin-bottom: 25px; font-size: 16px; }
+        /* LOGIN */
+        .login-page { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .login-card { width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        .login-title { font-size: 36px; font-weight: 700; color: #f1f5f9; text-align: center; margin-bottom: 40px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
+        input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
+        input:focus { border-color: #818cf8; }
+        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
         
-        /* KYC - FULL WIDTH */
-        .kyc-page { background: #0f172a; min-height: 100vh; padding: 60px 40px; }
+        /* KYC */
+        .kyc-page { min-height: 100vh; background: #0f172a; padding: 60px 40px; }
         .kyc-container { max-width: 1200px; margin: 0 auto; background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 60px; color: #f1f5f9; }
-        .kyc-header { margin-bottom: 50px; }
-        .kyc-subtitle { font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px; }
-        .kyc-title { font-size: 48px; font-weight: 700; margin-bottom: 12px; }
-        .kyc-desc { font-size: 18px; color: #cbd5e1; }
-        .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 40px; margin-bottom: 30px; }
-        .section h2 { font-size: 28px; margin-bottom: 20px; }
-        .contract-box { background: rgba(30, 41, 59, 0.6); border-radius: 16px; padding: 30px; max-height: 250px; overflow-y: auto; font-size: 16px; line-height: 1.8; margin-bottom: 25px; }
-        .checkbox-label { display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 18px; }
-        .checkbox-label input { width: 24px; height: 24px; }
+        .kyc-title { font-size: 42px; font-weight: 700; margin-bottom: 40px; }
+        .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .checkbox-label { display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 16px; }
+        .checkbox-label input { width: 22px; height: 22px; }
         
-        /* ADMIN - FULL WIDTH */
-        .admin-page { background: #0f172a; min-height: 100vh; padding: 60px 40px; }
+        /* ADMIN */
+        .admin-page { min-height: 100vh; background: #0f172a; padding: 60px 40px; }
         .admin-container { max-width: 1600px; margin: 0 auto; }
         .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 50px; margin-bottom: 30px; color: #f1f5f9; }
-        .card h1 { font-size: 48px; margin-bottom: 12px; }
-        .card p { font-size: 18px; color: #94a3b8; }
         table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { padding: 20px; text-align: left; font-size: 14px; color: #94a3b8; text-transform: uppercase; border-bottom: 2px solid #334155; letter-spacing: 0.05em; }
-        td { padding: 20px; border-bottom: 1px solid #334155; color: #f1f5f9; font-size: 16px; }
-        .badge { display: inline-block; padding: 6px 16px; border-radius: 9999px; font-size: 14px; font-weight: 600; }
+        th { padding: 18px; text-align: left; color: #94a3b8; text-transform: uppercase; border-bottom: 2px solid #334155; font-size: 13px; }
+        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; font-size: 15px; }
+        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
         .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
         .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
+        .loading { text-align: center; padding: 40px; color: #94a3b8; }
     </style>
 </head>
 <body>
+    <!-- LOGIN PAGE -->
     <div id="loginPage" class="page active login-page">
-        <div class="login-container">
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="login-subtitle">SuperParty • Login</div>
-                    <h1 class="login-title">Intră în contul tău</h1>
-                    <p class="login-desc">Folosește datele primite de la SuperParty</p>
+        <div class="login-card">
+            <h1 class="login-title">🎉 SuperParty Login</h1>
+            <div id="loginError" class="error" style="display:none;"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="ex: ana@superparty.ro" required />
                 </div>
-                <div id="loginError" class="error" style="display:none;"></div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="ex: ana@superparty.ro" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Parolă</label>
-                        <input type="password" id="password" placeholder="Introdu parola ta" required />
-                    </div>
-                    <button type="submit" class="btn-primary">🔓 Intră în aplicație</button>
-                </form>
-            </div>
+                <div class="form-group">
+                    <label>Parolă</label>
+                    <input type="password" id="loginPassword" placeholder="Introdu parola" required />
+                </div>
+                <button type="submit" class="btn" id="loginBtn">🔓 Intră în aplicație</button>
+            </form>
         </div>
     </div>
-    
+
+    <!-- KYC PAGE -->
     <div id="kycPage" class="page kyc-page">
         <div class="kyc-container">
-            <div class="kyc-header">
-                <div class="kyc-subtitle">SuperParty • Onboarding</div>
-                <h1 class="kyc-title">🪪 Verificare cont & contract</h1>
-                <p class="kyc-desc">Ca să poți primi evenimente, trebuie să accepți contractul și să încarci actele tale.</p>
-            </div>
+            <h1 class="kyc-title">🪪 Verificare cont & contract</h1>
             <div class="section">
-                <h2>📄 Contract de colaborare</h2>
-                <div class="contract-box">
-                    <p><strong>Contract de colaborare SuperParty</strong></p>
-                    <p>Subsemnatul/subsemnata accept să colaborez cu SuperParty în calitate de animator/decorator/șofer pentru evenimente.</p>
-                    <p>Mă angajez să respect regulamentul intern, să fiu punctual/ă și să ofer servicii de calitate.</p>
-                </div>
+                <h2 style="font-size: 24px; margin-bottom: 20px;">📄 Contract de colaborare</h2>
                 <label class="checkbox-label">
                     <input type="checkbox" id="contractCheck" />
                     <span>Am citit și accept contractul de colaborare</span>
                 </label>
             </div>
-            <button class="btn-primary" onclick="goToAdmin()">🚀 Continuă și activează contul</button>
+            <button class="btn" onclick="goToAdmin()">🚀 Continuă</button>
         </div>
     </div>
-    
+
+    <!-- ADMIN PAGE -->
     <div id="adminPage" class="page admin-page">
         <div class="admin-container">
             <div class="card">
-                <h1>🔒 Admin Panel</h1>
-                <p>Management utilizatori și aprobare conturi</p>
+                <h1 style="font-size: 42px; margin-bottom: 10px;">🔒 Admin Panel</h1>
+                <p style="color: #94a3b8; font-size: 18px;">Management utilizatori și aprobare conturi</p>
             </div>
             <div class="card">
-                <table>
+                <div id="usersLoading" class="loading">Se încarcă utilizatori...</div>
+                <table id="usersTable" style="display:none;">
                     <thead>
                         <tr>
                             <th>Nume</th>
@@ -117,57 +95,139 @@
                             <th>Cod</th>
                             <th>Rol</th>
                             <th>Status</th>
+                            <th>KYC</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Ion Popescu</td>
-                            <td style="color: #94a3b8;">ion@test.ro</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="badge badge-pending">pending</span></td>
-                        </tr>
-                        <tr>
-                            <td>Maria Ionescu</td>
-                            <td style="color: #94a3b8;">maria@test.ro</td>
-                            <td>A1</td>
-                            <td>ANIMATOR</td>
-                            <td><span class="badge badge-active">active</span></td>
-                        </tr>
-                        <tr>
-                            <td>Ana Mihăilescu</td>
-                            <td style="color: #94a3b8;">ana@test.ro</td>
-                            <td>B2</td>
-                            <td>DECOR</td>
-                            <td><span class="badge badge-active">active</span></td>
-                        </tr>
-                    </tbody>
+                    <tbody id="usersBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <script>
+        // CONFIG
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
+        let currentUser = null;
+
+        // JSONP Helper
+        function jsonp(url) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonpCallback_' + Date.now();
+                window[callbackName] = (data) => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                const script = document.createElement('script');
+                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+                script.onerror = () => reject(new Error('JSONP request failed'));
+                document.body.appendChild(script);
+            });
+        }
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.disabled = true;
+            btn.textContent = 'Se încarcă...';
+            errorDiv.style.display = 'none';
+
+            try {
+                const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                const result = await jsonp(url);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    localStorage.setItem('superparty_user', JSON.stringify(result.user));
+                    
+                    // Check KYC status
+                    if (!result.user.kyc_status || result.user.kyc_status === 'not_started') {
+                        showPage('kycPage');
+                    } else if (result.user.is_admin) {
+                        showPage('adminPage');
+                        loadUsers();
+                    } else {
+                        alert('Dashboard în construcție!');
+                    }
+                } else {
+                    errorDiv.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = '⚠️ Eroare la conectare: ' + error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔓 Intră în aplicație';
+            }
+        });
+
+        // KYC
+        function goToAdmin() {
+            if (document.getElementById('contractCheck').checked) {
+                if (currentUser && currentUser.is_admin) {
+                    showPage('adminPage');
+                    loadUsers();
+                } else {
+                    alert('Contul tău va fi revizuit de admin!');
+                }
+            } else {
+                alert('Trebuie să accepți contractul!');
+            }
+        }
+
+        // ADMIN - Load Users
+        async function loadUsers() {
+            const loading = document.getElementById('usersLoading');
+            const table = document.getElementById('usersTable');
+            const tbody = document.getElementById('usersBody');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+
+            try {
+                const url = `${BACKEND_URL}?action=getUsers`;
+                const result = await jsonp(url);
+                
+                if (result.success && result.users) {
+                    tbody.innerHTML = result.users.map(user => `
+                        <tr>
+                            <td>${user.prenume || ''} ${user.nume || ''}</td>
+                            <td style="color: #94a3b8;">${user.email}</td>
+                            <td>${user.cod || '-'}</td>
+                            <td>${user.rol || '-'}</td>
+                            <td><span class="badge badge-${user.status === 'active' ? 'active' : 'pending'}">${user.status || 'pending'}</span></td>
+                            <td><span class="badge badge-${user.kyc_status === 'approved' ? 'active' : 'pending'}">${user.kyc_status || 'pending'}</span></td>
+                        </tr>
+                    `).join('');
+                    loading.style.display = 'none';
+                    table.style.display = 'table';
+                } else {
+                    loading.textContent = 'Nu s-au găsit utilizatori';
+                }
+            } catch (error) {
+                loading.textContent = 'Eroare la încărcare: ' + error.message;
+            }
+        }
+
+        // ROUTING
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
         }
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            if (email === 'admin@test.ro' && password === 'admin123') {
-                showPage('kycPage');
-            } else {
-                document.getElementById('loginError').textContent = '⚠️ Email sau parolă greșită';
-                document.getElementById('loginError').style.display = 'block';
-            }
-        });
-        function goToAdmin() {
-            if (document.getElementById('contractCheck').checked) {
+
+        // Check if already logged in
+        const savedUser = localStorage.getItem('superparty_user');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            if (currentUser.is_admin) {
                 showPage('adminPage');
-            } else {
-                alert('Trebuie să accepți contractul!');
+                loadUsers();
             }
         }
     </script>
