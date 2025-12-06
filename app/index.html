@@ -71,50 +71,6 @@
             color: #f1f5f9; 
         }
         
-        /* DASHBOARD PAGE */
-        .dashboard-page {
-            background: #0f172a;
-            flex-direction: column;
-            padding: 40px;
-        }
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .dashboard-header {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid #334155;
-            border-radius: 30px;
-            padding: 40px;
-            margin-bottom: 30px;
-            color: #f1f5f9;
-        }
-        .tasks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-        .task-card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid #334155;
-            border-radius: 20px;
-            padding: 30px;
-            color: #f1f5f9;
-            transition: all 0.3s;
-        }
-        .task-card:hover {
-            border-color: #667eea;
-            transform: translateY(-5px);
-        }
-        
-        /* ADMIN & GM PAGES */
-        .admin-page, .gm-page { 
-            background: #0f172a; 
-            flex-direction: column;
-            padding: 40px; 
-        }
-        
         .form-group { margin-bottom: 25px; }
         label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
         input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
@@ -182,29 +138,6 @@
             font-size: 16px;
             font-weight: 600;
             text-transform: none;
-        }
-        
-        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { padding: 18px; text-align: left; color: #94a3b8; border-bottom: 2px solid #334155; }
-        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; }
-        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
-        .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
-        .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
-        .badge-blocked { background: rgba(239, 68, 68, 0.25); color: #ef4444; }
-        
-        .logout-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            z-index: 1000;
         }
     </style>
 </head>
@@ -322,63 +255,6 @@
         </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
-    <div id="dashboard" class="page dashboard-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <h1 style="font-size: 42px; margin-bottom: 10px;">👋 Bine ai venit!</h1>
-                <p style="color: #94a3b8; font-size: 18px;" id="welcomeText">Dashboard în construcție</p>
-            </div>
-            
-            <div class="tasks-grid">
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">📅</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Task-uri Astăzi</h3>
-                    <p style="color: #94a3b8;">0 task-uri programate</p>
-                </div>
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Profit Luna Asta</h3>
-                    <p style="color: #94a3b8;">0 RON</p>
-                </div>
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">⭐</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Rating</h3>
-                    <p style="color: #94a3b8;">5.0 / 5.0</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ADMIN PAGE -->
-    <div id="admin" class="page admin-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
-            <div class="card">
-                <h1 style="font-size: 42px;">🔒 Admin Panel</h1>
-            </div>
-            <div class="card">
-                <div id="adminLoading" style="text-align: center; padding: 40px; color: #94a3b8;">Se încarcă...</div>
-                <table id="adminTable" style="display:none;">
-                    <thead><tr><th>Cod</th><th>Nume</th><th>Email</th><th>Rol</th><th>Status</th></tr></thead>
-                    <tbody id="adminBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- GM PAGE -->
-    <div id="gm" class="page gm-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
-            <div class="card">
-                <h1 style="font-size: 42px;">👑 GM Panel</h1>
-                <p style="color: #94a3b8; margin-top: 10px;">Panou complet de control - Coming Soon</p>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ═══════════════════════════════════════════════════════════
         // CONFIG
@@ -451,12 +327,6 @@
             }
         }
 
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('sp_user');
-            showPage('login');
-        }
-
         // ═══════════════════════════════════════════════════════════
         // LOGIN
         // ═══════════════════════════════════════════════════════════
@@ -481,19 +351,8 @@
                     currentUser = result.user;
                     localStorage.setItem('sp_user', JSON.stringify(currentUser));
 
-                    if (currentUser.is_gm) {
-                        showPage('gm');
-                    } else if (currentUser.is_admin) {
-                        showPage('admin');
-                        loadAdmin();
-                    } else {
-                        if (!currentUser.kyc_status) {
-                            showPage('kyc');
-                        } else {
-                            showPage('dashboard');
-                            document.getElementById('welcomeText').textContent = `Bine ai venit, ${currentUser.username || currentUser.email}!`;
-                        }
-                    }
+                    // Redirect la dashboard.html
+                    window.location.href = 'dashboard.html';
                 } else {
                     err.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
                     err.style.display = 'block';
@@ -548,7 +407,7 @@
         // KYC
         // ═══════════════════════════════════════════════════════════
         
-        function completeKYC() {
+        async function completeKYC() {
             const contractOK = document.getElementById('contractCheck').checked;
             const buletinOK = document.getElementById('buletinUpload').files.length > 0;
             const selfieOK = document.getElementById('selfieUpload').files.length > 0;
@@ -571,95 +430,31 @@
                 return;
             }
             
-            alert('✅ KYC complet! Bine ai venit în echipă!');
-            showPage('dashboard');
-            if (currentUser) {
-                document.getElementById('welcomeText').textContent = `Bine ai venit, ${currentUser.username || currentUser.email}!`;
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // ADMIN
-        // ═══════════════════════════════════════════════════════════
-        
-        async function loadAdmin() {
-            const loading = document.getElementById('adminLoading');
-            const table = document.getElementById('adminTable');
-            const tbody = document.getElementById('adminBody');
-            
-            loading.style.display = 'block';
-            table.style.display = 'none';
+            // Salvează data KYC în backend
+            const today = new Date().toISOString();
             
             try {
-                const result = await jsonp(`${BACKEND}?action=getUsers`);
+                const result = await jsonp(
+                    `${BACKEND}?action=updateKYC&email=${encodeURIComponent(currentUser.email)}&kyc_date=${encodeURIComponent(today)}&is_driver=${isDriver}`
+                );
                 
-                if (result && result.success && result.users) {
-                    tbody.innerHTML = result.users.map((u) => {
-                        let badgeClass = 'badge-pending';
-                        if (u.status === 'active') badgeClass = 'badge-active';
-                        if (u.status === 'blocked') badgeClass = 'badge-blocked';
-                        
-                        return `<tr>
-                            <td>${u.cod || '-'}</td>
-                            <td>${u.username || u.email}</td>
-                            <td>${u.email}</td>
-                            <td>${u.rol}</td>
-                            <td><span class="badge ${badgeClass}">${u.status || 'pending'}</span></td>
-                        </tr>`;
-                    }).join('');
+                if (result && result.success) {
+                    // Update user object
+                    currentUser.last_kyc_date = today;
+                    currentUser.is_driver = isDriver;
+                    localStorage.setItem('sp_user', JSON.stringify(currentUser));
                     
-                    loading.style.display = 'none';
-                    table.style.display = 'table';
+                    alert('✅ KYC complet! Bine ai venit în echipă!');
+                    
+                    // Redirect la dashboard.html
+                    window.location.href = 'dashboard.html';
                 } else {
-                    loading.textContent = 'Nu s-au găsit utilizatori';
+                    alert('⚠️ Eroare la salvare KYC: ' + (result.error || 'Unknown error'));
                 }
             } catch (error) {
-                loading.textContent = 'Eroare: ' + error.message;
+                alert('⚠️ Eroare: ' + error.message);
             }
         }
-
-        // ═══════════════════════════════════════════════════════════
-        // AUTO-LOGIN
-        // ═══════════════════════════════════════════════════════════
-        
-        (function autoLogin() {
-            const saved = localStorage.getItem('sp_user');
-            if (!saved) return;
-
-            try {
-                currentUser = JSON.parse(saved);
-            } catch (e) {
-                localStorage.removeItem('sp_user');
-                return;
-            }
-
-            if (!currentUser) return;
-
-            if (currentUser.is_gm) {
-                showPage('gm');
-            } else if (currentUser.is_admin) {
-                showPage('admin');
-                loadAdmin();
-            } else {
-                showPage('dashboard');
-                document.getElementById('welcomeText').textContent = `Bine ai venit, ${currentUser.username || currentUser.email}!`;
-            }
-        })();
-
-        // ═══════════════════════════════════════════════════════════
-        // COMMAND SYSTEM
-        // ═══════════════════════════════════════════════════════════
-        
-        window.addEventListener('message', (event) => {
-            if (!event.data || event.data.type !== 'SUPERPARTY_COMMAND') return;
-
-            if (event.data.command === 'open mod andrei admin') {
-                showPage('admin');
-                loadAdmin();
-            } else if (event.data.command === 'open mod andrei gm') {
-                showPage('gm');
-            }
-        });
     </script>
 </body>
 </html>

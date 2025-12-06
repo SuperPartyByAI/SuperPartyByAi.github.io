@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperParty - Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #020617;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        
+        /* TOP BAR */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(51, 65, 85, 0.8);
+            color: #f1f5f9;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(71, 85, 105, 0.8);
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 80px 20px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        
+        /* CARD */
+        .card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #334155;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            padding: 16px;
+            text-align: left;
+            color: #94a3b8;
+            border-bottom: 2px solid #334155;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        tr:hover {
+            background: rgba(51, 65, 85, 0.3);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background: rgba(251, 191, 36, 0.25);
+            color: #fbbf24;
+        }
+        
+        .badge-active {
+            background: rgba(34, 197, 94, 0.25);
+            color: #22c55e;
+        }
+        
+        .badge-blocked {
+            background: rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+        }
+        
+        .badge-gm {
+            background: rgba(168, 85, 247, 0.25);
+            color: #a855f7;
+        }
+        
+        .badge-admin {
+            background: rgba(59, 130, 246, 0.25);
+            color: #3b82f6;
+        }
+        
+        .badge-operator {
+            background: rgba(107, 114, 128, 0.25);
+            color: #9ca3af;
+        }
+        
+        /* ACTIONS */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-approve {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .btn-approve:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-block {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .btn-block:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-action:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 32px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <button class="back-btn" onclick="goBack()">← Înapoi la Dashboard</button>
+        <div style="font-size: 24px;">🔒</div>
+    </div>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">🔒 Admin Panel</h1>
+            <p class="page-subtitle">Management utilizatori SuperParty</p>
+        </div>
+        
+        <div class="card">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 16px;">Se încarcă utilizatorii...</p>
+            </div>
+            
+            <div id="tableContainer" class="table-container" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cod</th>
+                            <th>Nume</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Status</th>
+                            <th>Data creare</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // CONFIG
+        // ═══════════════════════════════════════════════════════════
+        
+        const BACKEND = 'https://script.google.com/macros/s/AKfycbxRvNzFZ_7MAJL3yl263KAsJbn0ScoRjFia_If7TFYAwpttZetPwuVwbOpNFWrNzcx3/exec';
+        const OWNER_EMAIL = 'ursache.andrei1995@gmail.com';
+        
+        // ═══════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════
+        
+        (function init() {
+            const saved = localStorage.getItem('sp_user');
+            
+            if (!saved) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            let currentUser;
+            try {
+                currentUser = JSON.parse(saved);
+            } catch (e) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Verifică dacă e OWNER
+            if (currentUser.email.toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
+                alert('❌ Acces interzis! Doar Andrei poate accesa Admin Panel.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
+            loadUsers();
+        })();
+        
+        // ═══════════════════════════════════════════════════════════
+        // JSONP HELPER
+        // ═══════════════════════════════════════════════════════════
+        
+        function jsonp(url) {
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('Timeout')), 10000);
+                const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                const script = document.createElement('script');
+                
+                window[cb] = (data) => {
+                    clearTimeout(timeout);
+                    cleanup();
+                    resolve(data);
+                };
+                
+                function cleanup() {
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                    try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+                }
+                
+                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + encodeURIComponent(cb);
+                script.async = true;
+                script.onerror = () => {
+                    clearTimeout(timeout);
+                    cleanup();
+                    reject(new Error('Backend error'));
+                };
+                
+                document.body.appendChild(script);
+            });
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD USERS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadUsers() {
+            try {
+                const result = await jsonp(`${BACKEND}?action=getUsers`);
+                
+                if (result && result.success && result.users) {
+                    renderUsers(result.users);
+                } else {
+                    showError('Nu s-au găsit utilizatori.');
+                }
+            } catch (e) {
+                showError('Eroare la încărcare: ' + e.message);
+            }
+        }
+        
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                
+                // Cod
+                const tdCod = document.createElement('td');
+                tdCod.textContent = user.cod || '-';
+                tr.appendChild(tdCod);
+                
+                // Nume
+                const tdNume = document.createElement('td');
+                tdNume.textContent = user.username || user.email;
+                tr.appendChild(tdNume);
+                
+                // Email
+                const tdEmail = document.createElement('td');
+                tdEmail.textContent = user.email;
+                tr.appendChild(tdEmail);
+                
+                // Rol
+                const tdRol = document.createElement('td');
+                const badgeRol = document.createElement('span');
+                badgeRol.className = `badge badge-${user.rol}`;
+                badgeRol.textContent = user.rol.toUpperCase();
+                tdRol.appendChild(badgeRol);
+                tr.appendChild(tdRol);
+                
+                // Status
+                const tdStatus = document.createElement('td');
+                const badgeStatus = document.createElement('span');
+                badgeStatus.className = `badge badge-${user.status}`;
+                badgeStatus.textContent = user.status === 'pending' ? 'PENDING' : 
+                                          user.status === 'blocked' ? 'BLOCKED' : 'ACTIVE';
+                tdStatus.appendChild(badgeStatus);
+                tr.appendChild(tdStatus);
+                
+                // Data creare
+                const tdDate = document.createElement('td');
+                tdDate.textContent = user.created_at ? new Date(user.created_at).toLocaleDateString('ro-RO') : '-';
+                tr.appendChild(tdDate);
+                
+                // Acțiuni
+                const tdActions = document.createElement('td');
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'action-btns';
+                
+                // Buton Approve
+                const btnApprove = document.createElement('button');
+                btnApprove.className = 'btn-action btn-approve';
+                btnApprove.textContent = '✓ Approve';
+                btnApprove.disabled = user.approved || user.email === OWNER_EMAIL;
+                btnApprove.onclick = () => approveUser(user.email);
+                actionsDiv.appendChild(btnApprove);
+                
+                // Buton Block
+                const btnBlock = document.createElement('button');
+                btnBlock.className = 'btn-action btn-block';
+                btnBlock.textContent = user.blocked ? 'Unblock' : '✕ Block';
+                btnBlock.disabled = user.email === OWNER_EMAIL;
+                btnBlock.onclick = () => toggleBlockUser(user.email, user.blocked);
+                actionsDiv.appendChild(btnBlock);
+                
+                tdActions.appendChild(actionsDiv);
+                tr.appendChild(tdActions);
+                
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('tableContainer').style.display = 'block';
+        }
+        
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `<p style="color: #ef4444;">❌ ${message}</p>`;
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // ACTIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function approveUser(email) {
+            if (!confirm(`Aprobi utilizatorul ${email}?`)) return;
+            
+            try {
+                const result = await jsonp(`${BACKEND}?action=approveUser&email=${encodeURIComponent(email)}`);
+                
+                if (result && result.success) {
+                    alert('✅ ' + result.message);
+                    loadUsers();
+                } else {
+                    alert('❌ ' + (result.error || 'Eroare la aprobare'));
+                }
+            } catch (e) {
+                alert('❌ Eroare: ' + e.message);
+            }
+        }
+        
+        async function toggleBlockUser(email, currentlyBlocked) {
+            const action = currentlyBlocked ? 'deblochezi' : 'blochezi';
+            if (!confirm(`Sigur ${action} utilizatorul ${email}?`)) return;
+            
+            try {
+                const result = await jsonp(`${BACKEND}?action=blockUser&email=${encodeURIComponent(email)}`);
+                
+                if (result && result.success) {
+                    alert('✅ ' + result.message);
+                    loadUsers();
+                } else {
+                    alert('❌ ' + (result.error || 'Eroare'));
+                }
+            } catch (e) {
+                alert('❌ Eroare: ' + e.message);
+            }
+        }
+        
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

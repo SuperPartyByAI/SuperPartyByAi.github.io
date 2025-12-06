@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperParty - GM Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #020617;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        
+        /* TOP BAR */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(51, 65, 85, 0.8);
+            color: #f1f5f9;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(71, 85, 105, 0.8);
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 80px 20px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        
+        /* FILTERS */
+        .filters {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #334155;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-input {
+            padding: 10px 16px;
+            background: rgba(51, 65, 85, 0.5);
+            border: 2px solid #475569;
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-input:focus {
+            border-color: #667eea;
+        }
+        
+        .btn-filter {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-filter:hover {
+            opacity: 0.9;
+        }
+        
+        /* CONVERSATIONS GRID */
+        .conversations-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .conversation-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #334155;
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+        
+        .conversation-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-email {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .message-count {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .last-message-time {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .messages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        
+        .message.user {
+            background: rgba(102, 126, 234, 0.15);
+            border-left: 3px solid #667eea;
+        }
+        
+        .message.ai {
+            background: rgba(51, 65, 85, 0.5);
+            border-left: 3px solid #94a3b8;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        
+        .message-from {
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .message.user .message-from {
+            color: #818cf8;
+        }
+        
+        .message.ai .message-from {
+            color: #94a3b8;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #64748b;
+        }
+        
+        .message-text {
+            line-height: 1.5;
+        }
+        
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 32px;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .filter-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <button class="back-btn" onclick="goBack()">← Înapoi la Dashboard</button>
+        <div style="font-size: 24px;">👑</div>
+    </div>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">👑 GM Panel</h1>
+            <p class="page-subtitle">Conversații AI - Toți utilizatorii</p>
+        </div>
+        
+        <div class="filters">
+            <input 
+                type="text" 
+                class="filter-input" 
+                id="searchInput" 
+                placeholder="🔍 Caută după email..."
+            />
+            <button class="btn-filter" onclick="loadAllChats()">🔄 Reîncarcă</button>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 16px;">Se încarcă conversațiile...</p>
+        </div>
+        
+        <div id="conversationsContainer" class="conversations-grid" style="display: none;"></div>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div style="font-size: 64px; margin-bottom: 16px;">💬</div>
+            <p>Nu există conversații încă.</p>
+        </div>
+    </div>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // CONFIG
+        // ═══════════════════════════════════════════════════════════
+        
+        const BACKEND = 'https://script.google.com/macros/s/AKfycbxRvNzFZ_7MAJL3yl263KAsJbn0ScoRjFia_If7TFYAwpttZetPwuVwbOpNFWrNzcx3/exec';
+        const OWNER_EMAIL = 'ursache.andrei1995@gmail.com';
+        
+        let allChats = [];
+        
+        // ═══════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════
+        
+        (function init() {
+            const saved = localStorage.getItem('sp_user');
+            
+            if (!saved) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            let currentUser;
+            try {
+                currentUser = JSON.parse(saved);
+            } catch (e) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Verifică dacă e OWNER
+            if (currentUser.email.toLowerCase() !== OWNER_EMAIL.toLowerCase()) {
+                alert('❌ Acces interzis! Doar Andrei poate accesa GM Panel.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
+            loadAllChats();
+            
+            // Search filter
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                filterChats(e.target.value);
+            });
+        })();
+        
+        // ═══════════════════════════════════════════════════════════
+        // JSONP HELPER
+        // ═══════════════════════════════════════════════════════════
+        
+        function jsonp(url) {
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('Timeout')), 10000);
+                const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                const script = document.createElement('script');
+                
+                window[cb] = (data) => {
+                    clearTimeout(timeout);
+                    cleanup();
+                    resolve(data);
+                };
+                
+                function cleanup() {
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                    try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+                }
+                
+                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + encodeURIComponent(cb);
+                script.async = true;
+                script.onerror = () => {
+                    clearTimeout(timeout);
+                    cleanup();
+                    reject(new Error('Backend error'));
+                };
+                
+                document.body.appendChild(script);
+            });
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD ALL CHATS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadAllChats() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('conversationsContainer').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            
+            try {
+                const result = await jsonp(`${BACKEND}?action=getAllChats`);
+                
+                if (result && result.success && result.chats) {
+                    allChats = result.chats;
+                    
+                    if (allChats.length === 0) {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('emptyState').style.display = 'block';
+                    } else {
+                        renderChats(allChats);
+                    }
+                } else {
+                    showError('Nu s-au găsit conversații.');
+                }
+            } catch (e) {
+                showError('Eroare la încărcare: ' + e.message);
+            }
+        }
+        
+        function renderChats(chats) {
+            // Grupează mesajele pe utilizator
+            const chatsByUser = {};
+            
+            chats.forEach(chat => {
+                if (!chatsByUser[chat.email]) {
+                    chatsByUser[chat.email] = [];
+                }
+                chatsByUser[chat.email].push(chat);
+            });
+            
+            const container = document.getElementById('conversationsContainer');
+            container.innerHTML = '';
+            
+            Object.keys(chatsByUser).forEach(email => {
+                const userChats = chatsByUser[email];
+                const lastMessage = userChats[userChats.length - 1];
+                
+                const card = document.createElement('div');
+                card.className = 'conversation-card';
+                
+                // Header
+                const header = document.createElement('div');
+                header.className = 'conversation-header';
+                
+                const userBadge = document.createElement('div');
+                userBadge.className = 'user-badge';
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'user-avatar';
+                avatar.textContent = '👤';
+                
+                const userInfo = document.createElement('div');
+                userInfo.className = 'user-info';
+                
+                const userEmail = document.createElement('div');
+                userEmail.className = 'user-email';
+                userEmail.textContent = email;
+                
+                const messageCount = document.createElement('div');
+                messageCount.className = 'message-count';
+                messageCount.textContent = `${userChats.length} mesaje`;
+                
+                userInfo.appendChild(userEmail);
+                userInfo.appendChild(messageCount);
+                
+                userBadge.appendChild(avatar);
+                userBadge.appendChild(userInfo);
+                
+                const lastTime = document.createElement('div');
+                lastTime.className = 'last-message-time';
+                lastTime.textContent = new Date(lastMessage.timestamp).toLocaleString('ro-RO');
+                
+                header.appendChild(userBadge);
+                header.appendChild(lastTime);
+                
+                card.appendChild(header);
+                
+                // Messages
+                const messagesList = document.createElement('div');
+                messagesList.className = 'messages-list';
+                
+                userChats.forEach(chat => {
+                    const msg = document.createElement('div');
+                    msg.className = `message ${chat.from.toLowerCase()}`;
+                    
+                    const msgHeader = document.createElement('div');
+                    msgHeader.className = 'message-header';
+                    
+                    const msgFrom = document.createElement('span');
+                    msgFrom.className = 'message-from';
+                    msgFrom.textContent = chat.from;
+                    
+                    const msgTime = document.createElement('span');
+                    msgTime.className = 'message-time';
+                    msgTime.textContent = new Date(chat.timestamp).toLocaleTimeString('ro-RO');
+                    
+                    msgHeader.appendChild(msgFrom);
+                    msgHeader.appendChild(msgTime);
+                    
+                    const msgText = document.createElement('div');
+                    msgText.className = 'message-text';
+                    msgText.textContent = chat.text;
+                    
+                    msg.appendChild(msgHeader);
+                    msg.appendChild(msgText);
+                    
+                    messagesList.appendChild(msg);
+                });
+                
+                card.appendChild(messagesList);
+                container.appendChild(card);
+            });
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('conversationsContainer').style.display = 'grid';
+        }
+        
+        function filterChats(searchTerm) {
+            if (!searchTerm.trim()) {
+                renderChats(allChats);
+                return;
+            }
+            
+            const filtered = allChats.filter(chat => 
+                chat.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            renderChats(filtered);
+        }
+        
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `<p style="color: #ef4444;">❌ ${message}</p>`;
+        }
+        
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
