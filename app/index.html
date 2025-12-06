@@ -7,10 +7,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .nav { position: fixed; top: 0; left: 0; right: 0; background: #1f2937; padding: 20px; display: flex; gap: 10px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-wrap: wrap; }
+        .nav button { padding: 12px 20px; background: #374151; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .nav button.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .page { display: none; }
         .page.active { display: block; }
-        
-        /* LOGIN */
+        .page.login-page.active, .page.register-page.active { display: flex !important; }
+        .kyc-page, .admin-page, .gm-page { padding-top: 100px; }
+        .login-page, .register-page { padding-top: 0; min-height: 100vh; }
         .login-page { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; padding: 40px; }
         .login-card { width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
         .login-title { font-size: 36px; font-weight: 700; color: #f1f5f9; text-align: center; margin-bottom: 40px; }
@@ -21,31 +25,36 @@
         .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        
-        /* KYC */
+        .register-page { min-height: 100vh; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .register-card { width: 100%; max-width: 600px; background: white; border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+        .register-card label { color: #374151; text-transform: none; }
+        .register-card input { background: white; border: 2px solid #e5e7eb; color: #1f2937; }
+        .register-card input:focus { border-color: #10b981; }
         .kyc-page { min-height: 100vh; background: #0f172a; padding: 60px 40px; }
         .kyc-container { max-width: 1200px; margin: 0 auto; background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 60px; color: #f1f5f9; }
-        .kyc-title { font-size: 42px; font-weight: 700; margin-bottom: 40px; }
         .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .checkbox-label { display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 16px; }
-        .checkbox-label input { width: 22px; height: 22px; }
-        
-        /* ADMIN */
-        .admin-page { min-height: 100vh; background: #0f172a; padding: 60px 40px; }
-        .admin-container { max-width: 1600px; margin: 0 auto; }
-        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 50px; margin-bottom: 30px; color: #f1f5f9; }
+        .upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .upload-card { background: rgba(30, 41, 59, 0.6); border: 2px dashed #475569; border-radius: 16px; padding: 30px; text-align: center; cursor: pointer; }
+        .admin-page, .gm-page { min-height: 100vh; background: #0f172a; padding: 40px; }
+        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
         table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { padding: 18px; text-align: left; color: #94a3b8; text-transform: uppercase; border-bottom: 2px solid #334155; font-size: 13px; }
-        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; font-size: 15px; }
+        th { padding: 18px; text-align: left; color: #94a3b8; border-bottom: 2px solid #334155; }
+        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; }
         .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
         .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
         .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
-        .loading { text-align: center; padding: 40px; color: #94a3b8; }
     </style>
 </head>
 <body>
-    <!-- LOGIN PAGE -->
-    <div id="loginPage" class="page active login-page">
+    <div class="nav">
+        <button class="active" onclick="showPage('login')">🔓 LOGIN</button>
+        <button onclick="showPage('register')">✨ REGISTER</button>
+        <button onclick="showPage('kyc')">🪪 KYC</button>
+        <button onclick="showPage('admin')">🔒 ADMIN</button>
+        <button onclick="showPage('gm')">👑 GM</button>
+    </div>
+
+    <div id="login" class="page active login-page">
         <div class="login-card">
             <h1 class="login-title">🎉 SuperParty Login</h1>
             <div id="loginError" class="error" style="display:none;"></div>
@@ -63,172 +72,176 @@
         </div>
     </div>
 
-    <!-- KYC PAGE -->
-    <div id="kycPage" class="page kyc-page">
-        <div class="kyc-container">
-            <h1 class="kyc-title">🪪 Verificare cont & contract</h1>
-            <div class="section">
-                <h2 style="font-size: 24px; margin-bottom: 20px;">📄 Contract de colaborare</h2>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="contractCheck" />
-                    <span>Am citit și accept contractul de colaborare</span>
-                </label>
+    <div id="register" class="page register-page">
+        <div class="register-card">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="font-size: 64px; margin-bottom: 15px;">✨</div>
+                <h2 style="font-size: 36px; font-weight: 700; color: #1f2937;">Înregistrează-te</h2>
             </div>
-            <button class="btn" onclick="goToAdmin()">🚀 Continuă</button>
+            <div id="registerError" class="error" style="display:none;"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label style="color: #374151;">👨‍💼 Username</label>
+                    <input type="text" id="registerUsername" placeholder="Alege un username" required style="background: white; border: 2px solid #e5e7eb; color: #1f2937;" />
+                </div>
+                <div class="form-group">
+                    <label style="color: #374151;">📧 Email</label>
+                    <input type="email" id="registerEmail" placeholder="adresa@email.ro" required style="background: white; border: 2px solid #e5e7eb; color: #1f2937;" />
+                </div>
+                <div class="form-group">
+                    <label style="color: #374151;">🔒 Parolă</label>
+                    <input type="password" id="registerPassword" placeholder="Minim 8 caractere" required style="background: white; border: 2px solid #e5e7eb; color: #1f2937;" />
+                </div>
+                <button type="submit" class="btn" id="registerBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✨ Creează cont</button>
+            </form>
         </div>
     </div>
 
-    <!-- ADMIN PAGE -->
-    <div id="adminPage" class="page admin-page">
-        <div class="admin-container">
+    <div id="kyc" class="page kyc-page">
+        <div class="kyc-container">
+            <h1 style="font-size: 42px; margin-bottom: 40px;">🪪 KYC Onboarding</h1>
+            <div class="section">
+                <h2 style="font-size: 24px; margin-bottom: 20px;">📄 Contract</h2>
+                <label style="display: flex; align-items: center; gap: 15px; cursor: pointer; text-transform: none;">
+                    <input type="checkbox" id="contractCheck" style="width: 22px; height: 22px;" />
+                    <span>Am citit și accept contractul</span>
+                </label>
+            </div>
+            <div class="section">
+                <h2 style="font-size: 24px; margin-bottom: 20px;">👤 Identitate</h2>
+                <div class="upload-grid">
+                    <div class="upload-card"><div style="font-size: 48px;">🪪</div><div>Buletin</div></div>
+                    <div class="upload-card"><div style="font-size: 48px;">🤳</div><div>Selfie</div></div>
+                </div>
+            </div>
+            <button class="btn" onclick="completeKYC()">🚀 Continuă</button>
+        </div>
+    </div>
+
+    <div id="admin" class="page admin-page">
+        <div style="max-width: 1600px; margin: 0 auto;">
             <div class="card">
-                <h1 style="font-size: 42px; margin-bottom: 10px;">🔒 Admin Panel</h1>
-                <p style="color: #94a3b8; font-size: 18px;">Management utilizatori și aprobare conturi</p>
+                <h1 style="font-size: 42px;">🔒 Admin Panel</h1>
             </div>
             <div class="card">
-                <div id="usersLoading" class="loading">Se încarcă utilizatori...</div>
-                <table id="usersTable" style="display:none;">
-                    <thead>
-                        <tr>
-                            <th>Nume</th>
-                            <th>Email</th>
-                            <th>Cod</th>
-                            <th>Rol</th>
-                            <th>Status</th>
-                            <th>KYC</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersBody"></tbody>
+                <div id="adminLoading" style="text-align: center; padding: 40px; color: #94a3b8;">Se încarcă...</div>
+                <table id="adminTable" style="display:none;">
+                    <thead><tr><th>Nume</th><th>Email</th><th>Status</th></tr></thead>
+                    <tbody id="adminBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <div id="gm" class="page gm-page">
+        <div style="max-width: 1600px; margin: 0 auto;">
+            <div class="card">
+                <h1 style="font-size: 42px;">👑 GM Panel</h1>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // CONFIG
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
+        const BACKEND = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
         let currentUser = null;
 
-        // JSONP Helper
         function jsonp(url) {
             return new Promise((resolve, reject) => {
-                const callbackName = 'jsonpCallback_' + Date.now();
-                window[callbackName] = (data) => {
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    resolve(data);
-                };
-                const script = document.createElement('script');
-                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
-                script.onerror = () => reject(new Error('JSONP request failed'));
-                document.body.appendChild(script);
+                const cb = 'cb_' + Date.now();
+                window[cb] = (data) => { delete window[cb]; document.body.removeChild(s); resolve(data); };
+                const s = document.createElement('script');
+                s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
+                s.onerror = () => reject(new Error('JSONP failed'));
+                document.body.appendChild(s);
             });
         }
 
-        // LOGIN
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('loginError');
-            
-            btn.disabled = true;
-            btn.textContent = 'Se încarcă...';
-            errorDiv.style.display = 'none';
-
+            const err = document.getElementById('loginError');
+            btn.disabled = true; btn.textContent = 'Se încarcă...'; err.style.display = 'none';
             try {
-                const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-                const result = await jsonp(url);
-                
+                const result = await jsonp(`${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
                 if (result.success) {
                     currentUser = result.user;
-                    localStorage.setItem('superparty_user', JSON.stringify(result.user));
-                    
-                    // Check KYC status
-                    if (!result.user.kyc_status || result.user.kyc_status === 'not_started') {
-                        showPage('kycPage');
-                    } else if (result.user.is_admin) {
-                        showPage('adminPage');
-                        loadUsers();
-                    } else {
-                        alert('Dashboard în construcție!');
-                    }
+                    localStorage.setItem('sp_user', JSON.stringify(result.user));
+                    if (!result.user.kyc_status) showPage('kyc');
+                    else if (result.user.is_admin) { showPage('admin'); loadAdmin(); }
+                    else alert('Dashboard în construcție!');
                 } else {
-                    errorDiv.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
-                    errorDiv.style.display = 'block';
+                    err.textContent = '⚠️ ' + (result.error || 'Eroare login');
+                    err.style.display = 'block';
                 }
             } catch (error) {
-                errorDiv.textContent = '⚠️ Eroare la conectare: ' + error.message;
-                errorDiv.style.display = 'block';
+                err.textContent = '⚠️ Eroare: ' + error.message;
+                err.style.display = 'block';
             } finally {
-                btn.disabled = false;
-                btn.textContent = '🔓 Intră în aplicație';
+                btn.disabled = false; btn.textContent = '🔓 Intră în aplicație';
             }
         });
 
-        // KYC
-        function goToAdmin() {
-            if (document.getElementById('contractCheck').checked) {
-                if (currentUser && currentUser.is_admin) {
-                    showPage('adminPage');
-                    loadUsers();
-                } else {
-                    alert('Contul tău va fi revizuit de admin!');
-                }
-            } else {
-                alert('Trebuie să accepți contractul!');
-            }
-        }
-
-        // ADMIN - Load Users
-        async function loadUsers() {
-            const loading = document.getElementById('usersLoading');
-            const table = document.getElementById('usersTable');
-            const tbody = document.getElementById('usersBody');
-            
-            loading.style.display = 'block';
-            table.style.display = 'none';
-
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const btn = document.getElementById('registerBtn');
+            const err = document.getElementById('registerError');
+            btn.disabled = true; btn.textContent = 'Se creează...'; err.style.display = 'none';
             try {
-                const url = `${BACKEND_URL}?action=getUsers`;
-                const result = await jsonp(url);
-                
-                if (result.success && result.users) {
-                    tbody.innerHTML = result.users.map(user => `
-                        <tr>
-                            <td>${user.prenume || ''} ${user.nume || ''}</td>
-                            <td style="color: #94a3b8;">${user.email}</td>
-                            <td>${user.cod || '-'}</td>
-                            <td>${user.rol || '-'}</td>
-                            <td><span class="badge badge-${user.status === 'active' ? 'active' : 'pending'}">${user.status || 'pending'}</span></td>
-                            <td><span class="badge badge-${user.kyc_status === 'approved' ? 'active' : 'pending'}">${user.kyc_status || 'pending'}</span></td>
-                        </tr>
-                    `).join('');
-                    loading.style.display = 'none';
-                    table.style.display = 'table';
+                const result = await jsonp(`${BACKEND}?action=register&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                if (result.success) {
+                    alert('✅ Cont creat! Acum te poți loga!');
+                    showPage('login');
                 } else {
-                    loading.textContent = 'Nu s-au găsit utilizatori';
+                    err.textContent = '⚠️ ' + (result.error || 'Eroare register');
+                    err.style.display = 'block';
                 }
             } catch (error) {
-                loading.textContent = 'Eroare la încărcare: ' + error.message;
+                err.textContent = '⚠️ Eroare: ' + error.message;
+                err.style.display = 'block';
+            } finally {
+                btn.disabled = false; btn.textContent = '✨ Creează cont';
+            }
+        });
+
+        function completeKYC() {
+            if (document.getElementById('contractCheck').checked) {
+                if (currentUser && currentUser.is_admin) { showPage('admin'); loadAdmin(); }
+                else alert('Contul va fi verificat de admin!');
+            } else alert('Acceptă contractul!');
+        }
+
+        async function loadAdmin() {
+            const loading = document.getElementById('adminLoading');
+            const table = document.getElementById('adminTable');
+            const tbody = document.getElementById('adminBody');
+            loading.style.display = 'block'; table.style.display = 'none';
+            try {
+                const result = await jsonp(`${BACKEND}?action=getUsers`);
+                if (result.success && result.users) {
+                    tbody.innerHTML = result.users.map(u => `<tr><td>${u.username||u.email}</td><td>${u.email}</td><td><span class="badge badge-${u.status==='active'?'active':'pending'}">${u.status||'pending'}</span></td></tr>`).join('');
+                    loading.style.display = 'none'; table.style.display = 'table';
+                } else loading.textContent = 'Nu s-au găsit utilizatori';
+            } catch (error) {
+                loading.textContent = 'Eroare: ' + error.message;
             }
         }
 
-        // ROUTING
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-        }
-
-        // Check if already logged in
-        const savedUser = localStorage.getItem('superparty_user');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            if (currentUser.is_admin) {
-                showPage('adminPage');
-                loadUsers();
-            }
+        const saved = localStorage.getItem('sp_user');
+        if (saved) {
+            currentUser = JSON.parse(saved);
+            if (currentUser.is_admin) { showPage('admin'); loadAdmin(); }
         }
     </script>
 </body>
